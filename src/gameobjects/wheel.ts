@@ -28,9 +28,9 @@ const SEGMENTS: WheelSegment[] = [
 ]
 
 const RADIUS = 150
-const SPIN_DURATION = 2
-const FULL_ROTATIONS_MIN = 8
-const FULL_ROTATIONS_MAX = 12
+const SPIN_DURATION = 5
+const ROTATIONS_MIN = 2
+const ROTATIONS_MAX = 4
 
 const WHITE = rgb(255, 255, 255)
 
@@ -39,6 +39,7 @@ export function addWheel() {
     pos(center()),
     rotate(0),
     anchor('center'),
+    timer(),
     TAG.WHEEL,
     {
       isSpinning: false,
@@ -51,27 +52,29 @@ export function addWheel() {
 
         this.isSpinning = true
 
-        const fullRotations = randi(FULL_ROTATIONS_MIN, FULL_ROTATIONS_MAX)
-        const extraAngle = rand(0, Math.PI * 2)
-        const targetAngle =
-          wheel.angle + fullRotations * Math.PI * 2 + extraAngle
+        const fullRotations = randi(ROTATIONS_MIN, ROTATIONS_MAX)
+        const extraAngle = rand(0, 360)
+        const targetAngle = wheel.angle + fullRotations * 360 + extraAngle
 
-        tween(
-          wheel.angle,
-          targetAngle,
-          SPIN_DURATION,
-          (angle) => {
-            wheel.angle = angle
-          },
-          easings.easeOutCubic,
-        ).then(() => {
-          this.isSpinning = false
-          onComplete(this.getWinningSegment())
-        })
+        wheel
+          .tween(
+            wheel.angle,
+            targetAngle,
+            SPIN_DURATION,
+            (angle) => {
+              wheel.angle = angle
+            },
+            easings.easeOutCubic,
+          )
+          .then(() => {
+            this.isSpinning = false
+            onComplete(this.getWinningSegment())
+          })
       },
       getWinningSegment() {
+        const wheelAngle = (wheel.angle * Math.PI) / 180
         const segmentAngle = (Math.PI * 2) / this.segments.length
-        let pointerRelative = -Math.PI / 2 - wheel.angle
+        let pointerRelative = -Math.PI / 2 - wheelAngle
         pointerRelative = pointerRelative % (Math.PI * 2)
 
         if (pointerRelative < 0) {
