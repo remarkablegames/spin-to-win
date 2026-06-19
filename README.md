@@ -4,14 +4,14 @@
 
 # Kaplay Template
 
-[![release](https://img.shields.io/github/v/release/remarkablegames/kaplay-template)](https://github.com/remarkablegames/kaplay-template/releases)
-[![build](https://github.com/remarkablegames/kaplay-template/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablegames/kaplay-template/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/v/release/remarkablegames/spin-to-win)](https://github.com/remarkablegames/spin-to-win/releases)
+[![build](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml)
 
-<kbd>kaplay-template</kbd> is a template for making [KAPLAY](https://kaplayjs.com/) games.
+<kbd>spin-to-win</kbd> is a template for making [KAPLAY](https://kaplayjs.com/) games.
 
 Play the game on:
 
-- [remarkablegames](https://remarkablegames.org/kaplay-template/)
+- [remarkablegames](https://remarkablegames.org/spin-to-win/)
 
 ## Prerequisites
 
@@ -26,8 +26,8 @@ brew install nvm
 Clone the repository:
 
 ```sh
-git clone https://github.com/remarkablegames/kaplay-template.git
-cd kaplay-template
+git clone https://github.com/remarkablegames/spin-to-win.git
+cd spin-to-win
 ```
 
 Install the dependencies:
@@ -39,7 +39,7 @@ npm install
 Rename the project:
 
 ```sh
-git grep -l kaplay-template | xargs sed -i '' -e 's/kaplay-template/my-game/g'
+git grep -l spin-to-win | xargs sed -i '' -e 's/spin-to-win/my-game/g'
 ```
 
 ```sh
