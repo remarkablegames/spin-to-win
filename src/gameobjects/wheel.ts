@@ -27,7 +27,7 @@ const SEGMENTS: WheelSegment[] = [
   { color: rgb(128, 128, 128), label: '+0', value: 0 },
 ]
 
-const RADIUS = 150
+const RADIUS = 250
 const SPIN_DURATION = 5
 const ROTATIONS_MIN = 2
 const ROTATIONS_MAX = 4

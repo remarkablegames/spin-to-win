@@ -3,7 +3,7 @@ import { addWheel } from '../gameobjects'
 
 const BUTTON_WIDTH = 120
 const BUTTON_HEIGHT = 50
-const BUTTON_OFFSET = 220
+const BUTTON_OFFSET = 320
 
 const GREEN = rgb(50, 150, 50)
 
