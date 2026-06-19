@@ -1,9 +1,11 @@
 import { SCENE } from '../constants'
-import { addButton, addWheel } from '../gameobjects'
+import { addButton, addGrid, addWheel } from '../gameobjects'
 
 const BUTTON_OFFSET = 320
 
 scene(SCENE.GAME, () => {
+  addGrid()
+
   let score = 0
 
   const scoreLabel = add([
