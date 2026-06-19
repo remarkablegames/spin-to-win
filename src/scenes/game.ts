@@ -1,16 +1,43 @@
 import { SCENE } from '../constants'
-import { addEnemy, addPlayer } from '../gameobjects'
+import { addWheel } from '../gameobjects'
+
+const BUTTON_WIDTH = 120
+const BUTTON_HEIGHT = 50
+const BUTTON_OFFSET = 220
+
+const GREEN = rgb(50, 150, 50)
 
 scene(SCENE.GAME, () => {
-  addPlayer()
+  let score = 0
 
-  onClick(() => addKaboom(mousePos()))
+  const scoreLabel = add([
+    text(`Score: ${String(score)}`, { size: 24 }),
+    pos(12, 12),
+  ])
 
-  add([text('Press arrow keys', { width: width() / 2 }), pos(12, 12)])
+  const wheel = addWheel()
 
-  for (let i = 0; i < 3; i++) {
-    const x = rand(0, width())
-    const y = rand(0, height())
-    addEnemy(x, y)
+  const spinButton = add([
+    rect(BUTTON_WIDTH, BUTTON_HEIGHT),
+    pos(center().x, center().y + BUTTON_OFFSET),
+    anchor('center'),
+    color(GREEN),
+    area(),
+  ])
+
+  spinButton.add([
+    text('Spin', { size: 24 }),
+    anchor('center'),
+    color(255, 255, 255),
+  ])
+
+  function spin() {
+    wheel.spin((segment) => {
+      score += segment.value
+      scoreLabel.text = `Score: ${String(score)}`
+    })
   }
+
+  spinButton.onClick(spin)
+  onKeyPress('space', spin)
 })

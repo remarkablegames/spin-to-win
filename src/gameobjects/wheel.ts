@@ -1,0 +1,128 @@
+import type { Color } from 'kaplay'
+
+import { TAG } from '../constants'
+
+export interface WheelSegment {
+  color: Color
+  label: string
+  value: number
+}
+
+interface WheelState {
+  isSpinning: boolean
+  radius: number
+  segments: WheelSegment[]
+  spin(onComplete: (segment: WheelSegment) => void): void
+  getWinningSegment(): WheelSegment
+}
+
+export type Wheel = ReturnType<typeof addWheel>
+
+const SEGMENTS: WheelSegment[] = [
+  { color: rgb(255, 99, 71), label: '+10', value: 10 },
+  { color: rgb(60, 179, 113), label: '+25', value: 25 },
+  { color: rgb(30, 144, 255), label: '+50', value: 50 },
+  { color: rgb(255, 215, 0), label: '+100', value: 100 },
+  { color: rgb(220, 20, 60), label: '-25', value: -25 },
+  { color: rgb(128, 128, 128), label: '+0', value: 0 },
+]
+
+const RADIUS = 150
+const SPIN_DURATION = 3
+const FULL_ROTATIONS_MIN = 5
+const FULL_ROTATIONS_MAX = 9
+
+const WHITE = rgb(255, 255, 255)
+
+export function addWheel() {
+  const wheel = add([
+    pos(center()),
+    rotate(0),
+    anchor('center'),
+    TAG.WHEEL,
+    {
+      isSpinning: false,
+      radius: RADIUS,
+      segments: SEGMENTS,
+      spin(onComplete) {
+        if (this.isSpinning) {
+          return
+        }
+
+        this.isSpinning = true
+
+        const fullRotations = randi(FULL_ROTATIONS_MIN, FULL_ROTATIONS_MAX)
+        const extraAngle = rand(0, Math.PI * 2)
+        const targetAngle =
+          wheel.angle + fullRotations * Math.PI * 2 + extraAngle
+
+        tween(
+          wheel.angle,
+          targetAngle,
+          SPIN_DURATION,
+          (angle) => {
+            wheel.angle = angle
+          },
+          easings.easeOutCubic,
+        ).then(() => {
+          this.isSpinning = false
+          onComplete(this.getWinningSegment())
+        })
+      },
+      getWinningSegment() {
+        const segmentAngle = (Math.PI * 2) / this.segments.length
+        let pointerRelative = -Math.PI / 2 - wheel.angle
+        pointerRelative = pointerRelative % (Math.PI * 2)
+
+        if (pointerRelative < 0) {
+          pointerRelative += Math.PI * 2
+        }
+
+        const index = Math.floor(pointerRelative / segmentAngle)
+        return this.segments[index]
+      },
+    } satisfies WheelState,
+  ])
+
+  wheel.onDraw(() => {
+    const segmentAngle = (Math.PI * 2) / wheel.segments.length
+
+    wheel.segments.forEach((segment, index) => {
+      const startAngle = index * segmentAngle
+      const endAngle = (index + 1) * segmentAngle
+
+      drawPolygon({
+        color: segment.color,
+        fill: true,
+        pos: vec2(0, 0),
+        pts: [
+          vec2(0, 0),
+          vec2(
+            Math.cos(startAngle) * wheel.radius,
+            Math.sin(startAngle) * wheel.radius,
+          ),
+          vec2(
+            Math.cos(endAngle) * wheel.radius,
+            Math.sin(endAngle) * wheel.radius,
+          ),
+        ],
+      })
+
+      const midAngle = startAngle + segmentAngle / 2
+      const labelRadius = wheel.radius * 0.65
+
+      drawText({
+        anchor: 'center',
+        color: WHITE,
+        pos: vec2(
+          Math.cos(midAngle) * labelRadius,
+          Math.sin(midAngle) * labelRadius,
+        ),
+        size: 20,
+        text: segment.label,
+      })
+    })
+  })
+
+  return wheel
+}
