@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="public/favicon.png" width="200" alt="Kaplay Template">
+  <img src="public/favicon.png" width="200" alt="Spin to Win">
 </p>
 
-# Kaplay Template
+# Spin to Win
 
 [![release](https://img.shields.io/github/v/release/remarkablegames/spin-to-win)](https://github.com/remarkablegames/spin-to-win/releases)
 [![build](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml)
 
-<kbd>spin-to-win</kbd> is a template for making [KAPLAY](https://kaplayjs.com/) games.
+🎡 **Spin to Win** is a luck-based strategy game where every spin counts. Earn points, unlock upgrades, add segments, and remove penalties as you build your ultimate wheel. Can you reach the target score before luck runs out?
 
 Play the game on:
 
@@ -34,16 +34,6 @@ Install the dependencies:
 
 ```sh
 npm install
-```
-
-Rename the project:
-
-```sh
-git grep -l spin-to-win | xargs sed -i '' -e 's/spin-to-win/my-game/g'
-```
-
-```sh
-git grep -l 'Kaplay Template' | xargs sed -i '' -e 's/Kaplay Template/My Game/g'
 ```
 
 Update the files:

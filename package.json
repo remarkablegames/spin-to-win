@@ -1,7 +1,7 @@
 {
   "name": "spin-to-win",
   "version": "1.0.0-alpha",
-  "description": "Kaplay Template",
+  "description": "Spin to Win",
   "author": "Mark <mark@remarkablemark.org>",
   "scripts": {
     "build": "npm run clean && vite build",

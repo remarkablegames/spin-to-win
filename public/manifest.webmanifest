@@ -1,7 +1,7 @@
 {
-  "name": "Kaplay Template",
-  "short_name": "Kaplay Template",
-  "description": "Kaplay Template",
+  "name": "Spin to Win",
+  "short_name": "Spin to Win",
+  "description": "🎡 Spin to Win is a luck-based strategy game where every spin counts. Earn points, unlock upgrades, add powerful segments, and remove penalties as you build your ultimate wheel. Can you reach the target score before luck runs out?",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
