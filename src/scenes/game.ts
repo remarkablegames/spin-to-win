@@ -1,13 +1,7 @@
 import { SCENE } from '../constants'
-import { addWheel } from '../gameobjects'
+import { addButton, addWheel } from '../gameobjects'
 
-const BUTTON_WIDTH = 120
-const BUTTON_HEIGHT = 50
 const BUTTON_OFFSET = 320
-
-const GREEN = rgb(50, 150, 50)
-const DARK_GREEN = rgb(30, 90, 30)
-const SHADOW_OFFSET = 4
 
 scene(SCENE.GAME, () => {
   let score = 0
@@ -32,29 +26,6 @@ scene(SCENE.GAME, () => {
     color(255, 255, 255),
   ])
 
-  const buttonPosition = vec2(center().x, center().y + BUTTON_OFFSET)
-
-  add([
-    rect(BUTTON_WIDTH, BUTTON_HEIGHT),
-    pos(buttonPosition.x + SHADOW_OFFSET, buttonPosition.y + SHADOW_OFFSET),
-    anchor('center'),
-    color(DARK_GREEN),
-  ])
-
-  const spinButton = add([
-    rect(BUTTON_WIDTH, BUTTON_HEIGHT),
-    pos(buttonPosition),
-    anchor('center'),
-    color(GREEN),
-    area(),
-  ])
-
-  spinButton.add([
-    text('Spin', { size: 24 }),
-    anchor('center'),
-    color(255, 255, 255),
-  ])
-
   function spin() {
     wheel.spin((segment) => {
       score += segment.value
@@ -62,6 +33,7 @@ scene(SCENE.GAME, () => {
     })
   }
 
-  spinButton.onClick(spin)
+  addButton('Spin', center().x, center().y + BUTTON_OFFSET, spin)
+
   onKeyPress('space', spin)
 })
