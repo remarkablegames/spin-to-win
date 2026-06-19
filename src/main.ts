@@ -1,6 +1,8 @@
 import kaplay from 'kaplay'
 
-kaplay()
+kaplay({
+  background: [176, 146, 126],
+})
 
 const { start } = await import('./scenes')
 
