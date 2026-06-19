@@ -17,6 +17,19 @@ scene(SCENE.GAME, () => {
 
   const wheel = addWheel()
 
+  const POINTER_SIZE = 20
+
+  add([
+    polygon([
+      vec2(0, 0),
+      vec2(-POINTER_SIZE / 2, -POINTER_SIZE),
+      vec2(POINTER_SIZE / 2, -POINTER_SIZE),
+    ]),
+    pos(center().x, center().y - wheel.radius - 8),
+    anchor('bot'),
+    color(255, 255, 255),
+  ])
+
   const spinButton = add([
     rect(BUTTON_WIDTH, BUTTON_HEIGHT),
     pos(center().x, center().y + BUTTON_OFFSET),

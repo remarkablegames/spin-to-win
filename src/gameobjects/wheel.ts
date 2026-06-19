@@ -28,9 +28,9 @@ const SEGMENTS: WheelSegment[] = [
 ]
 
 const RADIUS = 150
-const SPIN_DURATION = 3
-const FULL_ROTATIONS_MIN = 5
-const FULL_ROTATIONS_MAX = 9
+const SPIN_DURATION = 2
+const FULL_ROTATIONS_MIN = 8
+const FULL_ROTATIONS_MAX = 12
 
 const WHITE = rgb(255, 255, 255)
 
@@ -87,25 +87,29 @@ export function addWheel() {
   wheel.onDraw(() => {
     const segmentAngle = (Math.PI * 2) / wheel.segments.length
 
+    drawCircle({
+      fill: false,
+      outline: { color: WHITE, width: 4 },
+      radius: wheel.radius,
+    })
+
     wheel.segments.forEach((segment, index) => {
       const startAngle = index * segmentAngle
-      const endAngle = (index + 1) * segmentAngle
+
+      const arcPoints = [vec2(0, 0)]
+      const arcSteps = 10
+
+      for (let step = 0; step <= arcSteps; step++) {
+        const angle = startAngle + (step / arcSteps) * segmentAngle
+        arcPoints.push(
+          vec2(Math.cos(angle) * wheel.radius, Math.sin(angle) * wheel.radius),
+        )
+      }
 
       drawPolygon({
         color: segment.color,
         fill: true,
-        pos: vec2(0, 0),
-        pts: [
-          vec2(0, 0),
-          vec2(
-            Math.cos(startAngle) * wheel.radius,
-            Math.sin(startAngle) * wheel.radius,
-          ),
-          vec2(
-            Math.cos(endAngle) * wheel.radius,
-            Math.sin(endAngle) * wheel.radius,
-          ),
-        ],
+        pts: arcPoints,
       })
 
       const midAngle = startAngle + segmentAngle / 2
@@ -121,6 +125,11 @@ export function addWheel() {
         size: 20,
         text: segment.label,
       })
+    })
+
+    drawCircle({
+      color: WHITE,
+      radius: 12,
     })
   })
 
