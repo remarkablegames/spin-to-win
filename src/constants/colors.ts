@@ -17,3 +17,4 @@ export const LIGHT_BROWN = rgb(220, 185, 160)
 export const GOLD = rgb(255, 200, 50)
 
 export const WHITE = rgb(255, 255, 255)
+export const BLACK = rgb(0, 0, 0)
