@@ -12,6 +12,7 @@ interface WheelState {
   isSpinning: boolean
   radius: number
   segments: WheelSegment[]
+  reset(): void
   spin(onComplete: (segment: WheelSegment) => void): void
   getWinningSegment(): WheelSegment
 }
@@ -45,6 +46,10 @@ export function addWheel() {
       isSpinning: false,
       radius: RADIUS,
       segments: SEGMENTS,
+      reset() {
+        wheel.angle = 0
+        this.isSpinning = false
+      },
       spin(onComplete) {
         if (this.isSpinning) {
           return
