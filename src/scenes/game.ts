@@ -1,23 +1,39 @@
-import { COLOR, LEVEL, SCENE } from '../constants'
+import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
 import { addButton, addGrid, addHeader, addWheel } from '../gameobjects'
+import type { WheelSegment } from '../gameobjects/wheel'
+import { getDefaultSegments } from '../gameobjects/wheel'
 
 const BUTTON_OFFSET = 320
 const SKIP_BUTTON_OFFSET = BUTTON_OFFSET + 64
 
-scene(SCENE.GAME, () => {
+interface GameState {
+  extraSpins?: number
+  levelIndex?: number
+  levelScore?: number
+  money?: number
+  roundIndex?: number
+  segments?: WheelSegment[]
+}
+
+scene(SCENE.GAME, (initialState?: GameState) => {
   addGrid()
 
-  let levelIndex = 0
-  let roundIndex = 0
-  let levelScore = 0
+  let levelIndex = initialState?.levelIndex ?? 0
+  let roundIndex = initialState?.roundIndex ?? 0
+  let levelScore = initialState?.levelScore ?? 0
   let carryOver = 0
+  let money = initialState?.money ?? 0
+  let moneyDelta = 0
+  let extraSpins = initialState?.extraSpins ?? 0
   let spinsRemaining = 0
+  let totalSpinsForRound = 0
   let isSpinning = false
   let continueButton: ReturnType<typeof addButton> | null = null
 
   const header = addHeader()
 
-  const wheel = addWheel()
+  const wheelSegments = initialState?.segments ?? getDefaultSegments()
+  const wheel = addWheel(wheelSegments)
 
   const POINTER_SIZE = 20
 
@@ -33,10 +49,10 @@ scene(SCENE.GAME, () => {
   ])
 
   function updateSpinButton() {
-    const level = LEVEL.LEVELS[levelIndex]
-    const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
-    const currentSpin = totalSpins - spinsRemaining + 1
-    spinButton.setLabel(`Spin ${String(currentSpin)}/${String(totalSpins)}`)
+    const currentSpin = totalSpinsForRound - spinsRemaining + 1
+    spinButton.setLabel(
+      `Spin ${String(currentSpin)}/${String(totalSpinsForRound)}`,
+    )
   }
 
   function updateUI() {
@@ -45,29 +61,24 @@ scene(SCENE.GAME, () => {
     header.setLevel(levelIndex + 1)
     header.setRound(roundIndex + 1, level.roundsPerLevel)
     header.setScore(levelScore, level.targetScore)
+    header.setMoney(money, moneyDelta)
     updateSpinButton()
   }
 
   function endRound() {
     spinButton.disable()
     spinButton.hide()
+    skipButton.hide()
+    money += SHOP.BASE_PASSIVE_INCOME
+    header.setMoney(money, moneyDelta)
 
-    if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {
-      continueButton = addButton(
-        'Next Round',
-        center().x,
-        center().y + BUTTON_OFFSET,
-        () => {
-          continueButton?.destroy()
-          continueButton = null
-          roundIndex++
-          wheel.reset()
-          startRound()
-        },
-      )
-    } else {
-      endLevel()
-    }
+    go(SCENE.SHOP, {
+      levelIndex,
+      levelScore,
+      money,
+      roundIndex,
+      segments: wheel.segments,
+    })
   }
 
   function endLevel() {
@@ -95,8 +106,7 @@ scene(SCENE.GAME, () => {
           () => {
             continueButton?.destroy()
             continueButton = null
-            carryOver = 0
-            startLevel(0)
+            resetGame()
           },
         )
       }
@@ -123,15 +133,12 @@ scene(SCENE.GAME, () => {
     isSpinning = true
     spinButton.disable()
     skipButton.disable()
-
-    const level = LEVEL.LEVELS[levelIndex]
-    const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
-    spinButton.setLabel(
-      `Spin ${String(spinsRemaining - 1)}/${String(totalSpins)}`,
-    )
+    updateSpinButton()
 
     wheel.spin((segment) => {
-      levelScore += segment.value
+      levelScore += segment.score
+      money += segment.money
+      moneyDelta += segment.money
       spinsRemaining--
       updateUI()
       isSpinning = false
@@ -184,7 +191,11 @@ scene(SCENE.GAME, () => {
 
   function startRound() {
     const level = LEVEL.LEVELS[levelIndex]
-    spinsRemaining = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
+    totalSpinsForRound =
+      level.baseSpinsPerRound + LEVEL.BONUS_SPINS + extraSpins
+    spinsRemaining = totalSpinsForRound
+    extraSpins = 0
+    moneyDelta = SHOP.BASE_PASSIVE_INCOME
     updateUI()
     spinButton.show()
     spinButton.enable()
@@ -200,9 +211,31 @@ scene(SCENE.GAME, () => {
     startRound()
   }
 
+  function resetGame() {
+    carryOver = 0
+    money = 0
+    extraSpins = 0
+    wheel.resetSegments()
+    startLevel(0)
+  }
+
+  function continueFromShop() {
+    if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {
+      roundIndex++
+      wheel.reset()
+      startRound()
+    } else {
+      endLevel()
+    }
+  }
+
   onKeyPress('space', () => {
     spin()
   })
 
-  startLevel(0)
+  if (initialState) {
+    continueFromShop()
+  } else {
+    startLevel(0)
+  }
 })

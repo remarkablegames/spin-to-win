@@ -1,4 +1,5 @@
 export const GREEN = rgb(50, 150, 50)
+export const LIGHT_GREEN = rgb(100, 190, 100)
 export const DARK_GREEN = rgb(30, 90, 30)
 
 export const RED = rgb(200, 50, 50)

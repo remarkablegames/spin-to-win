@@ -1,5 +1,6 @@
 import './game'
 import './preload'
+import './shop'
 
 import { SCENE } from '../constants'
 

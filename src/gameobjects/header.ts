@@ -1,6 +1,6 @@
 import { COLOR } from '../constants'
 
-const HEADER_HEIGHT = 140
+const HEADER_HEIGHT = 160
 const TEXT_SIZE = 20
 const LINE_HEIGHT = 28
 const CENTER_X = () => width() / 2
@@ -26,6 +26,19 @@ export function addHeader() {
     color(COLOR.MEDIUM_BROWN),
   ])
 
+  const moneyLabel = add([
+    text('', {
+      align: 'center',
+      size: TEXT_SIZE,
+      styles: {
+        dim: { color: COLOR.LIGHT_GREEN },
+      },
+    }),
+    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 2),
+    anchor('top'),
+    color(COLOR.GREEN),
+  ])
+
   const scoreLabel = add([
     text('', {
       align: 'center',
@@ -34,14 +47,14 @@ export function addHeader() {
         gold: { color: COLOR.GOLD },
       },
     }),
-    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 2),
+    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 3),
     anchor('top'),
     color(COLOR.LIGHT_BROWN),
   ])
 
   add([
     rect(PROGRESS_BAR_WIDTH, PROGRESS_BAR_HEIGHT, { radius: 4 }),
-    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 3 + 4),
+    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 4 + 4),
     anchor('top'),
     color(COLOR.MEDIUM_BROWN),
     opacity(0.4),
@@ -49,7 +62,7 @@ export function addHeader() {
 
   const progressBarFill = add([
     rect(0, PROGRESS_BAR_HEIGHT, { radius: 4 }),
-    pos(CENTER_X() - PROGRESS_BAR_WIDTH / 2, TOP_Y + LINE_HEIGHT * 3 + 4),
+    pos(CENTER_X() - PROGRESS_BAR_WIDTH / 2, TOP_Y + LINE_HEIGHT * 4 + 4),
     anchor('topleft'),
     color(COLOR.GOLD),
   ])
@@ -65,6 +78,9 @@ export function addHeader() {
       scoreLabel.text = `[gold]${String(current)}[/gold]/${String(target)}`
       const ratio = Math.min(1, Math.max(0, current / target))
       progressBarFill.width = PROGRESS_BAR_WIDTH * ratio
+    },
+    setMoney(money: number, delta = 0) {
+      moneyLabel.text = `$${String(money)} [dim](${delta >= 0 ? '+' : ''}$${String(delta)})[/dim]`
     },
   }
 }
