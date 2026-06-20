@@ -21,18 +21,20 @@ export function addButton(
   const textWidth = formatText({ size: 24, text: label }).width
   const buttonWidth = Math.max(width, textWidth + HORIZONTAL_PADDING * 2)
 
-  const shadow = add([
+  const container = add([pos(x, y)])
+
+  const shadow = container.add([
     rect(buttonWidth, height),
-    pos(x + SHADOW_OFFSET, y + SHADOW_OFFSET),
+    pos(SHADOW_OFFSET, SHADOW_OFFSET),
     anchor('center'),
     color(DARK_GREEN),
     scale(),
     opacity(),
   ])
 
-  const button = add([
+  const button = container.add([
     rect(buttonWidth, height),
-    pos(x, y),
+    pos(),
     anchor('center'),
     color(GREEN),
     area(),
@@ -88,8 +90,7 @@ export function addButton(
 
   return {
     destroy() {
-      button.destroy()
-      shadow.destroy()
+      container.destroy()
     },
     disable() {
       enabled = false
@@ -106,16 +107,12 @@ export function addButton(
       updateOpacity()
     },
     hide() {
-      button.hidden = true
-      shadow.hidden = true
-      button.pos = vec2(OFFSCREEN)
-      shadow.pos = vec2(OFFSCREEN)
+      container.hidden = true
+      container.pos = vec2(OFFSCREEN)
     },
     show() {
-      button.hidden = false
-      shadow.hidden = false
-      button.pos = vec2(x, y)
-      shadow.pos = vec2(x + SHADOW_OFFSET, y + SHADOW_OFFSET)
+      container.hidden = false
+      container.pos = vec2(x, y)
       updateOpacity()
     },
   }

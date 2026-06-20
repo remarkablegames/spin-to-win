@@ -28,7 +28,7 @@ scene(SCENE.GAME, () => {
 
   add([
     polygon([
-      vec2(0, 0),
+      vec2(),
       vec2(-POINTER_SIZE / 2, -POINTER_SIZE),
       vec2(POINTER_SIZE / 2, -POINTER_SIZE),
     ]),

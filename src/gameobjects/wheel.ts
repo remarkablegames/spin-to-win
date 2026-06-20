@@ -104,7 +104,7 @@ export function addWheel() {
     wheel.segments.forEach((segment, index) => {
       const startAngle = index * segmentAngle
 
-      const arcPoints = [vec2(0, 0)]
+      const arcPoints = [vec2()]
       const arcSteps = 10
 
       for (let step = 0; step <= arcSteps; step++) {
