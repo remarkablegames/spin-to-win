@@ -45,8 +45,9 @@ export function addButton(
   ])
 
   let enabled = true
+  let hovered = false
 
-  function updateVisuals() {
+  function updateOpacity() {
     button.opacity = enabled ? 1 : 0.5
     shadow.opacity = enabled ? 1 : 0.5
   }
@@ -58,7 +59,10 @@ export function addButton(
   })
 
   button.onHover(() => {
+    hovered = true
+
     if (!enabled) {
+      setCursor('not-allowed')
       return
     }
 
@@ -68,7 +72,10 @@ export function addButton(
   })
 
   button.onHoverEnd(() => {
+    hovered = false
+
     if (!enabled) {
+      setCursor('default')
       return
     }
 
@@ -84,11 +91,17 @@ export function addButton(
     },
     disable() {
       enabled = false
-      updateVisuals()
+      updateOpacity()
+
+      if (hovered) {
+        setCursor('not-allowed')
+        button.scale = vec2(1)
+        shadow.scale = vec2(1)
+      }
     },
     enable() {
       enabled = true
-      updateVisuals()
+      updateOpacity()
     },
     hide() {
       button.hidden = true
@@ -97,7 +110,7 @@ export function addButton(
     show() {
       button.hidden = false
       shadow.hidden = false
-      updateVisuals()
+      updateOpacity()
     },
   }
 }
