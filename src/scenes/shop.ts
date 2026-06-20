@@ -33,6 +33,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
     pos(center().x, 200),
     anchor('center'),
     color(COLOR.WHITE),
+    opacity(),
+    scale(),
+    lifespan(2.5, { fade: 0.5 }),
   ])
 
   const shop = addShop({
@@ -84,6 +87,17 @@ scene(SCENE.SHOP, (state: ShopState) => {
       addedSegment = true
       notificationLabel.text = `Added ${segment.label}`
       notificationLabel.color = segment.color
+      notificationLabel.opacity = 1
+      notificationLabel.scale = vec2(1.5)
+      tween(
+        notificationLabel.scale.x,
+        1,
+        0.5,
+        (value) => {
+          notificationLabel.scale = vec2(value)
+        },
+        easings.easeOutBack,
+      )
       updateButtons()
     },
     onContinue: () => {
