@@ -13,6 +13,16 @@ Play the game on:
 
 - [remarkablegames](https://remarkablegames.org/spin-to-win/)
 
+## Credits
+
+### Art
+
+- [Kaplay Crew](https://kaplayjs.com/crew/)
+
+### Fonts
+
+- [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
+
 ## Prerequisites
 
 [nvm](https://github.com/nvm-sh/nvm#installing-and-updating):
