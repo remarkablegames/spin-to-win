@@ -182,8 +182,8 @@ scene(SCENE.GAME, () => {
     },
     120,
     50,
-    COLOR.BLUE,
-    COLOR.DARK_BLUE,
+    COLOR.RED,
+    COLOR.DARK_RED,
   )
 
   function startRound() {
