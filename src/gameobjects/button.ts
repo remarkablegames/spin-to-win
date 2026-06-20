@@ -17,6 +17,8 @@ export function addButton(
   onClick: () => void,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
+  buttonColor = GREEN,
+  shadowColor = DARK_GREEN,
 ) {
   function calcWidth(value: string) {
     return Math.max(
@@ -31,7 +33,7 @@ export function addButton(
     rect(calcWidth(label), height),
     pos(SHADOW_OFFSET, SHADOW_OFFSET),
     anchor('center'),
-    color(DARK_GREEN),
+    color(shadowColor),
     scale(),
     opacity(),
   ])
@@ -40,7 +42,7 @@ export function addButton(
     rect(calcWidth(label), height),
     pos(),
     anchor('center'),
-    color(GREEN),
+    color(buttonColor),
     area(),
     scale(),
     opacity(),

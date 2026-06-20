@@ -2,6 +2,7 @@ import { LEVEL, SCENE } from '../constants'
 import { addButton, addGrid, addHeader, addWheel } from '../gameobjects'
 
 const BUTTON_OFFSET = 320
+const SKIP_BUTTON_OFFSET = BUTTON_OFFSET + 64
 
 scene(SCENE.GAME, () => {
   addGrid()
@@ -125,6 +126,7 @@ scene(SCENE.GAME, () => {
 
     isSpinning = true
     spinButton.disable()
+    skipButton.disable()
 
     const level = LEVEL.LEVELS[levelIndex]
     const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
@@ -140,8 +142,10 @@ scene(SCENE.GAME, () => {
 
       if (spinsRemaining > 0) {
         spinButton.enable()
+        skipButton.enable()
         updateSpinButton()
       } else {
+        skipButton.hide()
         endRound()
       }
     })
@@ -154,12 +158,42 @@ scene(SCENE.GAME, () => {
     spin,
   )
 
+  const skipButton = addButton(
+    'Skip',
+    center().x,
+    center().y + SKIP_BUTTON_OFFSET,
+    () => {
+      if (isSpinning || spinsRemaining <= 0) {
+        return
+      }
+
+      spinsRemaining--
+      updateUI()
+
+      if (spinsRemaining > 0) {
+        updateSpinButton()
+      } else {
+        skipButton.disable()
+        skipButton.hide()
+        spinButton.disable()
+        spinButton.hide()
+        endRound()
+      }
+    },
+    120,
+    50,
+    rgb(50, 100, 200),
+    rgb(30, 60, 120),
+  )
+
   function startRound() {
     const level = LEVEL.LEVELS[levelIndex]
     spinsRemaining = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
     updateUI()
     spinButton.show()
     spinButton.enable()
+    skipButton.show()
+    skipButton.enable()
   }
 
   function startLevel(index: number) {
