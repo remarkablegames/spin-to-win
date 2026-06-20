@@ -1,4 +1,4 @@
-import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
+import { COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import { addButton, addGrid, addHeader, addWheel } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { getDefaultSegments } from '../gameobjects/wheel'
@@ -47,16 +47,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const wheelSegments = initialState?.segments ?? getDefaultSegments()
   const wheel = addWheel(wheelSegments)
 
-  const POINTER_SIZE = 20
-
   add([
-    polygon([
-      vec2(),
-      vec2(-POINTER_SIZE / 2, -POINTER_SIZE),
-      vec2(POINTER_SIZE / 2, -POINTER_SIZE),
-    ]),
-    pos(center().x, center().y - wheel.radius - 2),
-    anchor('bot'),
+    sprite(SPRITE.POINTER, { width: 28, height: 28 }),
+    pos(center().x, center().y - wheel.radius - 12),
+    anchor('center'),
+    rotate(90),
     color(COLOR.WHITE),
   ])
 
