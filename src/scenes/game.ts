@@ -43,7 +43,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       vec2(-POINTER_SIZE / 2, -POINTER_SIZE),
       vec2(POINTER_SIZE / 2, -POINTER_SIZE),
     ]),
-    pos(center().x, center().y - wheel.radius - 8),
+    pos(center().x, center().y - wheel.radius - 2),
     anchor('bot'),
     color(COLOR.WHITE),
   ])
