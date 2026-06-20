@@ -16,19 +16,31 @@ interface GameState {
 }
 
 scene(SCENE.GAME, (initialState?: GameState) => {
+  if (initialState) {
+    const level = LEVEL.LEVELS[initialState.levelIndex ?? 0]
+
+    if ((initialState.roundIndex ?? 0) >= level.roundsPerLevel - 1) {
+      go(SCENE.END, {
+        levelIndex: initialState.levelIndex,
+        levelScore: initialState.levelScore,
+        money: initialState.money,
+      })
+      return
+    }
+  }
+
   addGrid()
 
   let levelIndex = initialState?.levelIndex ?? 0
   let roundIndex = initialState?.roundIndex ?? 0
   let levelScore = initialState?.levelScore ?? 0
-  let carryOver = 0
+  const carryOver = 0
   let money = initialState?.money ?? 0
   let moneyDelta = 0
   let extraSpins = initialState?.extraSpins ?? 0
   let spinsRemaining = 0
   let totalSpinsForRound = 0
   let isSpinning = false
-  let continueButton: ReturnType<typeof addButton> | null = null
 
   const header = addHeader()
 
@@ -78,49 +90,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function endLevel() {
-    const level = LEVEL.LEVELS[levelIndex]
-
-    updateUI()
-
-    if (levelScore >= level.targetScore) {
-      carryOver = levelScore - level.targetScore
-
-      if (levelIndex < LEVEL.LEVELS.length - 1) {
-        continueButton = addButton({
-          label: 'Next Level',
-          x: center().x,
-          y: center().y + BUTTON_OFFSET,
-          onClick: () => {
-            continueButton?.destroy()
-            continueButton = null
-            startLevel(levelIndex + 1)
-          },
-        })
-      } else {
-        continueButton = addButton({
-          label: 'Play Again',
-          x: center().x,
-          y: center().y + BUTTON_OFFSET,
-          onClick: () => {
-            continueButton?.destroy()
-            continueButton = null
-            resetGame()
-          },
-        })
-      }
-    } else {
-      continueButton = addButton({
-        label: 'Retry Level',
-        x: center().x,
-        y: center().y + BUTTON_OFFSET,
-        onClick: () => {
-          continueButton?.destroy()
-          continueButton = null
-          carryOver = 0
-          startLevel(levelIndex)
-        },
-      })
-    }
+    go(SCENE.END, {
+      levelIndex,
+      levelScore,
+      money,
+    })
   }
 
   function spin() {
@@ -200,14 +174,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     levelScore = carryOver
     wheel.reset()
     startRound()
-  }
-
-  function resetGame() {
-    carryOver = 0
-    money = 0
-    extraSpins = 0
-    wheel.resetSegments()
-    startLevel(0)
   }
 
   function continueFromShop() {

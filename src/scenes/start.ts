@@ -1,3 +1,4 @@
+import './end'
 import './game'
 import './preload'
 import './shop'
