@@ -1,4 +1,5 @@
 import { COLOR } from '../constants'
+import { addTooltip } from './tooltip'
 
 const HEADER_HEIGHT = 160
 const TEXT_SIZE = 20
@@ -37,7 +38,21 @@ export function addHeader() {
     pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 2),
     anchor('top'),
     color(COLOR.GREEN),
+    area(),
   ])
+
+  const moneyTooltip = addTooltip({
+    position: 'below',
+    target: moneyLabel,
+    text: 'Money is used to buy things in the shop',
+  })
+
+  moneyLabel.onHover(() => {
+    moneyTooltip.show()
+  })
+  moneyLabel.onHoverEnd(() => {
+    moneyTooltip.hide()
+  })
 
   const scoreLabel = add([
     text('', {
@@ -50,7 +65,21 @@ export function addHeader() {
     pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 3),
     anchor('top'),
     color(COLOR.LIGHT_BROWN),
+    area(),
   ])
+
+  const scoreTooltip = addTooltip({
+    position: 'below',
+    target: scoreLabel,
+    text: '',
+  })
+
+  scoreLabel.onHover(() => {
+    scoreTooltip.show()
+  })
+  scoreLabel.onHoverEnd(() => {
+    scoreTooltip.hide()
+  })
 
   add([
     rect(PROGRESS_BAR_WIDTH, PROGRESS_BAR_HEIGHT, { radius: 4 }),
@@ -76,6 +105,7 @@ export function addHeader() {
     },
     setScore(current: number, target: number) {
       scoreLabel.text = `[gold]${String(current)}[/gold]/${String(target)}`
+      scoreTooltip.setText(`Score ${String(target)} points to clear the level`)
       const ratio = Math.min(1, Math.max(0, current / target))
       progressBarFill.width = PROGRESS_BAR_WIDTH * ratio
     },

@@ -60,10 +60,15 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     color(COLOR.WHITE),
   ])
 
+  function formatSpinTooltip() {
+    return `${String(spinsRemaining)} spin${spinsRemaining === 1 ? '' : 's'} remaining`
+  }
+
   function updateSpinButton() {
     spinButton.setLabel(
       `Spin ${String(spinsRemaining)}/${String(totalSpinsForRound)}`,
     )
+    spinButton.setTooltip(formatSpinTooltip())
   }
 
   function updateUI() {
@@ -130,6 +135,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     x: center().x,
     y: center().y + BUTTON_OFFSET,
     onClick: spin,
+    tooltip: '1 spin remaining',
+    tooltipPosition: 'above',
   })
 
   const skipButton = addButton({
@@ -150,6 +157,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         endRound()
       }
     },
+    tooltip: 'Skip this turn',
+    tooltipPosition: 'above',
     buttonColor: COLOR.RED,
     shadowColor: COLOR.DARK_RED,
   })

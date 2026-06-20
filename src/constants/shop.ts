@@ -9,11 +9,35 @@ export const UPGRADE_WHEEL_AMOUNT = 5
 export const ADD_SEGMENT_POSITIVE_CHANCE = 0.7
 
 export const POSITIVE_SEGMENTS = [
-  { color: rgb(255, 215, 0), label: '+25', money: 0, score: 25 },
-  { color: rgb(60, 179, 113), label: '+$5', money: 5, score: 0 },
+  {
+    color: rgb(255, 215, 0),
+    label: '+25',
+    money: 0,
+    score: 25,
+    tooltip: 'Score 25 points',
+  },
+  {
+    color: rgb(60, 179, 113),
+    label: '+$5',
+    money: 5,
+    score: 0,
+    tooltip: 'Earn $5',
+  },
 ]
 
 export const NEGATIVE_SEGMENTS = [
-  { color: rgb(220, 20, 60), label: '-25', money: 0, score: -25 },
-  { color: rgb(139, 0, 0), label: '-$5', money: -5, score: 0 },
+  {
+    color: rgb(220, 20, 60),
+    label: '-25',
+    money: 0,
+    score: -25,
+    tooltip: 'Lose 25 points',
+  },
+  {
+    color: rgb(139, 0, 0),
+    label: '-$5',
+    money: -5,
+    score: 0,
+    tooltip: 'Pay $5',
+  },
 ]

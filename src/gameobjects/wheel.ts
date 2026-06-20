@@ -1,6 +1,7 @@
 import type { Color } from 'kaplay'
 
 import { COLOR, SPRITE } from '../constants'
+import { addTooltip } from './tooltip'
 
 export interface WheelSegment {
   color: Color
@@ -8,6 +9,7 @@ export interface WheelSegment {
   label: string
   money: number
   score: number
+  tooltip: string
 }
 
 interface WheelState {
@@ -25,19 +27,56 @@ interface WheelState {
 export type Wheel = ReturnType<typeof addWheel>
 
 export const SEGMENTS: WheelSegment[] = [
-  { color: rgb(255, 99, 71), label: '+10', money: 0, score: 10 },
-  { color: rgb(128, 128, 128), label: '+25', money: 0, score: 25 },
-  { color: rgb(30, 144, 255), label: '+50', money: 0, score: 50 },
+  {
+    color: rgb(255, 99, 71),
+    label: '+10',
+    money: 0,
+    score: 10,
+    tooltip: 'Score 10 points',
+  },
+  {
+    color: rgb(128, 128, 128),
+    label: '+25',
+    money: 0,
+    score: 25,
+    tooltip: 'Score 25 points',
+  },
+  {
+    color: rgb(30, 144, 255),
+    label: '+50',
+    money: 0,
+    score: 50,
+    tooltip: 'Score 50 points',
+  },
   {
     color: rgb(255, 215, 0),
     icon: SPRITE.COIN,
     label: '+$5',
     money: 5,
     score: 0,
+    tooltip: 'Earn $5',
   },
-  { color: rgb(220, 20, 60), label: '-25', money: 0, score: -25 },
-  { color: rgb(60, 179, 113), label: '+$1', money: 1, score: 0 },
-  { color: rgb(139, 0, 0), label: '-$3', money: -3, score: 0 },
+  {
+    color: rgb(220, 20, 60),
+    label: '-25',
+    money: 0,
+    score: -25,
+    tooltip: 'Lose 25 points',
+  },
+  {
+    color: rgb(60, 179, 113),
+    label: '+$1',
+    money: 1,
+    score: 0,
+    tooltip: 'Earn $1',
+  },
+  {
+    color: rgb(139, 0, 0),
+    label: '-$3',
+    money: -3,
+    score: 0,
+    tooltip: 'Pay $3',
+  },
 ]
 
 export function getDefaultSegments() {
@@ -59,6 +98,8 @@ const ROTATIONS_MAX = 4
 export function addWheel(initialSegments?: WheelSegment[]) {
   const wheelSegments = initialSegments ?? getDefaultSegments()
 
+  let isSpinning = false
+
   const wheel = add([
     pos(center()),
     rotate(),
@@ -72,16 +113,18 @@ export function addWheel(initialSegments?: WheelSegment[]) {
       },
       reset() {
         wheel.angle = 0
+        isSpinning = false
         this.isSpinning = false
       },
       resetSegments() {
         this.segments = getDefaultSegments()
       },
       spin(onComplete) {
-        if (this.isSpinning) {
+        if (isSpinning) {
           return
         }
 
+        isSpinning = true
         this.isSpinning = true
 
         const fullRotations = randi(ROTATIONS_MIN, ROTATIONS_MAX)
@@ -99,6 +142,7 @@ export function addWheel(initialSegments?: WheelSegment[]) {
             easings.easeOutCubic,
           )
           .then(() => {
+            isSpinning = false
             this.isSpinning = false
             onComplete(this.getWinningSegment())
           })
@@ -135,6 +179,39 @@ export function addWheel(initialSegments?: WheelSegment[]) {
       },
     } satisfies WheelState,
   ])
+
+  const wheelTooltip = addTooltip()
+
+  wheel.onUpdate(() => {
+    if (isSpinning) {
+      wheelTooltip.hide()
+      return
+    }
+
+    const mouse = mousePos()
+    const relative = mouse.sub(wheel.pos)
+    const distance = Math.sqrt(relative.x ** 2 + relative.y ** 2)
+
+    if (distance > wheel.radius) {
+      wheelTooltip.hide()
+      return
+    }
+
+    const wheelAngle = (wheel.angle * Math.PI) / 180
+    const segmentAngle = (Math.PI * 2) / wheel.segments.length
+    let mouseAngle = Math.atan2(relative.y, relative.x) - wheelAngle
+    mouseAngle = mouseAngle % (Math.PI * 2)
+
+    if (mouseAngle < 0) {
+      mouseAngle += Math.PI * 2
+    }
+
+    const index = Math.floor(mouseAngle / segmentAngle)
+    const segment = wheel.segments[index]
+
+    wheelTooltip.setTarget(mouse)
+    wheelTooltip.show(segment.tooltip)
+  })
 
   wheel.onDraw(() => {
     const segmentAngle = (Math.PI * 2) / wheel.segments.length

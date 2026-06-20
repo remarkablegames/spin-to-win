@@ -19,6 +19,7 @@ export function addShop(callbacks: ShopCallbacks) {
     x: center().x,
     y: BUTTON_START_Y,
     onClick: callbacks.onExtraSpin,
+    tooltip: `Spend $${String(SHOP.EXTRA_SPIN_BASE_COST)} to gain an extra spin this round`,
     buttonColor: COLOR.BLUE,
     shadowColor: COLOR.DARK_BLUE,
   })
@@ -28,6 +29,7 @@ export function addShop(callbacks: ShopCallbacks) {
     x: center().x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING,
     onClick: callbacks.onUpgradeWheel,
+    tooltip: `Spend $${String(SHOP.UPGRADE_WHEEL_COST)} to upgrade a positive wheel segment`,
     buttonColor: COLOR.BLUE,
     shadowColor: COLOR.DARK_BLUE,
   })
@@ -37,6 +39,7 @@ export function addShop(callbacks: ShopCallbacks) {
     x: center().x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
     onClick: callbacks.onAddSegment,
+    tooltip: 'Add a random positive or negative segment to the wheel',
     buttonColor: COLOR.BLUE,
     shadowColor: COLOR.DARK_BLUE,
   })
@@ -46,6 +49,7 @@ export function addShop(callbacks: ShopCallbacks) {
     x: center().x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING * 3,
     onClick: callbacks.onContinue,
+    tooltip: 'Continue to the next round',
     buttonColor: COLOR.RED,
     shadowColor: COLOR.DARK_RED,
   })
@@ -53,6 +57,9 @@ export function addShop(callbacks: ShopCallbacks) {
   return {
     updateExtraSpinCost(cost: number) {
       extraSpinButton.setLabel(`Extra Spin ($${String(cost)})`)
+      extraSpinButton.setTooltip(
+        `Spend $${String(cost)} to gain an extra spin this round`,
+      )
     },
     setExtraSpinEnabled(enabled: boolean) {
       if (enabled) {

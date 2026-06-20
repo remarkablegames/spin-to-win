@@ -1,6 +1,7 @@
 import type { Color } from 'kaplay'
 
 import { COLOR } from '../constants'
+import { addTooltip } from './tooltip'
 
 const DEFAULT_WIDTH = 120
 const DEFAULT_HEIGHT = 50
@@ -17,6 +18,8 @@ interface AddButtonOptions {
   label: string
   onClick: () => void
   shadowColor?: Color
+  tooltip?: string
+  tooltipPosition?: 'above' | 'below'
   width?: number
   x: number
   y: number
@@ -27,6 +30,8 @@ export function addButton({
   x,
   y,
   onClick,
+  tooltip,
+  tooltipPosition,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
   buttonColor = COLOR.GREEN,
@@ -69,6 +74,15 @@ export function addButton({
   let enabled = true
   let hovered = false
 
+  const buttonTooltip =
+    tooltip != null
+      ? addTooltip({
+          position: tooltipPosition,
+          target: container,
+          text: tooltip,
+        })
+      : null
+
   function updateOpacity() {
     button.opacity = enabled ? 1 : 0.5
     shadow.opacity = enabled ? 1 : 0.5
@@ -91,6 +105,7 @@ export function addButton({
     setCursor('pointer')
     button.scale = vec2(1.1)
     shadow.scale = vec2(1.1)
+    buttonTooltip?.show()
   })
 
   button.onHoverEnd(() => {
@@ -104,6 +119,7 @@ export function addButton({
     setCursor('default')
     button.scale = vec2(1)
     shadow.scale = vec2(1)
+    buttonTooltip?.hide()
   })
 
   return {
@@ -129,6 +145,9 @@ export function addButton({
       const newWidth = calcWidth(value)
       button.width = newWidth
       shadow.width = newWidth
+    },
+    setTooltip(value: string) {
+      buttonTooltip?.setText(value)
     },
     hide() {
       container.hidden = true
