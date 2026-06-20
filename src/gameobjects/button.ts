@@ -110,6 +110,7 @@ export function addButton({
 
   button.onHoverEnd(() => {
     hovered = false
+    buttonTooltip?.hide()
 
     if (!enabled) {
       setCursor('default')
@@ -119,7 +120,6 @@ export function addButton({
     setCursor('default')
     button.scale = vec2(1)
     shadow.scale = vec2(1)
-    buttonTooltip?.hide()
   })
 
   return {
@@ -134,6 +134,7 @@ export function addButton({
         setCursor('not-allowed')
         button.scale = vec2(1)
         shadow.scale = vec2(1)
+        buttonTooltip?.hide()
       }
     },
     enable() {
