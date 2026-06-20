@@ -80,7 +80,11 @@ export function addHeader() {
       progressBarFill.width = PROGRESS_BAR_WIDTH * ratio
     },
     setMoney(money: number, delta = 0) {
-      moneyLabel.text = `$${String(money)} [dim](${delta >= 0 ? '+' : ''}$${String(delta)})[/dim]`
+      if (!delta) {
+        moneyLabel.text = `$${String(money)}`
+      } else {
+        moneyLabel.text = `$${String(money)} [dim](${delta >= 0 ? '+' : ''}$${String(delta)})[/dim]`
+      }
     },
   }
 }
