@@ -1,12 +1,7 @@
 import { LEVEL, SCENE } from '../constants'
-import { addButton, addGrid, addWheel } from '../gameobjects'
+import { addButton, addGrid, addHeader, addWheel } from '../gameobjects'
 
 const BUTTON_OFFSET = 320
-
-const UI_TEXT_SIZE = 20
-const UI_LINE_SPACING = 4
-const HEADER_HEIGHT = 112
-const HEADER_COLOR = rgb(74, 50, 56)
 
 scene(SCENE.GAME, () => {
   addGrid()
@@ -19,17 +14,7 @@ scene(SCENE.GAME, () => {
   let isSpinning = false
   let continueButton: ReturnType<typeof addButton> | null = null
 
-  add([rect(width(), HEADER_HEIGHT), pos(0, 0), color(HEADER_COLOR)])
-
-  const infoLabel = add([
-    text('', {
-      align: 'center',
-      lineSpacing: UI_LINE_SPACING,
-      size: UI_TEXT_SIZE,
-    }),
-    pos(width() / 2, HEADER_HEIGHT / 2),
-    anchor('center'),
-  ])
+  const header = addHeader()
 
   const wheel = addWheel()
 
@@ -51,12 +36,14 @@ scene(SCENE.GAME, () => {
     const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
     const currentSpin = totalSpins - spinsRemaining + 1
 
-    infoLabel.text = [
-      `Level ${String(levelIndex + 1)}`,
-      `Round ${String(roundIndex + 1)}/${String(level.roundsPerLevel)}`,
-      `Spin ${String(currentSpin)}/${String(totalSpins)}`,
-      `${String(levelScore)}/${String(level.targetScore)}`,
-    ].join('\n')
+    header.setText(
+      [
+        `Level ${String(levelIndex + 1)}`,
+        `Round ${String(roundIndex + 1)}/${String(level.roundsPerLevel)}`,
+        `Spin ${String(currentSpin)}/${String(totalSpins)}`,
+        `${String(levelScore)}/${String(level.targetScore)}`,
+      ].join('\n'),
+    )
   }
 
   function endRound() {
