@@ -49,9 +49,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   ])
 
   function updateSpinButton() {
-    const currentSpin = totalSpinsForRound - spinsRemaining + 1
     spinButton.setLabel(
-      `Spin ${String(currentSpin)}/${String(totalSpinsForRound)}`,
+      `Spin ${String(spinsRemaining)}/${String(totalSpinsForRound)}`,
     )
   }
 
@@ -66,9 +65,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function endRound() {
-    spinButton.disable()
-    spinButton.hide()
-    skipButton.hide()
     money += SHOP.BASE_PASSIVE_INCOME
     header.setMoney(money, moneyDelta)
 
@@ -131,6 +127,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     isSpinning = true
+    spinsRemaining -= 1
     spinButton.disable()
     skipButton.disable()
     updateSpinButton()
@@ -139,7 +136,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       levelScore += segment.score
       money += segment.money
       moneyDelta += segment.money
-      spinsRemaining--
       updateUI()
       isSpinning = false
 
@@ -148,7 +144,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         skipButton.enable()
         updateSpinButton()
       } else {
-        skipButton.hide()
         endRound()
       }
     })
@@ -170,16 +165,12 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         return
       }
 
-      spinsRemaining--
+      spinsRemaining -= 1
       updateUI()
 
       if (spinsRemaining > 0) {
         updateSpinButton()
       } else {
-        skipButton.disable()
-        skipButton.hide()
-        spinButton.disable()
-        spinButton.hide()
         endRound()
       }
     },
