@@ -1,9 +1,10 @@
 import type { Color } from 'kaplay'
 
-import { COLOR } from '../constants'
+import { COLOR, SPRITE } from '../constants'
 
 export interface WheelSegment {
   color: Color
+  icon?: string
   label: string
   money: number
   score: number
@@ -27,7 +28,13 @@ export const SEGMENTS: WheelSegment[] = [
   { color: rgb(255, 99, 71), label: '+10', money: 0, score: 10 },
   { color: rgb(128, 128, 128), label: '+25', money: 0, score: 25 },
   { color: rgb(30, 144, 255), label: '+50', money: 0, score: 50 },
-  { color: rgb(255, 215, 0), label: '+$5', money: 5, score: 0 },
+  {
+    color: rgb(255, 215, 0),
+    icon: SPRITE.COIN,
+    label: '+$5',
+    money: 5,
+    score: 0,
+  },
   { color: rgb(220, 20, 60), label: '-25', money: 0, score: -25 },
   { color: rgb(60, 179, 113), label: '+$1', money: 1, score: 0 },
   { color: rgb(139, 0, 0), label: '-$3', money: -3, score: 0 },
@@ -158,16 +165,50 @@ export function addWheel(initialSegments?: WheelSegment[]) {
 
       const midAngle = startAngle + segmentAngle / 2
       const labelRadius = wheel.radius * 0.65
+      const labelPos = vec2(
+        Math.cos(midAngle) * labelRadius,
+        Math.sin(midAngle) * labelRadius,
+      )
 
-      drawText({
-        anchor: 'center',
-        color: COLOR.WHITE,
-        pos: vec2(
-          Math.cos(midAngle) * labelRadius,
-          Math.sin(midAngle) * labelRadius,
-        ),
+      if (segment.icon) {
+        drawSprite({
+          anchor: 'center',
+          pos: vec2(labelPos.x - 20, labelPos.y),
+          sprite: segment.icon,
+          width: 20,
+          height: 20,
+        })
+      }
+
+      const textPos = vec2(labelPos.x + (segment.icon ? 20 : 0), labelPos.y)
+      const textOpts = {
+        anchor: 'center' as const,
         size: 20,
         text: segment.label,
+      }
+      const outlineOffset = 2
+
+      for (const [ox, oy] of [
+        [-outlineOffset, -outlineOffset],
+        [outlineOffset, -outlineOffset],
+        [-outlineOffset, outlineOffset],
+        [outlineOffset, outlineOffset],
+        [-outlineOffset, 0],
+        [outlineOffset, 0],
+        [0, -outlineOffset],
+        [0, outlineOffset],
+      ]) {
+        drawText({
+          ...textOpts,
+          color: COLOR.BLACK,
+          pos: vec2(textPos.x + ox, textPos.y + oy),
+        })
+      }
+
+      drawText({
+        ...textOpts,
+        color: COLOR.WHITE,
+        pos: textPos,
       })
     })
 
