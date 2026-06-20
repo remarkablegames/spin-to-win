@@ -1,5 +1,5 @@
-import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
-import { addGrid, addHeader, addNotification, addShop } from '../gameobjects'
+import { LEVEL, SCENE, SHOP } from '../constants'
+import { addGrid, addHeader, addShop, addToast } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel } from '../gameobjects/wheel'
 
@@ -39,7 +39,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
       header.setMoney(money)
       shop.updateExtraSpinCost(extraSpinCost)
-      addNotification('Extra Spin Purchased', COLOR.BLUE, vec2(center().x, 200))
+      addToast('Extra Spin Purchased')
       updateButtons()
     },
     onUpgradeWheel: () => {
@@ -63,7 +63,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
 
       header.setMoney(money)
-      addNotification('Wheel Upgraded', COLOR.BLUE, vec2(center().x, 200))
+      addToast('Wheel Upgraded')
       updateButtons()
     },
     onAddSegment: () => {
@@ -77,11 +77,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       const segment = { ...template }
       state.segments.push(segment)
       addedSegment = true
-      addNotification(
-        `Added ${segment.label}`,
-        segment.color,
-        vec2(center().x, 200),
-      )
+      addToast(`Added ${segment.label}`)
       updateButtons()
     },
     onContinue: () => {
