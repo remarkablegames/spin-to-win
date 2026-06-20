@@ -10,10 +10,10 @@ export const ADD_SEGMENT_POSITIVE_CHANCE = 0.7
 
 export const POSITIVE_SEGMENTS = [
   { color: rgb(255, 215, 0), label: '+25', money: 0, score: 25 },
-  { color: rgb(255, 165, 0), label: '+$5', money: 5, score: 0 },
+  { color: rgb(60, 179, 113), label: '+$5', money: 5, score: 0 },
 ]
 
 export const NEGATIVE_SEGMENTS = [
-  { color: rgb(128, 128, 128), label: '-25', money: 0, score: -25 },
-  { color: rgb(80, 80, 80), label: '-$5', money: -5, score: 0 },
+  { color: rgb(220, 20, 60), label: '-25', money: 0, score: -25 },
+  { color: rgb(139, 0, 0), label: '-$5', money: -5, score: 0 },
 ]

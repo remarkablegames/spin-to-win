@@ -1,5 +1,5 @@
 import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
-import { addHeader, addShop } from '../gameobjects'
+import { addGrid, addHeader, addShop } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel } from '../gameobjects/wheel'
 
@@ -12,6 +12,8 @@ interface ShopState {
 }
 
 scene(SCENE.SHOP, (state: ShopState) => {
+  addGrid()
+
   let money = state.money
   let extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
   let extraSpins = 0
@@ -28,12 +30,12 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   const notificationLabel = add([
     text('', { size: 24 }),
-    pos(center().x, center().y + 120),
+    pos(center().x, 200),
     anchor('center'),
     color(COLOR.WHITE),
   ])
 
-  const shop = addShop(money, {
+  const shop = addShop({
     onExtraSpin: () => {
       if (money < extraSpinCost) {
         return
@@ -43,7 +45,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
       extraSpins++
       extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
       header.setMoney(money)
-      shop.updateMoney(money)
       shop.updateExtraSpinCost(extraSpinCost)
       updateButtons()
     },
@@ -68,7 +69,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
 
       header.setMoney(money)
-      shop.updateMoney(money)
       updateButtons()
     },
     onAddSegment: () => {

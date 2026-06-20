@@ -1,10 +1,8 @@
 import { COLOR, SHOP } from '../constants'
 import { addButton } from './button'
 
-const TITLE_Y = 120
-const MONEY_Y = 180
-const BUTTON_START_Y = 280
-const BUTTON_SPACING = 80
+const BUTTON_START_Y = 260
+const BUTTON_Y_SPACING = 80
 
 export type Shop = ReturnType<typeof addShop>
 
@@ -15,57 +13,54 @@ interface ShopCallbacks {
   onUpgradeWheel: () => void
 }
 
-export function addShop(money: number, callbacks: ShopCallbacks) {
-  add([rect(width(), height()), pos(), color(COLOR.BROWN)])
-
-  add([
-    text('Shop', { size: 40 }),
-    pos(center().x, TITLE_Y),
-    anchor('center'),
-    color(COLOR.WHITE),
-  ])
-
-  const moneyLabel = add([
-    text(`$${String(money)}`, { size: 28 }),
-    pos(center().x, MONEY_Y),
-    anchor('center'),
-    color(COLOR.GOLD),
-  ])
-
+export function addShop(callbacks: ShopCallbacks) {
   const extraSpinButton = addButton(
     `Extra Spin ($${String(SHOP.EXTRA_SPIN_BASE_COST)})`,
     center().x,
     BUTTON_START_Y,
     callbacks.onExtraSpin,
+    undefined,
+    undefined,
+    COLOR.BLUE,
+    COLOR.DARK_BLUE,
   )
 
   const upgradeWheelButton = addButton(
     `Upgrade Wheel ($${String(SHOP.UPGRADE_WHEEL_COST)})`,
     center().x,
-    BUTTON_START_Y + BUTTON_SPACING,
+    BUTTON_START_Y + BUTTON_Y_SPACING,
     callbacks.onUpgradeWheel,
+    undefined,
+    undefined,
+    COLOR.BLUE,
+    COLOR.DARK_BLUE,
   )
 
   const addSegmentButton = addButton(
     'Add Segment (Free)',
     center().x,
-    BUTTON_START_Y + BUTTON_SPACING * 2,
+    BUTTON_START_Y + BUTTON_Y_SPACING * 2,
     callbacks.onAddSegment,
+    undefined,
+    undefined,
+    COLOR.BLUE,
+    COLOR.DARK_BLUE,
   )
 
   const continueButton = addButton(
     'Continue',
     center().x,
-    BUTTON_START_Y + BUTTON_SPACING * 4,
+    BUTTON_START_Y + BUTTON_Y_SPACING * 3,
     callbacks.onContinue,
+    undefined,
+    undefined,
+    COLOR.RED,
+    COLOR.DARK_RED,
   )
 
   return {
     updateExtraSpinCost(cost: number) {
       extraSpinButton.setLabel(`Extra Spin ($${String(cost)})`)
-    },
-    updateMoney(newMoney: number) {
-      moneyLabel.text = `$${String(newMoney)}`
     },
     setExtraSpinEnabled(enabled: boolean) {
       if (enabled) {
