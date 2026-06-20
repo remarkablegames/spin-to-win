@@ -1,5 +1,6 @@
 export * from './button'
 export * from './grid'
 export * from './header'
+export * from './notification'
 export * from './shop'
 export * from './wheel'

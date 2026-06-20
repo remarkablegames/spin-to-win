@@ -1,7 +1,5 @@
-import type { Color } from 'kaplay'
-
 import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
-import { addGrid, addHeader, addShop } from '../gameobjects'
+import { addGrid, addHeader, addNotification, addShop } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel } from '../gameobjects/wheel'
 
@@ -30,29 +28,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setScore(state.levelScore, LEVEL.LEVELS[state.levelIndex].targetScore)
   header.setMoney(money)
 
-  function showNotification(message: string, messageColor: Color) {
-    const label = add([
-      text(message, { size: 24 }),
-      pos(center().x, 200),
-      anchor('center'),
-      color(messageColor),
-      opacity(),
-      scale(),
-      lifespan(1.5, { fade: 0.5 }),
-    ])
-
-    label.scale = vec2(1.5)
-    tween(
-      label.scale.x,
-      1,
-      0.5,
-      (value) => {
-        label.scale = vec2(value)
-      },
-      easings.easeOutBack,
-    )
-  }
-
   const shop = addShop({
     onExtraSpin: () => {
       if (money < extraSpinCost) {
@@ -64,7 +39,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
       header.setMoney(money)
       shop.updateExtraSpinCost(extraSpinCost)
-      showNotification('Extra Spin Purchased', COLOR.BLUE)
+      addNotification('Extra Spin Purchased', COLOR.BLUE, vec2(center().x, 200))
       updateButtons()
     },
     onUpgradeWheel: () => {
@@ -88,7 +63,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
 
       header.setMoney(money)
-      showNotification('Wheel Upgraded', COLOR.BLUE)
+      addNotification('Wheel Upgraded', COLOR.BLUE, vec2(center().x, 200))
       updateButtons()
     },
     onAddSegment: () => {
@@ -102,7 +77,11 @@ scene(SCENE.SHOP, (state: ShopState) => {
       const segment = { ...template }
       state.segments.push(segment)
       addedSegment = true
-      showNotification(`Added ${segment.label}`, segment.color)
+      addNotification(
+        `Added ${segment.label}`,
+        segment.color,
+        vec2(center().x, 200),
+      )
       updateButtons()
     },
     onContinue: () => {
