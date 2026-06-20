@@ -1,3 +1,5 @@
+import type { Color } from 'kaplay'
+
 import { COLOR, LEVEL, SCENE, SHOP } from '../constants'
 import { addGrid, addHeader, addShop } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
@@ -28,15 +30,28 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setScore(state.levelScore, LEVEL.LEVELS[state.levelIndex].targetScore)
   header.setMoney(money)
 
-  const notificationLabel = add([
-    text('', { size: 24 }),
-    pos(center().x, 200),
-    anchor('center'),
-    color(COLOR.WHITE),
-    opacity(),
-    scale(),
-    lifespan(2.5, { fade: 0.5 }),
-  ])
+  function showNotification(message: string, messageColor: Color) {
+    const label = add([
+      text(message, { size: 24 }),
+      pos(center().x, 200),
+      anchor('center'),
+      color(messageColor),
+      opacity(),
+      scale(),
+      lifespan(1.5, { fade: 0.5 }),
+    ])
+
+    label.scale = vec2(1.5)
+    tween(
+      label.scale.x,
+      1,
+      0.5,
+      (value) => {
+        label.scale = vec2(value)
+      },
+      easings.easeOutBack,
+    )
+  }
 
   const shop = addShop({
     onExtraSpin: () => {
@@ -49,6 +64,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
       header.setMoney(money)
       shop.updateExtraSpinCost(extraSpinCost)
+      showNotification('Extra Spin Purchased', COLOR.BLUE)
       updateButtons()
     },
     onUpgradeWheel: () => {
@@ -72,6 +88,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
 
       header.setMoney(money)
+      showNotification('Wheel Upgraded', COLOR.BLUE)
       updateButtons()
     },
     onAddSegment: () => {
@@ -85,19 +102,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       const segment = { ...template }
       state.segments.push(segment)
       addedSegment = true
-      notificationLabel.text = `Added ${segment.label}`
-      notificationLabel.color = segment.color
-      notificationLabel.opacity = 1
-      notificationLabel.scale = vec2(1.5)
-      tween(
-        notificationLabel.scale.x,
-        1,
-        0.5,
-        (value) => {
-          notificationLabel.scale = vec2(value)
-        },
-        easings.easeOutBack,
-      )
+      showNotification(`Added ${segment.label}`, segment.color)
       updateButtons()
     },
     onContinue: () => {
