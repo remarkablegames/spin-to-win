@@ -1,3 +1,5 @@
+import type { Color } from 'kaplay'
+
 import { COLOR } from '../constants'
 
 const DEFAULT_WIDTH = 120
@@ -9,16 +11,27 @@ const OFFSCREEN = -99999
 
 export type Button = ReturnType<typeof addButton>
 
-export function addButton(
-  label: string,
-  x: number,
-  y: number,
-  onClick: () => void,
+interface AddButtonOptions {
+  buttonColor?: Color
+  height?: number
+  label: string
+  onClick: () => void
+  shadowColor?: Color
+  width?: number
+  x: number
+  y: number
+}
+
+export function addButton({
+  label,
+  x,
+  y,
+  onClick,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
   buttonColor = COLOR.GREEN,
   shadowColor = COLOR.DARK_GREEN,
-) {
+}: AddButtonOptions) {
   function calcWidth(value: string) {
     return Math.max(
       width,

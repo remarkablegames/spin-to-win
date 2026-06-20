@@ -14,49 +14,41 @@ interface ShopCallbacks {
 }
 
 export function addShop(callbacks: ShopCallbacks) {
-  const extraSpinButton = addButton(
-    `Extra Spin ($${String(SHOP.EXTRA_SPIN_BASE_COST)})`,
-    center().x,
-    BUTTON_START_Y,
-    callbacks.onExtraSpin,
-    undefined,
-    undefined,
-    COLOR.BLUE,
-    COLOR.DARK_BLUE,
-  )
+  const extraSpinButton = addButton({
+    label: `Extra Spin ($${String(SHOP.EXTRA_SPIN_BASE_COST)})`,
+    x: center().x,
+    y: BUTTON_START_Y,
+    onClick: callbacks.onExtraSpin,
+    buttonColor: COLOR.BLUE,
+    shadowColor: COLOR.DARK_BLUE,
+  })
 
-  const upgradeWheelButton = addButton(
-    `Upgrade Wheel ($${String(SHOP.UPGRADE_WHEEL_COST)})`,
-    center().x,
-    BUTTON_START_Y + BUTTON_Y_SPACING,
-    callbacks.onUpgradeWheel,
-    undefined,
-    undefined,
-    COLOR.BLUE,
-    COLOR.DARK_BLUE,
-  )
+  const upgradeWheelButton = addButton({
+    label: `Upgrade Wheel ($${String(SHOP.UPGRADE_WHEEL_COST)})`,
+    x: center().x,
+    y: BUTTON_START_Y + BUTTON_Y_SPACING,
+    onClick: callbacks.onUpgradeWheel,
+    buttonColor: COLOR.BLUE,
+    shadowColor: COLOR.DARK_BLUE,
+  })
 
-  const addSegmentButton = addButton(
-    'Add Segment (Free)',
-    center().x,
-    BUTTON_START_Y + BUTTON_Y_SPACING * 2,
-    callbacks.onAddSegment,
-    undefined,
-    undefined,
-    COLOR.BLUE,
-    COLOR.DARK_BLUE,
-  )
+  const addSegmentButton = addButton({
+    label: 'Add Segment (Free)',
+    x: center().x,
+    y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
+    onClick: callbacks.onAddSegment,
+    buttonColor: COLOR.BLUE,
+    shadowColor: COLOR.DARK_BLUE,
+  })
 
-  const continueButton = addButton(
-    'Continue',
-    center().x,
-    BUTTON_START_Y + BUTTON_Y_SPACING * 3,
-    callbacks.onContinue,
-    undefined,
-    undefined,
-    COLOR.RED,
-    COLOR.DARK_RED,
-  )
+  const continueButton = addButton({
+    label: 'Continue',
+    x: center().x,
+    y: BUTTON_START_Y + BUTTON_Y_SPACING * 3,
+    onClick: callbacks.onContinue,
+    buttonColor: COLOR.RED,
+    shadowColor: COLOR.DARK_RED,
+  })
 
   return {
     updateExtraSpinCost(cost: number) {

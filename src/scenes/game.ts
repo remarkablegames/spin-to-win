@@ -88,40 +88,40 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       carryOver = levelScore - level.targetScore
 
       if (levelIndex < LEVEL.LEVELS.length - 1) {
-        continueButton = addButton(
-          'Next Level',
-          center().x,
-          center().y + BUTTON_OFFSET,
-          () => {
+        continueButton = addButton({
+          label: 'Next Level',
+          x: center().x,
+          y: center().y + BUTTON_OFFSET,
+          onClick: () => {
             continueButton?.destroy()
             continueButton = null
             startLevel(levelIndex + 1)
           },
-        )
+        })
       } else {
-        continueButton = addButton(
-          'Play Again',
-          center().x,
-          center().y + BUTTON_OFFSET,
-          () => {
+        continueButton = addButton({
+          label: 'Play Again',
+          x: center().x,
+          y: center().y + BUTTON_OFFSET,
+          onClick: () => {
             continueButton?.destroy()
             continueButton = null
             resetGame()
           },
-        )
+        })
       }
     } else {
-      continueButton = addButton(
-        'Retry Level',
-        center().x,
-        center().y + BUTTON_OFFSET,
-        () => {
+      continueButton = addButton({
+        label: 'Retry Level',
+        x: center().x,
+        y: center().y + BUTTON_OFFSET,
+        onClick: () => {
           continueButton?.destroy()
           continueButton = null
           carryOver = 0
           startLevel(levelIndex)
         },
-      )
+      })
     }
   }
 
@@ -154,18 +154,18 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     })
   }
 
-  const spinButton = addButton(
-    'Spin',
-    center().x,
-    center().y + BUTTON_OFFSET,
-    spin,
-  )
+  const spinButton = addButton({
+    label: 'Spin',
+    x: center().x,
+    y: center().y + BUTTON_OFFSET,
+    onClick: spin,
+  })
 
-  const skipButton = addButton(
-    'Skip',
-    center().x,
-    center().y + SKIP_BUTTON_OFFSET,
-    () => {
+  const skipButton = addButton({
+    label: 'Skip',
+    x: center().x,
+    y: center().y + SKIP_BUTTON_OFFSET,
+    onClick: () => {
       if (isSpinning || spinsRemaining <= 0) {
         return
       }
@@ -183,11 +183,9 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         endRound()
       }
     },
-    120,
-    50,
-    COLOR.RED,
-    COLOR.DARK_RED,
-  )
+    buttonColor: COLOR.RED,
+    shadowColor: COLOR.DARK_RED,
+  })
 
   function startRound() {
     const level = LEVEL.LEVELS[levelIndex]
