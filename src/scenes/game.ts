@@ -1,4 +1,4 @@
-import { LEVEL, SCENE } from '../constants'
+import { COLOR, LEVEL, SCENE } from '../constants'
 import { addButton, addGrid, addHeader, addWheel } from '../gameobjects'
 
 const BUTTON_OFFSET = 320
@@ -29,7 +29,7 @@ scene(SCENE.GAME, () => {
     ]),
     pos(center().x, center().y - wheel.radius - 8),
     anchor('bot'),
-    color(255, 255, 255),
+    color(COLOR.WHITE),
   ])
 
   function updateSpinButton() {
@@ -182,8 +182,8 @@ scene(SCENE.GAME, () => {
     },
     120,
     50,
-    rgb(50, 100, 200),
-    rgb(30, 60, 120),
+    COLOR.BLUE,
+    COLOR.DARK_BLUE,
   )
 
   function startRound() {

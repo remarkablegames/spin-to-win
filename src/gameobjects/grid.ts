@@ -1,5 +1,7 @@
+import { COLOR } from '../constants'
+
 const GRID_SIZE = 40
-const GRID_COLOR = rgb(255, 255, 255)
+const GRID_COLOR = COLOR.WHITE
 const GRID_OPACITY = 0.06
 
 export function addGrid() {

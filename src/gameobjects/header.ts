@@ -1,11 +1,12 @@
+import { COLOR } from '../constants'
+
 const HEADER_HEIGHT = 112
-const HEADER_COLOR = rgb(74, 50, 56)
 
 const UI_TEXT_SIZE = 20
 const UI_LINE_SPACING = 4
 
 export function addHeader() {
-  add([rect(width(), HEADER_HEIGHT), pos(0, 0), color(HEADER_COLOR)])
+  add([rect(width(), HEADER_HEIGHT), pos(0, 0), color(COLOR.BROWN)])
 
   const infoLabel = add([
     text('', {

@@ -1,12 +1,11 @@
+import { COLOR } from '../constants'
+
 const DEFAULT_WIDTH = 120
 const DEFAULT_HEIGHT = 50
 const HORIZONTAL_PADDING = 24
 const SHADOW_OFFSET = 4
 
 const OFFSCREEN = -99999
-
-const GREEN = rgb(50, 150, 50)
-const DARK_GREEN = rgb(30, 90, 30)
 
 export type Button = ReturnType<typeof addButton>
 
@@ -17,8 +16,8 @@ export function addButton(
   onClick: () => void,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
-  buttonColor = GREEN,
-  shadowColor = DARK_GREEN,
+  buttonColor = COLOR.GREEN,
+  shadowColor = COLOR.DARK_GREEN,
 ) {
   function calcWidth(value: string) {
     return Math.max(
@@ -51,7 +50,7 @@ export function addButton(
   const buttonLabel = button.add([
     text(label, { size: 24 }),
     anchor('center'),
-    color(255, 255, 255),
+    color(COLOR.WHITE),
   ])
 
   let enabled = true

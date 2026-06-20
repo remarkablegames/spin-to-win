@@ -1,6 +1,6 @@
 import type { Color } from 'kaplay'
 
-import { TAG } from '../constants'
+import { COLOR, TAG } from '../constants'
 
 export interface WheelSegment {
   color: Color
@@ -32,8 +32,6 @@ const RADIUS = 250
 const SPIN_DURATION = 5
 const ROTATIONS_MIN = 2
 const ROTATIONS_MAX = 4
-
-const WHITE = rgb(255, 255, 255)
 
 export function addWheel() {
   const wheel = add([
@@ -97,7 +95,7 @@ export function addWheel() {
 
     drawCircle({
       fill: false,
-      outline: { color: WHITE, width: 4 },
+      outline: { color: COLOR.WHITE, width: 4 },
       radius: wheel.radius,
     })
 
@@ -125,7 +123,7 @@ export function addWheel() {
 
       drawText({
         anchor: 'center',
-        color: WHITE,
+        color: COLOR.WHITE,
         pos: vec2(
           Math.cos(midAngle) * labelRadius,
           Math.sin(midAngle) * labelRadius,
@@ -136,7 +134,7 @@ export function addWheel() {
     })
 
     drawCircle({
-      color: WHITE,
+      color: COLOR.WHITE,
       radius: 12,
     })
   })
