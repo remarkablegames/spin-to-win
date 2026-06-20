@@ -1,2 +1,7 @@
 export const COIN = 'coin'
+export const GRAPE = 'grape'
+export const HEART = 'heart'
+export const MONEY_BAG = 'money_bag'
 export const POINTER = 'pointer'
+export const SKULLER = 'skuller'
+export const STAR = 'star'

@@ -11,6 +11,7 @@ export const ADD_SEGMENT_POSITIVE_CHANCE = 0.7
 export const POSITIVE_SEGMENTS = [
   {
     color: rgb(255, 215, 0),
+    icon: { sprite: 'grape', width: 30, height: 43 },
     label: '+25',
     money: 0,
     score: 25,
@@ -18,6 +19,7 @@ export const POSITIVE_SEGMENTS = [
   },
   {
     color: rgb(60, 179, 113),
+    icon: { sprite: 'coin', width: 28, height: 28 },
     label: '+$5',
     money: 5,
     score: 0,
@@ -28,6 +30,7 @@ export const POSITIVE_SEGMENTS = [
 export const NEGATIVE_SEGMENTS = [
   {
     color: rgb(220, 20, 60),
+    icon: { sprite: 'skuller', width: 28, height: 30 },
     label: '-25',
     money: 0,
     score: -25,
@@ -35,6 +38,7 @@ export const NEGATIVE_SEGMENTS = [
   },
   {
     color: rgb(139, 0, 0),
+    icon: { sprite: 'money_bag', width: 35, height: 35 },
     label: '-$5',
     money: -5,
     score: 0,
