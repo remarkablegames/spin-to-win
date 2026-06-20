@@ -46,7 +46,7 @@ scene(SCENE.GAME, () => {
       [
         `Level ${String(levelIndex + 1)}`,
         `Round ${String(roundIndex + 1)}/${String(level.roundsPerLevel)}`,
-        `${String(levelScore)}/${String(level.targetScore)}`,
+        `Score ${String(levelScore)}/${String(level.targetScore)}`,
       ].join('\n'),
     )
     updateSpinButton()
