@@ -42,13 +42,9 @@ scene(SCENE.GAME, () => {
   function updateUI() {
     const level = LEVEL.LEVELS[levelIndex]
 
-    header.setText(
-      [
-        `Level ${String(levelIndex + 1)}`,
-        `Round ${String(roundIndex + 1)}/${String(level.roundsPerLevel)}`,
-        `Score ${String(levelScore)}/${String(level.targetScore)}`,
-      ].join('\n'),
-    )
+    header.setLevel(levelIndex + 1)
+    header.setRound(roundIndex + 1, level.roundsPerLevel)
+    header.setScore(levelScore, level.targetScore)
     updateSpinButton()
   }
 
