@@ -1,7 +1,7 @@
 import { COLOR, SHOP } from '../constants'
 import { addButton } from './button'
 
-const BUTTON_START_Y = 260
+const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 80
 
 export type Shop = ReturnType<typeof addShop>
