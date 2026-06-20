@@ -80,6 +80,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   function endLevel() {
     const level = LEVEL.LEVELS[levelIndex]
 
+    updateUI()
+
     if (levelScore >= level.targetScore) {
       carryOver = levelScore - level.targetScore
 
