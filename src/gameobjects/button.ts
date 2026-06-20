@@ -3,6 +3,8 @@ const DEFAULT_HEIGHT = 50
 const HORIZONTAL_PADDING = 24
 const SHADOW_OFFSET = 4
 
+const OFFSCREEN = -99999
+
 const GREEN = rgb(50, 150, 50)
 const DARK_GREEN = rgb(30, 90, 30)
 
@@ -106,10 +108,14 @@ export function addButton(
     hide() {
       button.hidden = true
       shadow.hidden = true
+      button.pos = vec2(OFFSCREEN)
+      shadow.pos = vec2(OFFSCREEN)
     },
     show() {
       button.hidden = false
       shadow.hidden = false
+      button.pos = vec2(x, y)
+      shadow.pos = vec2(x + SHADOW_OFFSET, y + SHADOW_OFFSET)
       updateOpacity()
     },
   }
