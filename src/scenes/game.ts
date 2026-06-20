@@ -136,7 +136,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     y: center().y + BUTTON_OFFSET,
     onClick: spin,
     tooltip: '1 spin remaining',
-    tooltipPosition: 'above',
+    tooltipAnchor: 'bot',
   })
 
   const skipButton = addButton({
@@ -158,7 +158,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
     },
     tooltip: 'Skip this turn',
-    tooltipPosition: 'above',
+    tooltipAnchor: 'bot',
     buttonColor: COLOR.RED,
     shadowColor: COLOR.DARK_RED,
   })

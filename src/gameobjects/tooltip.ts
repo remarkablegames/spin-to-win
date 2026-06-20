@@ -1,11 +1,10 @@
-import type { GameObj, PosComp, Vec2 } from 'kaplay'
+import type { Anchor, GameObj, PosComp, Vec2 } from 'kaplay'
 
 import { COLOR } from '../constants'
 
 const PADDING_X = 12
 const PADDING_Y = 8
 const TEXT_SIZE = 18
-const OFFSET_Y = 12
 const OFFSCREEN = -99999
 
 export interface Tooltip {
@@ -17,13 +16,14 @@ export interface Tooltip {
 }
 
 interface AddTooltipOptions {
+  anchor?: Anchor
   offset?: Vec2
-  position?: 'above' | 'below'
   target?: GameObj<PosComp> | Vec2
   text?: string
 }
 
 export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
+  const backgroundAnchor = options.anchor ?? 'bot'
   let currentText = options.text ?? ''
   let currentTarget = options.target
   let isVisible = false
@@ -31,7 +31,7 @@ export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
   const background = add([
     rect(1, 1, { radius: 4 }),
     pos(OFFSCREEN, OFFSCREEN),
-    anchor('center'),
+    anchor(backgroundAnchor),
     color(COLOR.BLACK),
     opacity(0),
     z(100),
@@ -49,6 +49,39 @@ export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
     background.width = formatted.width + PADDING_X * 2
     background.height = formatted.height + PADDING_Y * 2
     label.text = currentText
+    label.pos = getLabelOffset(backgroundAnchor)
+  }
+
+  function getLabelOffset(anchor: Anchor) {
+    switch (anchor) {
+      case 'top':
+        return vec2(0, background.height / 2)
+
+      case 'bot':
+        return vec2(0, -background.height / 2)
+
+      case 'left':
+        return vec2(background.width / 2, 0)
+
+      case 'right':
+        return vec2(-background.width / 2, 0)
+
+      case 'topleft':
+        return vec2(background.width / 2, background.height / 2)
+
+      case 'topright':
+        return vec2(-background.width / 2, background.height / 2)
+
+      case 'botleft':
+        return vec2(background.width / 2, -background.height / 2)
+
+      case 'botright':
+        return vec2(-background.width / 2, -background.height / 2)
+
+      case 'center':
+      default:
+        return vec2()
+    }
   }
 
   function getTargetPosition() {
@@ -65,13 +98,9 @@ export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
 
   function updatePosition() {
     const targetPos = getTargetPosition()
-    const offset = options.offset ?? vec2(0, -OFFSET_Y)
-    const direction = options.position === 'below' ? 1 : -1
+    const offset = options.offset ?? getDefaultOffset(backgroundAnchor)
 
-    background.pos = vec2(
-      targetPos.x + offset.x,
-      targetPos.y + offset.y + (background.height / 2 + OFFSET_Y) * direction,
-    )
+    background.pos = targetPos.add(offset)
   }
 
   function show(text?: string) {
@@ -120,5 +149,39 @@ export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
     setTarget,
     setText,
     show,
+  }
+}
+
+const OFFSET = 24
+
+function getDefaultOffset(anchor: Anchor) {
+  switch (anchor) {
+    case 'top':
+      return vec2(0, OFFSET)
+
+    case 'bot':
+      return vec2(0, -OFFSET)
+
+    case 'left':
+      return vec2(-OFFSET, 0)
+
+    case 'right':
+      return vec2(OFFSET, 0)
+
+    case 'topleft':
+      return vec2(-OFFSET, OFFSET)
+
+    case 'topright':
+      return vec2(OFFSET)
+
+    case 'botleft':
+      return vec2(-OFFSET)
+
+    case 'botright':
+      return vec2(OFFSET, -OFFSET)
+
+    case 'center':
+    default:
+      return vec2(0, -OFFSET)
   }
 }

@@ -42,7 +42,7 @@ export function addHeader() {
   ])
 
   const moneyTooltip = addTooltip({
-    position: 'below',
+    anchor: 'top',
     target: moneyLabel,
     text: 'Money is used to buy things in the shop',
   })
@@ -69,7 +69,7 @@ export function addHeader() {
   ])
 
   const scoreTooltip = addTooltip({
-    position: 'below',
+    anchor: 'top',
     target: scoreLabel,
     text: '',
   })

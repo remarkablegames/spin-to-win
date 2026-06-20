@@ -1,4 +1,4 @@
-import type { Color } from 'kaplay'
+import type { Anchor, Color } from 'kaplay'
 
 import { COLOR } from '../constants'
 import { addTooltip } from './tooltip'
@@ -19,7 +19,7 @@ interface AddButtonOptions {
   onClick: () => void
   shadowColor?: Color
   tooltip?: string
-  tooltipPosition?: 'above' | 'below'
+  tooltipAnchor?: Anchor
   width?: number
   x: number
   y: number
@@ -31,7 +31,7 @@ export function addButton({
   y,
   onClick,
   tooltip,
-  tooltipPosition,
+  tooltipAnchor,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
   buttonColor = COLOR.GREEN,
@@ -77,7 +77,7 @@ export function addButton({
   const buttonTooltip =
     tooltip != null
       ? addTooltip({
-          position: tooltipPosition,
+          anchor: tooltipAnchor,
           target: container,
           text: tooltip,
         })
