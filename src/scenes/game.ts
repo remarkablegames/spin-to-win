@@ -31,19 +31,24 @@ scene(SCENE.GAME, () => {
     color(255, 255, 255),
   ])
 
-  function updateUI() {
+  function updateSpinButton() {
     const level = LEVEL.LEVELS[levelIndex]
     const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
     const currentSpin = totalSpins - spinsRemaining + 1
+    spinButton.setLabel(`Spin ${String(currentSpin)}/${String(totalSpins)}`)
+  }
+
+  function updateUI() {
+    const level = LEVEL.LEVELS[levelIndex]
 
     header.setText(
       [
         `Level ${String(levelIndex + 1)}`,
         `Round ${String(roundIndex + 1)}/${String(level.roundsPerLevel)}`,
-        `Spin ${String(currentSpin)}/${String(totalSpins)}`,
         `${String(levelScore)}/${String(level.targetScore)}`,
       ].join('\n'),
     )
+    updateSpinButton()
   }
 
   function endRound() {
@@ -120,6 +125,13 @@ scene(SCENE.GAME, () => {
 
     isSpinning = true
     spinButton.disable()
+
+    const level = LEVEL.LEVELS[levelIndex]
+    const totalSpins = level.baseSpinsPerRound + LEVEL.BONUS_SPINS
+    spinButton.setLabel(
+      `Spin ${String(spinsRemaining - 1)}/${String(totalSpins)}`,
+    )
+
     wheel.spin((segment) => {
       levelScore += segment.value
       spinsRemaining--
@@ -128,6 +140,7 @@ scene(SCENE.GAME, () => {
 
       if (spinsRemaining > 0) {
         spinButton.enable()
+        updateSpinButton()
       } else {
         endRound()
       }

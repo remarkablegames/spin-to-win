@@ -18,13 +18,17 @@ export function addButton(
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
 ) {
-  const textWidth = formatText({ size: 24, text: label }).width
-  const buttonWidth = Math.max(width, textWidth + HORIZONTAL_PADDING * 2)
+  function calcWidth(value: string) {
+    return Math.max(
+      width,
+      formatText({ size: 24, text: value }).width + HORIZONTAL_PADDING * 2,
+    )
+  }
 
   const container = add([pos(x, y)])
 
   const shadow = container.add([
-    rect(buttonWidth, height),
+    rect(calcWidth(label), height),
     pos(SHADOW_OFFSET, SHADOW_OFFSET),
     anchor('center'),
     color(DARK_GREEN),
@@ -33,7 +37,7 @@ export function addButton(
   ])
 
   const button = container.add([
-    rect(buttonWidth, height),
+    rect(calcWidth(label), height),
     pos(),
     anchor('center'),
     color(GREEN),
@@ -42,7 +46,7 @@ export function addButton(
     opacity(),
   ])
 
-  button.add([
+  const buttonLabel = button.add([
     text(label, { size: 24 }),
     anchor('center'),
     color(255, 255, 255),
@@ -105,6 +109,12 @@ export function addButton(
     enable() {
       enabled = true
       updateOpacity()
+    },
+    setLabel(value: string) {
+      buttonLabel.text = value
+      const newWidth = calcWidth(value)
+      button.width = newWidth
+      shadow.width = newWidth
     },
     hide() {
       container.hidden = true
