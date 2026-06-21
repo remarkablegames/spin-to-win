@@ -83,7 +83,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
           tooltip: 'Blank segment — fill it with an upgrade',
         }
         wheel.addSegment(blank)
-        state.segments.push(blank)
         addedSegment = true
         addToast('Blank Segment Added')
         updateButtons()
@@ -205,7 +204,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
           tooltip: `Multiply round score by ${String(multiplierValue)} (${multiplierLabel})`,
         }
         wheel.addSegment(multiplierSegment)
-        state.segments.push(multiplierSegment)
         addToast(`Added ${multiplierLabel} Segment`)
         updateButtons()
         break
