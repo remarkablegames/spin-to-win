@@ -1,12 +1,22 @@
-import { LEVEL, SCENE, SHOP } from '../constants'
-import { addGrid, addHeader, addShop, addToast } from '../gameobjects'
+import { LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import type { PoolUpgrade } from '../constants/shop'
+import {
+  addGrid,
+  addHeader,
+  addShop,
+  addToast,
+  addWheel,
+  drawPoolOffers,
+  pickFillTemplates,
+} from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
-import { formatSegmentLabel } from '../gameobjects/wheel'
 
 interface ShopState {
+  bonusBaseSpins: number
   levelIndex: number
   levelScore: number
   money: number
+  passiveIncome: number
   roundIndex: number
   segments: WheelSegment[]
 }
@@ -18,6 +28,14 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
   let extraSpins = 0
   let addedSegment = false
+  let bonusBaseSpins = state.bonusBaseSpins
+  let passiveIncome = state.passiveIncome
+  let passiveIncomeUpgrades = 0
+  let upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
+  let upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
+  let permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
+  let deleteSegmentCost = SHOP.DELETE_SEGMENT_BASE_COST
+  let passiveIncomeCost = SHOP.PASSIVE_INCOME_UPGRADE_BASE_COST
 
   const header = addHeader()
   header.setLevel(state.levelIndex + 1)
@@ -28,72 +46,264 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setScore(state.levelScore, LEVEL.LEVELS[state.levelIndex].targetScore)
   header.setMoney(money)
 
-  const shop = addShop({
-    onExtraSpin: () => {
-      if (money < extraSpinCost) {
-        return
-      }
+  const wheelX = vec2(width() * 0.28, center().y)
+  const wheel = addWheel(state.segments, wheelX)
 
-      money -= extraSpinCost
-      extraSpins++
-      extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
-      header.setMoney(money)
-      shop.updateExtraSpinCost(extraSpinCost)
-      addToast('Extra Spin Purchased')
-      updateButtons()
-    },
-    onUpgradeWheel: () => {
-      if (money < SHOP.UPGRADE_WHEEL_COST) {
-        return
-      }
+  add([
+    sprite(SPRITE.POINTER, { width: 28, height: 28 }),
+    pos(wheelX.x, wheelX.y - wheel.radius - 12),
+    anchor('center'),
+    rotate(90),
+    color(rgb(255, 255, 255)),
+  ])
 
-      money -= SHOP.UPGRADE_WHEEL_COST
-      const positiveSegments = state.segments.filter(
-        (segment) => segment.score > 0 || segment.money > 0,
-      )
+  const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
 
-      if (positiveSegments.length > 0) {
-        const segment = positiveSegments[randi(0, positiveSegments.length)]
-        if (segment.score > 0) {
-          segment.score += SHOP.UPGRADE_WHEEL_AMOUNT
-        } else {
-          segment.money += SHOP.UPGRADE_WHEEL_AMOUNT
+  const shop = addShop(
+    {
+      onExtraSpin: () => {
+        if (money < extraSpinCost) return
+        money -= extraSpinCost
+        extraSpins++
+        extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
+        header.setMoney(money)
+        shop.updateExtraSpinCost(extraSpinCost)
+        addToast('Extra Spin Purchased')
+        updateButtons()
+      },
+      onAddSegment: () => {
+        if (addedSegment) return
+        const blank: WheelSegment = {
+          blank: true,
+          color: rgb(100, 100, 100),
+          icon: { sprite: SPRITE.QUESTION_MARK, width: 24, height: 24 },
+          label: '?',
+          money: 0,
+          score: 0,
+          tooltip: 'Blank segment — fill it with an upgrade',
         }
-        segment.label = formatSegmentLabel(segment)
-      }
+        wheel.addSegment(blank)
+        state.segments.push(blank)
+        addedSegment = true
+        addToast('Blank Segment Added')
+        updateButtons()
+      },
+      onPoolUpgrade: (upgrade: PoolUpgrade) => {
+        handlePoolUpgrade(upgrade)
+      },
+      onContinue: () => {
+        wheel.clearMode()
+        shop.destroy()
+        go(SCENE.GAME, {
+          ...state,
+          bonusBaseSpins,
+          money,
+          extraSpins,
+          passiveIncome,
+          segments: wheel.segments,
+        })
+      },
+    },
+    poolOffers,
+    extraSpinCost,
+  )
 
-      header.setMoney(money)
-      addToast('Wheel Upgraded')
-      updateButtons()
-    },
-    onAddSegment: () => {
-      if (addedSegment) {
-        return
-      }
+  function getPoolOfferCost(upgrade: PoolUpgrade): number {
+    switch (upgrade.id) {
+      case 'upgradeScoreSegment':
+        return upgradeScoreCost
+      case 'upgradeMoneySegment':
+        return upgradeMoneyCost
+      case 'permanentBaseSpin':
+        return permanentSpinCost
+      case 'deleteSegment':
+        return deleteSegmentCost
+      case 'upgradePassiveIncome':
+        return passiveIncomeCost
+      default:
+        return upgrade.baseCost
+    }
+  }
 
-      const isPositive = rand(0, 1) < SHOP.ADD_SEGMENT_POSITIVE_CHANCE
-      const pool = isPositive ? SHOP.POSITIVE_SEGMENTS : SHOP.NEGATIVE_SEGMENTS
-      const template = pool[randi(0, pool.length)]
-      const segment = { ...template }
-      state.segments.push(segment)
-      addedSegment = true
-      addToast(`Added ${segment.label}`)
-      updateButtons()
-    },
-    onContinue: () => {
-      shop.destroy()
-      go(SCENE.GAME, {
-        ...state,
-        money,
-        extraSpins,
-      })
-    },
-  })
+  function handlePoolUpgrade(upgrade: PoolUpgrade) {
+    const cost = getPoolOfferCost(upgrade)
+    if (money < cost) return
+
+    const offerIndex = poolOffers.indexOf(upgrade) as 0 | 1
+
+    switch (upgrade.id) {
+      case 'upgradeScoreSegment': {
+        money -= cost
+        upgradeScoreCost += SHOP.UPGRADE_SCORE_SEGMENT_COST_INCREMENT
+        header.setMoney(money)
+        shop.updatePoolOfferLabel(
+          offerIndex,
+          `Upgrade Score Segment ($${String(upgradeScoreCost)})`,
+          `Spend $${String(upgradeScoreCost)} to boost a score segment by +${String(SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
+        )
+        addToast('Select a score segment on the wheel')
+        wheel.setUpgradeMode('score', SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT, () => {
+          addToast('Score Segment Upgraded')
+          updateButtons()
+        })
+        updateButtons()
+        break
+      }
+      case 'upgradeMoneySegment': {
+        money -= cost
+        upgradeMoneyCost += SHOP.UPGRADE_MONEY_SEGMENT_COST_INCREMENT
+        header.setMoney(money)
+        shop.updatePoolOfferLabel(
+          offerIndex,
+          `Upgrade Money Segment ($${String(upgradeMoneyCost)})`,
+          `Spend $${String(upgradeMoneyCost)} to boost a money segment by +$${String(SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
+        )
+        addToast('Select a money segment on the wheel')
+        wheel.setUpgradeMode('money', SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT, () => {
+          addToast('Money Segment Upgraded')
+          updateButtons()
+        })
+        updateButtons()
+        break
+      }
+      case 'fillBlank': {
+        money -= cost
+        header.setMoney(money)
+        const templates = pickFillTemplates(SHOP.FILL_TEMPLATES, 3)
+        addToast('Select a blank segment on the wheel')
+        wheel.setFillMode((segment: WheelSegment) => {
+          shop.showFillTemplates(templates, (template) => {
+            const idx = wheel.segments.indexOf(segment)
+            if (idx !== -1) {
+              wheel.segments[idx] = { ...template }
+            }
+            addToast(`Filled: ${template.label}`)
+            updateButtons()
+          })
+        })
+        updateButtons()
+        break
+      }
+      case 'addMultiplierSegment': {
+        money -= cost
+        header.setMoney(money)
+        const isPositive = rand(0, 1) < SHOP.MULTIPLIER_SEGMENT_POSITIVE_CHANCE
+        const multiplierValue = isPositive
+          ? SHOP.MULTIPLIER_SEGMENT_POSITIVE_VALUE
+          : SHOP.MULTIPLIER_SEGMENT_NEGATIVE_VALUE
+        const multiplierColor = isPositive
+          ? rgb(100, 200, 255)
+          : rgb(180, 100, 200)
+        const multiplierSegment: WheelSegment = {
+          color: multiplierColor,
+          icon: { sprite: SPRITE.STAR, width: 30, height: 30 },
+          label: `\u00d7${String(multiplierValue)}`,
+          money: 0,
+          multiplier: multiplierValue,
+          score: 0,
+          tooltip: `Multiply round score by ${String(multiplierValue)}`,
+        }
+        wheel.addSegment(multiplierSegment)
+        state.segments.push(multiplierSegment)
+        addToast(`Added ×${String(multiplierValue)} Segment`)
+        updateButtons()
+        break
+      }
+      case 'permanentBaseSpin': {
+        money -= cost
+        bonusBaseSpins++
+        permanentSpinCost += SHOP.PERMANENT_BASE_SPIN_COST_INCREMENT
+        header.setMoney(money)
+        shop.updatePoolOfferLabel(
+          offerIndex,
+          `Permanent Base Spin ($${String(permanentSpinCost)})`,
+          `Spend $${String(permanentSpinCost)} to permanently add +1 spin to every round`,
+        )
+        addToast('+1 Permanent Spin Added')
+        updateButtons()
+        break
+      }
+      case 'deleteSegment': {
+        money -= cost
+        deleteSegmentCost += SHOP.DELETE_SEGMENT_COST_INCREMENT
+        header.setMoney(money)
+        shop.updatePoolOfferLabel(
+          offerIndex,
+          `Delete Segment ($${String(deleteSegmentCost)})`,
+          `Spend $${String(deleteSegmentCost)} to permanently remove a segment from the wheel`,
+        )
+        addToast('Select a segment to delete')
+        wheel.setDeleteMode((segment: WheelSegment) => {
+          const idx = wheel.segments.indexOf(segment)
+          if (idx !== -1) {
+            wheel.segments.splice(idx, 1)
+          }
+          addToast('Segment Deleted')
+          updateButtons()
+        })
+        updateButtons()
+        break
+      }
+      case 'upgradePassiveIncome': {
+        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) return
+        money -= cost
+        passiveIncome += SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT
+        passiveIncomeUpgrades++
+        passiveIncomeCost += SHOP.PASSIVE_INCOME_UPGRADE_COST_INCREMENT
+        header.setMoney(money)
+        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {
+          shop.setPoolOfferEnabled(offerIndex, false)
+        } else {
+          shop.updatePoolOfferLabel(
+            offerIndex,
+            `Upgrade Income ($${String(passiveIncomeCost)})`,
+            `Spend $${String(passiveIncomeCost)} to earn +$${String(SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT)} more money each round`,
+          )
+        }
+        addToast(`Passive Income now $${String(passiveIncome)}/round`)
+        updateButtons()
+        break
+      }
+    }
+  }
+
+  function hasScoreSegments() {
+    return wheel.segments.some((s) => s.score !== 0)
+  }
+
+  function hasMoneySegments() {
+    return wheel.segments.some((s) => s.money !== 0)
+  }
+
+  function hasBlankSegments() {
+    return wheel.segments.some((s) => s.blank === true)
+  }
+
+  function isPoolOfferEnabled(upgrade: PoolUpgrade): boolean {
+    const cost = getPoolOfferCost(upgrade)
+    if (money < cost) return false
+    switch (upgrade.id) {
+      case 'upgradeScoreSegment':
+        return hasScoreSegments()
+      case 'upgradeMoneySegment':
+        return hasMoneySegments()
+      case 'fillBlank':
+        return hasBlankSegments()
+      case 'deleteSegment':
+        return wheel.segments.length > SHOP.DELETE_SEGMENT_MIN_SEGMENTS
+      case 'upgradePassiveIncome':
+        return passiveIncomeUpgrades < SHOP.PASSIVE_INCOME_UPGRADE_MAX
+      default:
+        return true
+    }
+  }
 
   function updateButtons() {
     shop.setExtraSpinEnabled(money >= extraSpinCost)
-    shop.setUpgradeWheelEnabled(money >= SHOP.UPGRADE_WHEEL_COST)
     shop.setAddSegmentEnabled(!addedSegment)
+    poolOffers.forEach((offer, i) => {
+      shop.setPoolOfferEnabled(i as 0 | 1, isPoolOfferEnabled(offer))
+    })
   }
 
   updateButtons()

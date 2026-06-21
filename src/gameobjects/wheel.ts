@@ -4,13 +4,28 @@ import { COLOR, SPRITE } from '../constants'
 import { addTooltip } from './tooltip'
 
 export interface WheelSegment {
+  blank?: boolean
   color: Color
   icon: { sprite: string; width: number; height: number }
   label: string
   money: number
+  multiplier?: number
   score: number
   tooltip: string
 }
+
+type UpgradeType = 'score' | 'money'
+
+type WheelMode =
+  | { type: 'none' }
+  | {
+      type: 'upgrade'
+      upgradeType: UpgradeType
+      amount: number
+      onSelect: (segment: WheelSegment) => void
+    }
+  | { type: 'fill'; onSelect: (segment: WheelSegment) => void }
+  | { type: 'delete'; onSelect: (segment: WheelSegment) => void }
 
 interface WheelState {
   isSpinning: boolean
@@ -20,8 +35,15 @@ interface WheelState {
   reset(): void
   resetSegments(): void
   spin(onComplete: (segment: WheelSegment) => void): void
-  upgradeRandomPositiveSegment(amount: number): void
   getWinningSegment(): WheelSegment
+  setUpgradeMode(
+    upgradeType: UpgradeType,
+    amount: number,
+    onSelect: (segment: WheelSegment) => void,
+  ): void
+  setFillMode(onSelect: (segment: WheelSegment) => void): void
+  setDeleteMode(onSelect: (segment: WheelSegment) => void): void
+  clearMode(): void
 }
 
 export type Wheel = ReturnType<typeof addWheel>
@@ -90,6 +112,12 @@ export function getDefaultSegments() {
 }
 
 export function formatSegmentLabel(segment: WheelSegment) {
+  if (segment.blank) {
+    return '?'
+  }
+  if (segment.multiplier !== undefined) {
+    return `\u00d7${String(segment.multiplier)}`
+  }
   if (segment.score !== 0) {
     return `${segment.score >= 0 ? '+' : ''}${String(segment.score)}`
   }
@@ -101,20 +129,24 @@ const SPIN_DURATION = 5
 const ROTATIONS_MIN = 2
 const ROTATIONS_MAX = 4
 
-export function addWheel(initialSegments?: WheelSegment[]) {
+export function addWheel(
+  initialSegments?: WheelSegment[],
+  wheelPos?: ReturnType<typeof vec2>,
+) {
   const wheelSegments = initialSegments ?? getDefaultSegments()
 
   let isSpinning = false
+  let currentMode: WheelMode = { type: 'none' }
 
   const wheel = add([
-    pos(center()),
+    pos(wheelPos ?? center()),
     rotate(),
     timer(),
     {
       isSpinning: false,
       radius: RADIUS,
       segments: wheelSegments,
-      addSegment(segment) {
+      addSegment(segment: WheelSegment) {
         this.segments.push(segment)
       },
       reset() {
@@ -125,7 +157,7 @@ export function addWheel(initialSegments?: WheelSegment[]) {
       resetSegments() {
         this.segments = getDefaultSegments()
       },
-      spin(onComplete) {
+      spin(onComplete: (segment: WheelSegment) => void) {
         if (isSpinning) {
           return
         }
@@ -142,7 +174,7 @@ export function addWheel(initialSegments?: WheelSegment[]) {
             wheel.angle,
             targetAngle,
             SPIN_DURATION,
-            (angle) => {
+            (angle: number) => {
               wheel.angle = angle
             },
             easings.easeOutCubic,
@@ -152,23 +184,6 @@ export function addWheel(initialSegments?: WheelSegment[]) {
             this.isSpinning = false
             onComplete(this.getWinningSegment())
           })
-      },
-      upgradeRandomPositiveSegment(amount) {
-        const positiveSegments = this.segments.filter(
-          (segment) => segment.score > 0 || segment.money > 0,
-        )
-
-        if (positiveSegments.length === 0) {
-          return
-        }
-
-        const segment = positiveSegments[randi(0, positiveSegments.length)]
-        if (segment.score > 0) {
-          segment.score += amount
-        } else {
-          segment.money += amount
-        }
-        segment.label = formatSegmentLabel(segment)
       },
       getWinningSegment() {
         const wheelAngle = (wheel.angle * Math.PI) / 180
@@ -183,10 +198,63 @@ export function addWheel(initialSegments?: WheelSegment[]) {
         const index = Math.floor(pointerRelative / segmentAngle)
         return this.segments[index]
       },
+      setUpgradeMode(
+        upgradeType: UpgradeType,
+        amount: number,
+        onSelect: (segment: WheelSegment) => void,
+      ) {
+        currentMode = { type: 'upgrade', upgradeType, amount, onSelect }
+      },
+      setFillMode(onSelect: (segment: WheelSegment) => void) {
+        currentMode = { type: 'fill', onSelect }
+      },
+      setDeleteMode(onSelect: (segment: WheelSegment) => void) {
+        currentMode = { type: 'delete', onSelect }
+      },
+      clearMode() {
+        currentMode = { type: 'none' }
+      },
     } satisfies WheelState,
   ])
 
   const wheelTooltip = addTooltip()
+
+  function getSegmentAtMouse(mouse: ReturnType<typeof mousePos>) {
+    const relative = mouse.sub(wheel.pos)
+    const distance = Math.sqrt(relative.x ** 2 + relative.y ** 2)
+    if (distance > wheel.radius) return null
+
+    const wheelAngle = (wheel.angle * Math.PI) / 180
+    const segmentAngle = (Math.PI * 2) / wheel.segments.length
+    let mouseAngle = Math.atan2(relative.y, relative.x) - wheelAngle
+    mouseAngle = mouseAngle % (Math.PI * 2)
+    if (mouseAngle < 0) mouseAngle += Math.PI * 2
+
+    const index = Math.floor(mouseAngle / segmentAngle)
+    return { segment: wheel.segments[index], index }
+  }
+
+  function isValidModeTarget(segment: WheelSegment, mode: WheelMode): boolean {
+    if (mode.type === 'upgrade') {
+      if (mode.upgradeType === 'score') return segment.score !== 0
+      return segment.money !== 0
+    }
+    if (mode.type === 'fill') return segment.blank === true
+    if (mode.type === 'delete') return true
+    return false
+  }
+
+  function getUpgradeTooltip(segment: WheelSegment, mode: WheelMode): string {
+    if (mode.type === 'upgrade') {
+      if (mode.upgradeType === 'score') {
+        return `${String(segment.score)} \u2192 ${String(segment.score + mode.amount)} \u00b7 click to upgrade`
+      }
+      return `$${String(segment.money)} \u2192 $${String(segment.money + mode.amount)} \u00b7 click to upgrade`
+    }
+    if (mode.type === 'fill') return 'Click to fill this blank segment'
+    if (mode.type === 'delete') return 'Click to delete this segment'
+    return segment.tooltip
+  }
 
   wheel.onUpdate(() => {
     if (isSpinning) {
@@ -195,28 +263,57 @@ export function addWheel(initialSegments?: WheelSegment[]) {
     }
 
     const mouse = mousePos()
-    const relative = mouse.sub(wheel.pos)
-    const distance = Math.sqrt(relative.x ** 2 + relative.y ** 2)
+    const hit = getSegmentAtMouse(mouse)
 
-    if (distance > wheel.radius) {
+    if (!hit) {
       wheelTooltip.hide()
+      setCursor('default')
       return
     }
 
-    const wheelAngle = (wheel.angle * Math.PI) / 180
-    const segmentAngle = (Math.PI * 2) / wheel.segments.length
-    let mouseAngle = Math.atan2(relative.y, relative.x) - wheelAngle
-    mouseAngle = mouseAngle % (Math.PI * 2)
+    const { segment } = hit
 
-    if (mouseAngle < 0) {
-      mouseAngle += Math.PI * 2
+    if (currentMode.type !== 'none') {
+      const valid = isValidModeTarget(segment, currentMode)
+      if (valid) {
+        setCursor('pointer')
+        wheelTooltip.setTarget(mouse)
+        wheelTooltip.show(getUpgradeTooltip(segment, currentMode))
+      } else {
+        setCursor('default')
+        wheelTooltip.setTarget(mouse)
+        wheelTooltip.show(segment.tooltip)
+      }
+    } else {
+      wheelTooltip.setTarget(mouse)
+      wheelTooltip.show(segment.tooltip)
     }
+  })
 
-    const index = Math.floor(mouseAngle / segmentAngle)
-    const segment = wheel.segments[index]
+  onMousePress(() => {
+    if (isSpinning || currentMode.type === 'none') return
 
-    wheelTooltip.setTarget(mouse)
-    wheelTooltip.show(segment.tooltip)
+    const mouse = mousePos()
+    const hit = getSegmentAtMouse(mouse)
+    if (!hit) return
+
+    const { segment } = hit
+    if (!isValidModeTarget(segment, currentMode)) return
+
+    const mode = currentMode
+    currentMode = { type: 'none' }
+    setCursor('default')
+    wheelTooltip.hide()
+
+    if (mode.type === 'upgrade') {
+      if (mode.upgradeType === 'score') {
+        segment.score += mode.amount
+      } else {
+        segment.money += mode.amount
+      }
+      segment.label = formatSegmentLabel(segment)
+    }
+    mode.onSelect(segment)
   })
 
   wheel.onDraw(() => {
@@ -226,6 +323,9 @@ export function addWheel(initialSegments?: WheelSegment[]) {
       fill: false,
       radius: wheel.radius,
     })
+
+    const mouse = isSpinning ? null : mousePos()
+    const hovered = mouse ? getSegmentAtMouse(mouse) : null
 
     wheel.segments.forEach((segment, index) => {
       const startAngle = index * segmentAngle
@@ -240,8 +340,15 @@ export function addWheel(initialSegments?: WheelSegment[]) {
         )
       }
 
+      const isHoveredValid =
+        hovered?.index === index &&
+        currentMode.type !== 'none' &&
+        isValidModeTarget(segment, currentMode)
+
+      const drawColor = isHoveredValid ? COLOR.GOLD : segment.color
+
       drawPolygon({
-        color: segment.color,
+        color: drawColor,
         fill: true,
         pts: arcPoints,
       })
