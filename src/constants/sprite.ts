@@ -8,8 +8,8 @@ export const ARROW: Sprite = {
 
 export const ART: Sprite = {
   id: 'art',
-  width: 64,
-  height: 64,
+  width: 32, // 64
+  height: 32, // 64
 }
 
 export const COIN: Sprite = {
@@ -20,8 +20,8 @@ export const COIN: Sprite = {
 
 export const CROSS_MARK: Sprite = {
   id: 'cross_mark',
-  width: 64,
-  height: 64,
+  width: 36, // 64
+  height: 36, // 64
 }
 
 export const GRAPE: Sprite = {
@@ -44,8 +44,8 @@ export const MONEY_BAG: Sprite = {
 
 export const PLUS: Sprite = {
   id: 'plus',
-  width: 64,
-  height: 64,
+  width: 32, // 64
+  height: 32, // 64
 }
 
 export const POINTER: Sprite = {
@@ -56,8 +56,8 @@ export const POINTER: Sprite = {
 
 export const QUESTION_MARK: Sprite = {
   id: 'question_mark',
-  width: 64,
-  height: 64,
+  width: 32, // 64
+  height: 32, // 64
 }
 
 export const SKULLER: Sprite = {
@@ -68,8 +68,8 @@ export const SKULLER: Sprite = {
 
 export const SPARK: Sprite = {
   id: 'spark',
-  width: 18,
-  height: 21,
+  width: 20, // 18
+  height: 23, // 21
 }
 
 export const STAR: Sprite = {
@@ -80,6 +80,6 @@ export const STAR: Sprite = {
 
 export const TRASH: Sprite = {
   id: 'trash',
-  width: 64,
-  height: 64,
+  width: 32, // 64
+  height: 32, // 64
 }
