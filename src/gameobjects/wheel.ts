@@ -341,7 +341,7 @@ export function addWheel(options: WheelOptions = {}) {
     const segmentAngle = (Math.PI * 2) / wheel.segments.length
 
     drawCircle({
-      fill: false,
+      outline: { color: COLOR.BLACK, width: 5 },
       radius: wheel.radius,
     })
 

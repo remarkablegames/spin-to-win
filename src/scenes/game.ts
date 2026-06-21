@@ -58,7 +58,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   add([
     sprite(SPRITE.POINTER, { width: 28, height: 28 }),
-    pos(center().x, center().y - wheel.radius - 12),
+    pos(center().x, center().y - wheel.radius - 14),
     anchor('center'),
     rotate(90),
     color(COLOR.WHITE),
