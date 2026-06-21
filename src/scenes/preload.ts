@@ -1,7 +1,7 @@
 import { SCENE, SPRITE } from '../constants'
 
 scene(SCENE.PRELOAD, () => {
-  loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
+  const font = loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
 
   loadSprite(SPRITE.COIN, '/sprites/coin.png')
   loadSprite(SPRITE.GRAPE, '/sprites/grape.png')
@@ -13,5 +13,7 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.STAR, '/sprites/star.png')
   loadSprite(SPRITE.TRASH, '/icons/trash.png')
 
-  go(SCENE.GAME)
+  font.then(() => {
+    go(SCENE.GAME)
+  })
 })
