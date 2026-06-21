@@ -1,5 +1,7 @@
 import type { Color } from 'kaplay'
 
+import { ART, COIN, GRAPE, HEART, MONEY_BAG, SKULLER, STAR } from './sprite'
+
 export const BASE_PASSIVE_INCOME = 3
 export const PASSIVE_INCOME_UPGRADE_AMOUNT = 1
 export const PASSIVE_INCOME_UPGRADE_BASE_COST = 8
@@ -103,7 +105,7 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
 export interface FillTemplate {
   artifact?: boolean
   color: Color
-  icon: { sprite: string; width: number; height: number }
+  icon: string
   label: string
   money: number
   multiplier?: number
@@ -114,7 +116,7 @@ export interface FillTemplate {
 export const FILL_TEMPLATES: FillTemplate[] = [
   {
     color: rgb(255, 99, 71),
-    icon: { sprite: 'heart', width: 30, height: 26 },
+    icon: HEART.id,
     label: '+10',
     money: 0,
     score: 10,
@@ -122,7 +124,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(128, 128, 128),
-    icon: { sprite: 'grape', width: 30, height: 43 },
+    icon: GRAPE.id,
     label: '+25',
     money: 0,
     score: 25,
@@ -130,7 +132,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(30, 144, 255),
-    icon: { sprite: 'star', width: 30, height: 30 },
+    icon: STAR.id,
     label: '+50',
     money: 0,
     score: 50,
@@ -138,7 +140,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(255, 215, 0),
-    icon: { sprite: 'coin', width: 28, height: 28 },
+    icon: COIN.id,
     label: '+$3',
     money: 3,
     score: 0,
@@ -146,7 +148,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(60, 179, 113),
-    icon: { sprite: 'coin', width: 28, height: 28 },
+    icon: COIN.id,
     label: '+$5',
     money: 5,
     score: 0,
@@ -154,7 +156,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(220, 20, 60),
-    icon: { sprite: 'skuller', width: 28, height: 30 },
+    icon: SKULLER.id,
     label: '-15',
     money: 0,
     score: -15,
@@ -162,7 +164,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(139, 0, 0),
-    icon: { sprite: 'money_bag', width: 35, height: 35 },
+    icon: MONEY_BAG.id,
     label: '-$3',
     money: -3,
     score: 0,
@@ -170,7 +172,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(100, 200, 255),
-    icon: { sprite: 'star', width: 30, height: 30 },
+    icon: STAR.id,
     label: '+25%',
     money: 0,
     multiplier: 1.25,
@@ -179,7 +181,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
   {
     color: rgb(180, 100, 200),
-    icon: { sprite: 'star', width: 30, height: 30 },
+    icon: STAR.id,
     label: '-25%',
     money: 0,
     multiplier: 0.75,
@@ -189,7 +191,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   {
     artifact: true,
     color: rgb(200, 100, 200),
-    icon: { sprite: 'art', width: 30, height: 30 },
+    icon: ART.id,
     label: 'Artifact',
     money: 0,
     score: 0,

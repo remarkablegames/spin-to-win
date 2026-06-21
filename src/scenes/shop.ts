@@ -59,7 +59,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
   })
 
   add([
-    sprite(SPRITE.POINTER, { width: 28, height: 28 }),
+    sprite(SPRITE.POINTER.id, {
+      width: SPRITE.POINTER.width,
+      height: SPRITE.POINTER.height,
+    }),
     pos(wheelX.x, wheelX.y - wheel.radius - 12),
     anchor('center'),
     rotate(90),
@@ -122,7 +125,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
   const shop = addShop(
     {
       onExtraSpin: () => {
-        if (money < extraSpinCost) return
+        if (money < extraSpinCost) {
+          return
+        }
         money -= extraSpinCost
         extraSpins += 1
         extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
@@ -132,11 +137,13 @@ scene(SCENE.SHOP, (state: ShopState) => {
         updateButtons()
       },
       onAddSegment: () => {
-        if (addedSegment) return
+        if (addedSegment) {
+          return
+        }
         const blank: WheelSegment = {
           blank: true,
           color: rgb(100, 100, 100),
-          icon: { sprite: SPRITE.QUESTION_MARK, width: 24, height: 24 },
+          icon: SPRITE.QUESTION_MARK.id,
           label: '',
           money: 0,
           score: 0,
@@ -193,7 +200,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   function handlePoolUpgrade(upgrade: PoolUpgrade) {
     const cost = getPoolOfferCost(upgrade)
-    if (money < cost) return
+    if (money < cost) {
+      return
+    }
 
     const offerIndex = poolOffers.indexOf(upgrade) as 0 | 1
 
@@ -263,7 +272,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         const multiplierLabel = isPositive ? '+25%' : '-25%'
         const multiplierSegment: WheelSegment = {
           color: multiplierColor,
-          icon: { sprite: SPRITE.STAR, width: 30, height: 30 },
+          icon: SPRITE.STAR.id,
           label: multiplierLabel,
           money: 0,
           multiplier: multiplierValue,
@@ -311,7 +320,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
         break
       }
       case 'upgradePassiveIncome': {
-        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) return
+        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {
+          return
+        }
         money -= cost
         passiveIncome += SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT
         passiveIncomeUpgrades += 1
@@ -347,7 +358,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   function isPoolOfferEnabled(upgrade: PoolUpgrade): boolean {
     const cost = getPoolOfferCost(upgrade)
-    if (money < cost) return false
+    if (money < cost) {
+      return false
+    }
     switch (upgrade.id) {
       case 'upgradeScoreSegment':
         return hasScoreSegments()

@@ -6,6 +6,7 @@ import type {
   ArtifactId,
   ArtifactSlot,
 } from '../constants/artifacts'
+import { getSpriteById } from '../utils'
 import { addTooltip } from './tooltip'
 
 const SLOT_SIZE = 64
@@ -13,7 +14,6 @@ const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
 const BOTTOM_OFFSET = 16
-const ICON_SCALE = 0.8
 
 interface ArtifactInventory {
   destroy(): void
@@ -87,11 +87,14 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
 
       if (slot) {
         const artifact = ARTIFACT.getArtifactById(slot.id)
+        const spriteData = getSpriteById(artifact.icon)
         bg.add([
-          sprite(artifact.icon),
+          sprite(artifact.icon, {
+            width: spriteData.width,
+            height: spriteData.height,
+          }),
           pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
           anchor('center'),
-          scale(ICON_SCALE),
           z(12),
         ])
 

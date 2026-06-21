@@ -76,7 +76,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   })
 
   add([
-    sprite(SPRITE.POINTER, { width: 28, height: 28 }),
+    sprite(SPRITE.POINTER.id, {
+      width: SPRITE.POINTER.width,
+      height: SPRITE.POINTER.height,
+    }),
     pos(center().x, center().y - WHEEL_OFFSET - wheel.radius - 14),
     anchor('center'),
     rotate(90),

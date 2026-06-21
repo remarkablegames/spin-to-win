@@ -9,13 +9,14 @@ import type {
 } from 'kaplay'
 
 import { COLOR, SPRITE } from '../constants'
+import { getSpriteById } from '../utils'
 import { addTooltip } from './tooltip'
 
 export interface WheelSegment {
   artifact?: boolean
   blank?: boolean
   color: Color
-  icon: { sprite: string; width: number; height: number }
+  icon: string
   label: string
   money: number
   multiplier?: number
@@ -67,7 +68,7 @@ export type Wheel = ReturnType<typeof addWheel>
 export const SEGMENTS: WheelSegment[] = [
   {
     color: rgb(255, 99, 71),
-    icon: { sprite: SPRITE.HEART, width: 30, height: 26 },
+    icon: SPRITE.HEART.id,
     label: '+10',
     money: 0,
     score: 10,
@@ -75,7 +76,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(128, 128, 128),
-    icon: { sprite: SPRITE.GRAPE, width: 30, height: 43 },
+    icon: SPRITE.GRAPE.id,
     label: '+25',
     money: 0,
     score: 25,
@@ -83,7 +84,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(30, 144, 255),
-    icon: { sprite: SPRITE.STAR, width: 30, height: 30 },
+    icon: SPRITE.STAR.id,
     label: '+50',
     money: 0,
     score: 50,
@@ -91,7 +92,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(255, 215, 0),
-    icon: { sprite: SPRITE.COIN, width: 28, height: 28 },
+    icon: SPRITE.COIN.id,
     label: '+$5',
     money: 5,
     score: 0,
@@ -99,7 +100,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(220, 20, 60),
-    icon: { sprite: SPRITE.SKULLER, width: 28, height: 30 },
+    icon: SPRITE.SKULLER.id,
     label: '-25',
     money: 0,
     score: -25,
@@ -107,7 +108,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(60, 179, 113),
-    icon: { sprite: SPRITE.COIN, width: 24, height: 24 },
+    icon: SPRITE.COIN.id,
     label: '+$1',
     money: 1,
     score: 0,
@@ -115,7 +116,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(139, 0, 0),
-    icon: { sprite: SPRITE.MONEY_BAG, width: 35, height: 35 },
+    icon: SPRITE.MONEY_BAG.id,
     label: '-$3',
     money: -3,
     score: 0,
@@ -432,12 +433,13 @@ export function addWheel(options: WheelOptions = {}) {
       const textWidth = formatText({ size: 20, text: segment.label }).width
       const halfOffset = textWidth / 2
 
+      const spriteData = getSpriteById(segment.icon)
       drawSprite({
         anchor: 'center',
         pos: vec2(labelPos.x - halfOffset, labelPos.y),
-        sprite: segment.icon.sprite,
-        width: segment.icon.width,
-        height: segment.icon.height,
+        sprite: segment.icon,
+        width: spriteData.width,
+        height: spriteData.height,
       })
 
       const textPos = vec2(labelPos.x + halfOffset, labelPos.y)
