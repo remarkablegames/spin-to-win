@@ -12,7 +12,7 @@ import {
 import type { WheelSegment } from '../gameobjects/wheel'
 
 interface ShopState {
-  bonusBaseSpins: number
+  baseSpins: number
   levelIndex: number
   levelScore: number
   money: number
@@ -28,7 +28,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
   let extraSpins = 0
   let addedSegment = false
-  let bonusBaseSpins = state.bonusBaseSpins
+  let baseSpins = state.baseSpins
   let passiveIncome = state.passiveIncome
   let passiveIncomeUpgrades = 0
   let upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
@@ -64,7 +64,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       onExtraSpin: () => {
         if (money < extraSpinCost) return
         money -= extraSpinCost
-        extraSpins++
+        extraSpins += 1
         extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
         header.setMoney(money)
         shop.updateExtraSpinCost(extraSpinCost)
@@ -96,7 +96,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         shop.destroy()
         go(SCENE.GAME, {
           ...state,
-          bonusBaseSpins,
+          baseSpins,
           money,
           extraSpins,
           passiveIncome,
@@ -211,7 +211,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
       case 'permanentBaseSpin': {
         money -= cost
-        bonusBaseSpins++
+        baseSpins += 1
         permanentSpinCost += SHOP.PERMANENT_BASE_SPIN_COST_INCREMENT
         header.setMoney(money)
         shop.updatePoolOfferLabel(
@@ -248,7 +248,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) return
         money -= cost
         passiveIncome += SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT
-        passiveIncomeUpgrades++
+        passiveIncomeUpgrades += 1
         passiveIncomeCost += SHOP.PASSIVE_INCOME_UPGRADE_COST_INCREMENT
         header.setMoney(money)
         if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {

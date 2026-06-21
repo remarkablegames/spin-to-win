@@ -7,7 +7,7 @@ const BUTTON_OFFSET = 320
 const SKIP_BUTTON_OFFSET = BUTTON_OFFSET + 64
 
 interface GameState {
-  bonusBaseSpins?: number
+  baseSpins?: number
   extraSpins?: number
   levelIndex?: number
   levelScore?: number
@@ -40,7 +40,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   let money = initialState?.money ?? 0
   let moneyDelta = 0
   let extraSpins = initialState?.extraSpins ?? 0
-  let bonusBaseSpins = initialState?.bonusBaseSpins ?? 0
+  let baseSpins =
+    initialState?.baseSpins ?? LEVEL.LEVELS[levelIndex].baseSpinsPerRound
   let passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
   let spinsRemaining = 0
   let totalSpinsForRound = 0
@@ -85,7 +86,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     header.setMoney(money, moneyDelta)
 
     go(SCENE.SHOP, {
-      bonusBaseSpins,
+      baseSpins,
       levelIndex,
       levelScore,
       money,
@@ -169,9 +170,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   })
 
   function startRound() {
-    const level = LEVEL.LEVELS[levelIndex]
-    totalSpinsForRound =
-      level.baseSpinsPerRound + LEVEL.BONUS_SPINS + extraSpins + bonusBaseSpins
+    totalSpinsForRound = baseSpins + LEVEL.BONUS_SPINS + extraSpins
     spinsRemaining = totalSpinsForRound
     extraSpins = 0
     moneyDelta = passiveIncome
@@ -191,10 +190,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function continueFromShop() {
-    bonusBaseSpins = initialState?.bonusBaseSpins ?? 0
+    baseSpins =
+      initialState?.baseSpins ?? LEVEL.LEVELS[levelIndex].baseSpinsPerRound
     passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
     if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {
-      roundIndex++
+      roundIndex += 1
       wheel.reset()
       startRound()
     } else {
