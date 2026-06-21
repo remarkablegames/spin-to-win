@@ -407,6 +407,19 @@ export function addWheel(
       })
     })
 
+    wheel.segments.forEach((_, index) => {
+      const angle = index * segmentAngle
+      drawLine({
+        p1: vec2(),
+        p2: vec2(
+          Math.cos(angle) * wheel.radius,
+          Math.sin(angle) * wheel.radius,
+        ),
+        width: 2,
+        color: COLOR.BLACK,
+      })
+    })
+
     drawCircle({
       color: COLOR.WHITE,
       radius: 12,
