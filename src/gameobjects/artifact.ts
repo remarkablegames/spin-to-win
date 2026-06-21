@@ -1,16 +1,11 @@
-import type {
-  ColorComp,
-  GameObj,
-  PosComp,
-  RectComp,
-  ScaleComp,
-  SpriteComp,
-} from 'kaplay'
+import type { GameObj, PosComp } from 'kaplay'
 
 import { ARTIFACT, COLOR } from '../constants'
 import type {
   ActiveArtifactId,
   ActiveArtifactSlot,
+  ArtifactId,
+  PassiveArtifactSlot,
 } from '../constants/artifacts'
 import { addTooltip } from './tooltip'
 
@@ -25,65 +20,165 @@ interface ArtifactInventory {
   destroy(): void
   update(
     activeArtifacts: ActiveArtifactSlot[],
+    passiveArtifacts?: PassiveArtifactSlot[],
     queuedArtifacts?: ActiveArtifactId[],
   ): void
 }
 
 interface AddArtifactOptions {
-  onUse: (id: ActiveArtifactId) => void
+  onUse: (id: ArtifactId) => void
   x?: number
   y?: number
 }
 
+interface SlotDisplay {
+  background: GameObj<PosComp>
+  tooltip: ReturnType<typeof addTooltip>
+}
+
 export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
-  const slotCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
-  const totalWidth =
-    slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2
   const totalHeight = SLOT_SIZE + PADDING * 2
-  const x = options.x ?? (width() - totalWidth) / 2 + PADDING
   const y = options.y ?? height() - totalHeight - BOTTOM_OFFSET + PADDING
 
-  const container = add([pos(x, y)])
+  const container = add([pos(0, y)])
 
-  container.add([
-    rect(totalWidth, totalHeight, { radius: 8 }),
-    pos(-PADDING, -PADDING),
+  let background = container.add([
+    rect(1, totalHeight, { radius: 8 }),
+    pos(0, -PADDING),
     color(COLOR.LIGHT_BROWN),
     z(10),
   ])
 
-  interface Slot {
-    background: GameObj<RectComp & ColorComp>
-    badge: GameObj<PosComp & RectComp & ColorComp> | null
-    icon: GameObj<PosComp & SpriteComp & ScaleComp> | null
-    id: ActiveArtifactId | null
-    tooltip: ReturnType<typeof addTooltip>
+  let slotDisplays: SlotDisplay[] = []
+
+  function clearSlots() {
+    slotDisplays.forEach((s) => {
+      s.tooltip.destroy()
+      s.background.destroy()
+    })
+    slotDisplays = []
   }
 
-  const slots: Slot[] = []
-
-  function updateSlot(
-    index: number,
-    slot: ActiveArtifactSlot | undefined,
-    queuedCount: number,
+  function rebuildSlots(
+    activeArtifacts: ActiveArtifactSlot[],
+    passiveArtifacts: PassiveArtifactSlot[],
+    queuedArtifacts: ActiveArtifactId[],
   ) {
-    const slotData = slots[index]
-    slotData.id = slot?.id ?? null
+    clearSlots()
+    background.destroy()
 
-    if (slotData.icon) {
-      slotData.icon.destroy()
-      slotData.icon = null
+    const activeCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
+    const totalSlots = activeCount + passiveArtifacts.length
+    const totalWidth =
+      Math.max(totalSlots, activeCount) * SLOT_SIZE +
+      (Math.max(totalSlots, activeCount) - 1) * SLOT_GAP +
+      PADDING * 2
+    const x = options.x ?? (width() - totalWidth) / 2 + PADDING
+
+    container.pos.x = x
+
+    background = container.add([
+      rect(totalWidth, totalHeight, { radius: 8 }),
+      pos(-PADDING, -PADDING),
+      color(COLOR.LIGHT_BROWN),
+      z(10),
+    ])
+
+    for (let i = 0; i < activeCount; i++) {
+      const slotX = i * (SLOT_SIZE + SLOT_GAP)
+      const activeSlot = activeArtifacts[i] as ActiveArtifactSlot | undefined
+      const queuedCount = activeSlot
+        ? queuedArtifacts.filter((id) => id === activeSlot.id).length
+        : 0
+
+      const bg = container.add([
+        rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
+        pos(slotX, 0),
+        color(
+          activeSlot
+            ? queuedCount > 0
+              ? COLOR.GOLD
+              : COLOR.WHITE
+            : COLOR.WHITE,
+        ),
+        opacity(0.6),
+        area(),
+        z(11),
+      ])
+
+      if (activeSlot) {
+        const artifact = ARTIFACT.getArtifactById(activeSlot.id)
+        bg.add([
+          sprite(artifact.icon),
+          pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
+          anchor('center'),
+          scale(ICON_SCALE),
+          z(12),
+        ])
+
+        if (activeSlot.charges > 1) {
+          const badge = bg.add([
+            rect(BADGE_SIZE, BADGE_SIZE, { radius: 4 }),
+            pos(SLOT_SIZE - BADGE_SIZE - 4, 4),
+            color(COLOR.BLACK),
+            z(13),
+          ])
+          badge.add([
+            text(String(activeSlot.charges), { size: 14 }),
+            pos(BADGE_SIZE / 2, BADGE_SIZE / 2),
+            anchor('center'),
+            color(COLOR.WHITE),
+            z(14),
+          ])
+        }
+      }
+
+      const queueHint =
+        queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
+      const tooltipText = activeSlot
+        ? `${ARTIFACT.getArtifactById(activeSlot.id).name}${queueHint}\n${ARTIFACT.getArtifactById(activeSlot.id).description}`
+        : 'Empty artifact slot'
+
+      const tooltip = addTooltip({
+        anchor: 'top',
+        target: bg,
+        text: tooltipText,
+      })
+
+      const slotId = activeSlot?.id ?? null
+      bg.onHover(() => {
+        if (slotId) {
+          setCursor('pointer')
+          tooltip.show()
+        }
+      })
+      bg.onHoverEnd(() => {
+        setCursor('default')
+        tooltip.hide()
+      })
+      bg.onClick(() => {
+        if (slotId) {
+          options.onUse(slotId)
+        }
+      })
+
+      slotDisplays.push({ background: bg, tooltip })
     }
 
-    if (slotData.badge) {
-      slotData.badge.destroy()
-      slotData.badge = null
-    }
+    passiveArtifacts.forEach((passiveSlot, i) => {
+      const slotX = (activeCount + i) * (SLOT_SIZE + SLOT_GAP)
+      const artifact = ARTIFACT.getArtifactById(passiveSlot.id)
 
-    if (slot) {
-      const artifact = ARTIFACT.getArtifactById(slot.id)
-      slotData.background.color = queuedCount > 0 ? COLOR.GOLD : COLOR.WHITE
-      slotData.icon = slotData.background.add([
+      const bg = container.add([
+        rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
+        pos(slotX, 0),
+        color(COLOR.LIGHT_BROWN),
+        opacity(0.8),
+        area(),
+        z(11),
+      ])
+
+      bg.add([
         sprite(artifact.icon),
         pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
         anchor('center'),
@@ -91,100 +186,43 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         z(12),
       ])
 
-      if (slot.charges > 1) {
-        slotData.badge = slotData.background.add([
-          rect(BADGE_SIZE, BADGE_SIZE, { radius: 4 }),
-          pos(SLOT_SIZE - BADGE_SIZE - 4, 4),
-          color(COLOR.BLACK),
-          z(13),
-        ])
-        slotData.badge.add([
-          text(String(slot.charges), { size: 14 }),
-          pos(BADGE_SIZE / 2, BADGE_SIZE / 2),
-          anchor('center'),
-          color(COLOR.WHITE),
-          z(14),
-        ])
-      }
+      const tooltip = addTooltip({
+        anchor: 'top',
+        target: bg,
+        text: `${artifact.name}\n${artifact.description}`,
+      })
 
-      const queueHint =
-        queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
-      slotData.tooltip.setText(
-        `${artifact.name}${queueHint}\n${artifact.description}`,
-      )
-    } else {
-      slotData.background.color = COLOR.WHITE
-      slotData.tooltip.setText('Empty artifact slot')
-    }
-  }
-
-  for (let i = 0; i < slotCount; i++) {
-    const slotX = i * (SLOT_SIZE + SLOT_GAP)
-    const background = container.add([
-      rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
-      pos(slotX, 0),
-      color(COLOR.WHITE),
-      opacity(0.6),
-      area(),
-      z(11),
-    ])
-
-    const tooltip = addTooltip({
-      anchor: 'top',
-      target: background,
-      text: 'Empty artifact slot',
-    })
-
-    background.onHover(() => {
-      const slotData = slots[i]
-
-      if (slotData.id) {
+      const slotId = passiveSlot.id
+      bg.onHover(() => {
         setCursor('pointer')
-        slotData.tooltip.show()
-      }
-    })
+        tooltip.show()
+      })
+      bg.onHoverEnd(() => {
+        setCursor('default')
+        tooltip.hide()
+      })
+      bg.onClick(() => {
+        options.onUse(slotId)
+      })
 
-    background.onHoverEnd(() => {
-      setCursor('default')
-      slots[i].tooltip.hide()
-    })
-
-    background.onClick(() => {
-      const slotData = slots[i]
-
-      if (slotData.id) {
-        options.onUse(slotData.id)
-      }
-    })
-
-    slots.push({
-      background,
-      badge: null,
-      icon: null,
-      id: null,
-      tooltip,
+      slotDisplays.push({ background: bg, tooltip })
     })
   }
 
   function update(
     activeArtifacts: ActiveArtifactSlot[],
+    passiveArtifacts: PassiveArtifactSlot[] = [],
     queuedArtifacts: ActiveArtifactId[] = [],
   ) {
-    for (let i = 0; i < slotCount; i++) {
-      const slot = activeArtifacts[i] as ActiveArtifactSlot | undefined
-      const queuedCount = queuedArtifacts.filter((id) => id === slot?.id).length
-      updateSlot(i, slot, queuedCount)
-    }
+    rebuildSlots(activeArtifacts, passiveArtifacts, queuedArtifacts)
   }
 
   update([])
 
   return {
     destroy() {
+      clearSlots()
       container.destroy()
-      slots.forEach((slot) => {
-        slot.tooltip.destroy()
-      })
     },
     update,
   }

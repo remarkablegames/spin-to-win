@@ -90,6 +90,12 @@ export function addTooltip(options: AddTooltipOptions = {}): Tooltip {
     }
 
     if ('pos' in currentTarget) {
+      if (
+        'worldPos' in currentTarget &&
+        typeof currentTarget.worldPos === 'function'
+      ) {
+        return currentTarget.worldPos() ?? currentTarget.pos
+      }
       return currentTarget.pos
     }
 

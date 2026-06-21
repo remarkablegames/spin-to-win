@@ -1,5 +1,5 @@
 import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
-import type { ActiveArtifactId } from '../constants/artifacts'
+import type { ActiveArtifactId, ArtifactId } from '../constants/artifacts'
 import {
   addArtifact,
   addButton,
@@ -106,7 +106,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     updateSpinButton()
   }
 
-  function useArtifact(id: ActiveArtifactId) {
+  function useArtifact(id: ArtifactId) {
+    if (!ARTIFACT.isActiveArtifact(id)) {
+      return
+    }
+
     if (spinsRemaining <= 0) {
       return
     }
@@ -124,7 +128,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       wheel.extendSpin()
       activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
       addToast('Spin Extended')
-      artifactInventory.update(activeArtifacts, queuedArtifacts)
+      artifactInventory.update(
+        activeArtifacts,
+        passiveArtifacts,
+        queuedArtifacts,
+      )
       return
     }
 
@@ -135,7 +143,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
       isBlankSelecting = true
       activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
-      artifactInventory.update(activeArtifacts, queuedArtifacts)
+      artifactInventory.update(
+        activeArtifacts,
+        passiveArtifacts,
+        queuedArtifacts,
+      )
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
         isBlankSelecting = false
@@ -152,7 +164,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     queuedArtifacts.push(id)
-    artifactInventory.update(activeArtifacts, queuedArtifacts)
+    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
   }
 
   function grantRandomArtifact() {
@@ -179,7 +191,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
     }
 
-    artifactInventory.update(activeArtifacts, queuedArtifacts)
+    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
   }
 
   function applyArtifactEffects(segment: WheelSegment) {
@@ -255,7 +267,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
     queuedArtifacts = []
     blankSegmentIndex = null
-    artifactInventory.update(activeArtifacts, queuedArtifacts)
+    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
   }
 
   function endRound() {
@@ -299,7 +311,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     spinsRemaining -= 1
     spinButton.disable()
     skipButton.disable()
-    artifactInventory.update(activeArtifacts, queuedArtifacts)
+    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
     updateSpinButton()
 
     wheel.spin((segment) => {
@@ -340,7 +352,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       queuedArtifacts = []
       blankSegmentIndex = null
       isBlankSelecting = false
-      artifactInventory.update(activeArtifacts, queuedArtifacts)
+      artifactInventory.update(
+        activeArtifacts,
+        passiveArtifacts,
+        queuedArtifacts,
+      )
       updateUI()
 
       if (spinsRemaining > 0) {
@@ -366,7 +382,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     queuedArtifacts = []
     blankSegmentIndex = null
     isBlankSelecting = false
-    artifactInventory.update(activeArtifacts, queuedArtifacts)
+    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
     updateUI()
     spinButton.show()
     spinButton.enable()

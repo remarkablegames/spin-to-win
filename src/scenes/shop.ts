@@ -1,4 +1,4 @@
-import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import { ARTIFACT, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type { ArtifactId } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
@@ -7,7 +7,6 @@ import {
   addHeader,
   addShop,
   addToast,
-  addTooltip,
   addWheel,
   drawPoolOffers,
   pickFillTemplates,
@@ -72,11 +71,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
   const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
 
   const artifactOfferIds = ARTIFACT.getRandomArtifacts(2)
-  const passiveArtifactDisplays: { destroy: () => void }[] = []
-
-  const ARTIFACT_ICON_SIZE = 48
-  const ARTIFACT_PANEL_X = width() - 220
-  const PASSIVE_ARTIFACT_PANEL_Y = 80
 
   function sellArtifact(id: ArtifactId) {
     const artifact = ARTIFACT.getArtifactById(id)
@@ -126,92 +120,13 @@ scene(SCENE.SHOP, (state: ShopState) => {
   }
 
   const activeArtifactInventory = addArtifact({
-    onUse: (id: ArtifactId) => {
+    onUse: (id) => {
       sellArtifact(id)
     },
   })
 
   function updateArtifactUI() {
-    passiveArtifactDisplays.forEach((d) => {
-      d.destroy()
-    })
-    passiveArtifactDisplays.length = 0
-    activeArtifactInventory.update(activeArtifacts)
-
-    passiveArtifacts.forEach((slot, i) => {
-      const x = ARTIFACT_PANEL_X + i * (ARTIFACT_ICON_SIZE + 8)
-      const display = createArtifactSlot(
-        x,
-        PASSIVE_ARTIFACT_PANEL_Y,
-        slot.id,
-        `${ARTIFACT.getArtifactById(slot.id).name}\nClick to sell for $${String(ARTIFACT.getSellRefund(slot.id))}`,
-        () => {
-          sellArtifact(slot.id)
-        },
-      )
-      passiveArtifactDisplays.push(display)
-    })
-  }
-
-  function createArtifactSlot(
-    x: number,
-    y: number,
-    id: ArtifactId,
-    tooltipText: string,
-    onClick: () => void,
-    badgeText?: string,
-  ) {
-    const container = add([pos(x, y)])
-    const bg = container.add([
-      rect(ARTIFACT_ICON_SIZE, ARTIFACT_ICON_SIZE, { radius: 6 }),
-      color(COLOR.WHITE),
-      area(),
-      z(10),
-    ])
-    const artifact = ARTIFACT.getArtifactById(id)
-    bg.add([
-      sprite(artifact.icon),
-      pos(ARTIFACT_ICON_SIZE / 2, ARTIFACT_ICON_SIZE / 2),
-      anchor('center'),
-      scale(0.7),
-      z(11),
-    ])
-    if (badgeText) {
-      bg.add([
-        rect(18, 18, { radius: 3 }),
-        pos(ARTIFACT_ICON_SIZE - 20, 2),
-        color(COLOR.BLACK),
-        z(12),
-      ])
-      bg.add([
-        text(badgeText, { size: 12 }),
-        pos(ARTIFACT_ICON_SIZE - 11, 11),
-        anchor('center'),
-        color(COLOR.WHITE),
-        z(13),
-      ])
-    }
-    const tooltip = addTooltip({
-      anchor: 'top',
-      target: container,
-      text: tooltipText,
-    })
-    bg.onHover(() => {
-      setCursor('pointer')
-      tooltip.show()
-    })
-    bg.onHoverEnd(() => {
-      setCursor('default')
-      tooltip.hide()
-    })
-    bg.onClick(() => {
-      onClick()
-    })
-    return {
-      destroy: () => {
-        container.destroy()
-      },
-    }
+    activeArtifactInventory.update(activeArtifacts, passiveArtifacts)
   }
 
   updateArtifactUI()
@@ -254,9 +169,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
         wheel.clearMode()
         shop.destroy()
         activeArtifactInventory.destroy()
-        passiveArtifactDisplays.forEach((artifact) => {
-          artifact.destroy()
-        })
         go(SCENE.GAME, {
           ...state,
           activeArtifacts,
