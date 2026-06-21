@@ -1,6 +1,7 @@
 import type { Anchor, Color } from 'kaplay'
 
 import { COLOR } from '../constants'
+import { getSpriteById } from '../utils'
 import { addTooltip } from './tooltip'
 
 const DEFAULT_WIDTH = 120
@@ -80,11 +81,18 @@ export function addButton({
   ])
 
   if (icon) {
+    const spriteData = getSpriteById(icon)
+    const iconHeight = ICON_SIZE
+    const renderedIconWidth = Math.round(
+      (spriteData.width / spriteData.height) * iconHeight,
+    )
     button.add([
-      sprite(icon),
-      pos(-button.width / 2 + ICON_SIZE / 2 + HORIZONTAL_PADDING / 2, 0),
+      sprite(icon, { width: renderedIconWidth, height: iconHeight }),
+      pos(
+        -button.width / 2 + renderedIconWidth / 2 + HORIZONTAL_PADDING / 2,
+        0,
+      ),
       anchor('center'),
-      scale(ICON_SIZE / 24),
       color(COLOR.WHITE),
     ])
   }
