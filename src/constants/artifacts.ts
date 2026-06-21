@@ -45,16 +45,11 @@ export interface PassiveArtifact extends ArtifactBase {
 
 export type Artifact = ActiveArtifact | PassiveArtifact
 
-export interface ActiveArtifactSlot {
-  id: ActiveArtifactId
-  charges: number
-}
+export type ArtifactSlot =
+  | { type: 'active'; id: ActiveArtifactId; charges: number }
+  | { type: 'passive'; id: PassiveArtifactId }
 
-export interface PassiveArtifactSlot {
-  id: PassiveArtifactId
-}
-
-export const ACTIVE_ARTIFACT_SLOTS = 3
+export const ARTIFACT_SLOTS = 3
 
 export const ARTIFACTS: Record<ArtifactId, Artifact> = {
   doubleNextSegment: {
@@ -246,55 +241,53 @@ export function getSellRefund(artifactId: ArtifactId): number {
 }
 
 export function hasArtifact(
-  passiveArtifacts: PassiveArtifactSlot[],
+  artifacts: ArtifactSlot[],
   id: PassiveArtifactId,
 ): boolean {
-  return passiveArtifacts.some((artifact) => artifact.id === id)
+  return artifacts.some((slot) => slot.id === id)
 }
 
-export function addActiveArtifact(
-  activeArtifacts: ActiveArtifactSlot[],
-  id: ActiveArtifactId,
-): ActiveArtifactSlot[] {
-  const existing = activeArtifacts.find((slot) => slot.id === id)
-
-  if (existing) {
-    existing.charges += 1
-    return activeArtifacts
+export function addArtifactSlot(
+  artifacts: ArtifactSlot[],
+  id: ArtifactId,
+): ArtifactSlot[] {
+  if (artifacts.length >= ARTIFACT_SLOTS) {
+    return artifacts
   }
 
-  if (activeArtifacts.length >= ACTIVE_ARTIFACT_SLOTS) {
-    return activeArtifacts
-  }
-
-  return [...activeArtifacts, { id, charges: 1 }]
-}
-
-export function removeActiveArtifact(
-  activeArtifacts: ActiveArtifactSlot[],
-  id: ActiveArtifactId,
-): ActiveArtifactSlot[] {
-  return activeArtifacts
-    .map((slot) =>
-      slot.id === id ? { ...slot, charges: slot.charges - 1 } : slot,
+  if (isActiveArtifact(id)) {
+    const existing = artifacts.find(
+      (slot): slot is Extract<ArtifactSlot, { type: 'active' }> =>
+        slot.type === 'active' && slot.id === id,
     )
-    .filter((slot) => slot.charges > 0)
-}
-
-export function addPassiveArtifact(
-  passiveArtifacts: PassiveArtifactSlot[],
-  id: PassiveArtifactId,
-): PassiveArtifactSlot[] {
-  if (passiveArtifacts.some((slot) => slot.id === id)) {
-    return passiveArtifacts
+    if (existing) {
+      existing.charges += 1
+      return artifacts
+    }
+    return [...artifacts, { type: 'active', id, charges: 1 }]
   }
 
-  return [...passiveArtifacts, { id }]
+  if (artifacts.some((slot) => slot.id === id)) {
+    return artifacts
+  }
+  return [...artifacts, { type: 'passive', id }]
 }
 
-export function removePassiveArtifact(
-  passiveArtifacts: PassiveArtifactSlot[],
-  id: PassiveArtifactId,
-): PassiveArtifactSlot[] {
-  return passiveArtifacts.filter((slot) => slot.id !== id)
+export function removeArtifactSlot(
+  artifacts: ArtifactSlot[],
+  id: ArtifactId,
+): ArtifactSlot[] {
+  if (isActiveArtifact(id)) {
+    return artifacts
+      .map((slot) =>
+        slot.type === 'active' && slot.id === id
+          ? { ...slot, charges: slot.charges - 1 }
+          : slot,
+      )
+      .filter(
+        (slot): slot is ArtifactSlot =>
+          slot.type !== 'active' || slot.charges > 0,
+      )
+  }
+  return artifacts.filter((slot) => slot.id !== id)
 }

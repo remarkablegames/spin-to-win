@@ -1,5 +1,5 @@
 import { ARTIFACT, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
-import type { ArtifactId } from '../constants/artifacts'
+import type { ArtifactId, ArtifactSlot } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
   addArtifact,
@@ -14,12 +14,11 @@ import {
 import type { WheelSegment } from '../gameobjects/wheel'
 
 interface ShopState {
-  activeArtifacts: ARTIFACT.ActiveArtifactSlot[]
+  artifacts: ArtifactSlot[]
   baseSpins: number
   levelIndex: number
   levelScore: number
   money: number
-  passiveArtifacts: ARTIFACT.PassiveArtifactSlot[]
   passiveIncome: number
   roundIndex: number
   segments: WheelSegment[]
@@ -36,8 +35,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let baseSpins = state.baseSpins
   let passiveIncome = state.passiveIncome
   let passiveIncomeUpgrades = 0
-  let activeArtifacts = state.activeArtifacts
-  let passiveArtifacts = state.passiveArtifacts
+  let artifacts = state.artifacts
   let upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
   let upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
   let permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
@@ -78,13 +76,8 @@ scene(SCENE.SHOP, (state: ShopState) => {
     money += refund
     header.setMoney(money)
 
-    if (ARTIFACT.isActiveArtifact(id)) {
-      activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
-      addToast(`Sold ${artifact.name} for $${String(refund)}`)
-    } else {
-      passiveArtifacts = ARTIFACT.removePassiveArtifact(passiveArtifacts, id)
-      addToast(`Sold ${artifact.name} for $${String(refund)}`)
-    }
+    artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
+    addToast(`Sold ${artifact.name} for $${String(refund)}`)
 
     updateArtifactUI()
     updateButtons()
@@ -96,20 +89,15 @@ scene(SCENE.SHOP, (state: ShopState) => {
       return
     }
 
-    if (ARTIFACT.isActiveArtifact(id)) {
-      const previousLength = activeArtifacts.length
-      activeArtifacts = ARTIFACT.addActiveArtifact(activeArtifacts, id)
-      if (activeArtifacts.length === previousLength) {
-        addToast('You cannot buy any more artifacts')
-        return
-      }
-    } else {
-      const previousLength = passiveArtifacts.length
-      passiveArtifacts = ARTIFACT.addPassiveArtifact(passiveArtifacts, id)
-      if (passiveArtifacts.length === previousLength) {
-        addToast(`You already own ${artifact.name}`)
-        return
-      }
+    const previousLength = artifacts.length
+    artifacts = ARTIFACT.addArtifactSlot(artifacts, id)
+    if (artifacts.length === previousLength && !ARTIFACT.isActiveArtifact(id)) {
+      addToast(`You already own ${artifact.name}`)
+      return
+    }
+    if (artifacts.length === previousLength) {
+      addToast("You can't buy any more artifacts")
+      return
     }
 
     money -= artifact.cost
@@ -126,7 +114,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   })
 
   function updateArtifactUI() {
-    activeArtifactInventory.update(activeArtifacts, passiveArtifacts)
+    activeArtifactInventory.update(artifacts)
   }
 
   updateArtifactUI()
@@ -171,11 +159,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
         activeArtifactInventory.destroy()
         go(SCENE.GAME, {
           ...state,
-          activeArtifacts,
+          artifacts,
           baseSpins,
           money,
           extraSpins,
-          passiveArtifacts,
           passiveIncome,
           segments: wheel.segments,
           wheelAngle: state.wheelAngle,
@@ -387,8 +374,8 @@ scene(SCENE.SHOP, (state: ShopState) => {
       const artifact = ARTIFACT.getArtifactById(id)
       const canAfford = money >= artifact.cost
       const canAdd = ARTIFACT.isActiveArtifact(id)
-        ? activeArtifacts.length < ARTIFACT.ACTIVE_ARTIFACT_SLOTS
-        : !ARTIFACT.hasArtifact(passiveArtifacts, id)
+        ? artifacts.length < ARTIFACT.ARTIFACT_SLOTS
+        : !ARTIFACT.hasArtifact(artifacts, id)
       shop.setArtifactOfferEnabled(i as 0 | 1, canAfford && canAdd)
     })
   }

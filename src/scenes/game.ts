@@ -1,5 +1,9 @@
 import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
-import type { ActiveArtifactId, ArtifactId } from '../constants/artifacts'
+import type {
+  ActiveArtifactId,
+  ArtifactId,
+  ArtifactSlot,
+} from '../constants/artifacts'
 import {
   addArtifact,
   addButton,
@@ -16,13 +20,12 @@ const BUTTON_OFFSET = 265
 const SKIP_BUTTON_OFFSET = BUTTON_OFFSET + 65
 
 interface GameState {
-  activeArtifacts?: ARTIFACT.ActiveArtifactSlot[]
+  artifacts?: ArtifactSlot[]
   baseSpins?: number
   extraSpins?: number
   levelIndex?: number
   levelScore?: number
   money?: number
-  passiveArtifacts?: ARTIFACT.PassiveArtifactSlot[]
   passiveIncome?: number
   roundIndex?: number
   segments?: WheelSegment[]
@@ -58,8 +61,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   let spinsRemaining = 0
   let totalSpinsForRound = 0
   let isSpinning = false
-  let activeArtifacts = initialState?.activeArtifacts ?? []
-  let passiveArtifacts = initialState?.passiveArtifacts ?? []
+  let artifacts: ArtifactSlot[] = initialState?.artifacts ?? []
   let queuedArtifacts: ActiveArtifactId[] = []
   let blankSegmentIndex: number | null = null
   let isBlankSelecting = false
@@ -115,7 +117,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       return
     }
 
-    const slot = activeArtifacts.find((s) => s.id === id)
+    const slot = artifacts.find(
+      (s): s is Extract<ArtifactSlot, { type: 'active' }> =>
+        s.type === 'active' && s.id === id,
+    )
     if (!slot || slot.charges <= 0) {
       return
     }
@@ -126,13 +131,9 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       wheel.extendSpin()
-      activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
+      artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
       addToast('Spin Extended')
-      artifactInventory.update(
-        activeArtifacts,
-        passiveArtifacts,
-        queuedArtifacts,
-      )
+      artifactInventory.update(artifacts, queuedArtifacts)
       return
     }
 
@@ -142,12 +143,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       isBlankSelecting = true
-      activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
-      artifactInventory.update(
-        activeArtifacts,
-        passiveArtifacts,
-        queuedArtifacts,
-      )
+      artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
+      artifactInventory.update(artifacts, queuedArtifacts)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
         isBlankSelecting = false
@@ -164,34 +161,25 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     queuedArtifacts.push(id)
-    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    artifactInventory.update(artifacts, queuedArtifacts)
   }
 
   function grantRandomArtifact() {
     const artifactId = ARTIFACT.getRandomArtifacts(1)[0]
     const artifact = ARTIFACT.getArtifactById(artifactId)
-    if (ARTIFACT.isActiveArtifact(artifactId)) {
-      const previousLength = activeArtifacts.length
-      activeArtifacts = ARTIFACT.addActiveArtifact(activeArtifacts, artifactId)
-      if (activeArtifacts.length > previousLength) {
-        addToast(`Artifact: ${artifact.name}`)
-      } else {
-        addToast('Artifact inventory full')
-      }
+    const previousLength = artifacts.length
+    artifacts = ARTIFACT.addArtifactSlot(artifacts, artifactId)
+    if (artifacts.length > previousLength) {
+      addToast(`Artifact: ${artifact.name}`)
     } else {
-      const previousLength = passiveArtifacts.length
-      passiveArtifacts = ARTIFACT.addPassiveArtifact(
-        passiveArtifacts,
-        artifactId,
+      addToast(
+        ARTIFACT.isActiveArtifact(artifactId)
+          ? 'Artifact inventory full'
+          : `You already own ${artifact.name}`,
       )
-      if (passiveArtifacts.length > previousLength) {
-        addToast(`Artifact: ${artifact.name}`)
-      } else {
-        addToast(`You already own ${artifact.name}`)
-      }
     }
 
-    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    artifactInventory.update(artifacts, queuedArtifacts)
   }
 
   function applyArtifactEffects(segment: WheelSegment) {
@@ -250,10 +238,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       grantRandomArtifact()
     }
 
-    if (
-      ARTIFACT.hasArtifact(passiveArtifacts, 'scoreGrowth') &&
-      segment.score !== 0
-    ) {
+    if (ARTIFACT.hasArtifact(artifacts, 'scoreGrowth') && segment.score !== 0) {
       const index = wheel.getWinningSegmentIndex()
       if (index >= 0 && index < wheel.segments.length) {
         wheel.segments[index].score += 5
@@ -262,18 +247,18 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     for (const queuedId of queuedArtifacts) {
-      activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, queuedId)
+      artifacts = ARTIFACT.removeArtifactSlot(artifacts, queuedId)
     }
 
     queuedArtifacts = []
     blankSegmentIndex = null
-    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    artifactInventory.update(artifacts, queuedArtifacts)
   }
 
   function endRound() {
     money += passiveIncome
 
-    if (ARTIFACT.hasArtifact(passiveArtifacts, 'luckyCoin')) {
+    if (ARTIFACT.hasArtifact(artifacts, 'luckyCoin')) {
       money += spinsRemaining
       moneyDelta += spinsRemaining
     }
@@ -281,12 +266,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     header.setMoney(money, moneyDelta)
 
     go(SCENE.SHOP, {
-      activeArtifacts,
+      artifacts,
       baseSpins,
       levelIndex,
       levelScore,
       money,
-      passiveArtifacts,
       passiveIncome,
       roundIndex,
       segments: wheel.segments,
@@ -311,7 +295,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     spinsRemaining -= 1
     spinButton.disable()
     skipButton.disable()
-    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    artifactInventory.update(artifacts, queuedArtifacts)
     updateSpinButton()
 
     wheel.spin((segment) => {
@@ -352,11 +336,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       queuedArtifacts = []
       blankSegmentIndex = null
       isBlankSelecting = false
-      artifactInventory.update(
-        activeArtifacts,
-        passiveArtifacts,
-        queuedArtifacts,
-      )
+      artifactInventory.update(artifacts, queuedArtifacts)
       updateUI()
 
       if (spinsRemaining > 0) {
@@ -373,7 +353,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function startRound() {
     totalSpinsForRound = baseSpins + LEVEL.BONUS_SPINS + extraSpins
-    if (ARTIFACT.hasArtifact(passiveArtifacts, 'extraRoundSpin')) {
+    if (ARTIFACT.hasArtifact(artifacts, 'extraRoundSpin')) {
       totalSpinsForRound += 2
     }
     spinsRemaining = totalSpinsForRound
@@ -382,7 +362,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     queuedArtifacts = []
     blankSegmentIndex = null
     isBlankSelecting = false
-    artifactInventory.update(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    artifactInventory.update(artifacts, queuedArtifacts)
     updateUI()
     spinButton.show()
     spinButton.enable()
@@ -402,8 +382,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     baseSpins =
       initialState?.baseSpins ?? LEVEL.LEVELS[levelIndex].baseSpinsPerRound
     passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
-    activeArtifacts = initialState?.activeArtifacts ?? []
-    passiveArtifacts = initialState?.passiveArtifacts ?? []
+    artifacts = initialState?.artifacts ?? []
     if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {
       roundIndex += 1
       startRound()

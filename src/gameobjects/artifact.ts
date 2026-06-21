@@ -3,9 +3,8 @@ import type { GameObj, PosComp } from 'kaplay'
 import { ARTIFACT, COLOR } from '../constants'
 import type {
   ActiveArtifactId,
-  ActiveArtifactSlot,
   ArtifactId,
-  PassiveArtifactSlot,
+  ArtifactSlot,
 } from '../constants/artifacts'
 import { addTooltip } from './tooltip'
 
@@ -18,11 +17,7 @@ const ICON_SCALE = 0.8
 
 interface ArtifactInventory {
   destroy(): void
-  update(
-    activeArtifacts: ActiveArtifactSlot[],
-    passiveArtifacts?: PassiveArtifactSlot[],
-    queuedArtifacts?: ActiveArtifactId[],
-  ): void
+  update(artifacts: ArtifactSlot[], queuedArtifacts?: ActiveArtifactId[]): void
 }
 
 interface AddArtifactOptions {
@@ -37,7 +32,7 @@ interface SlotDisplay {
 }
 
 export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
-  const slotCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
+  const slotCount = ARTIFACT.ARTIFACT_SLOTS
   const totalWidth =
     slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2
   const totalHeight = SLOT_SIZE + PADDING * 2
@@ -64,32 +59,29 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
   }
 
   function rebuildSlots(
-    activeArtifacts: ActiveArtifactSlot[],
-    passiveArtifacts: PassiveArtifactSlot[],
+    artifacts: ArtifactSlot[],
     queuedArtifacts: ActiveArtifactId[],
   ) {
     clearSlots()
 
     for (let i = 0; i < slotCount; i++) {
       const slotX = i * (SLOT_SIZE + SLOT_GAP)
-      const activeSlot = activeArtifacts[i] as ActiveArtifactSlot | undefined
-      const passiveSlot = activeSlot
-        ? undefined
-        : (passiveArtifacts[i - activeArtifacts.length] as
-            | PassiveArtifactSlot
-            | undefined)
-      const queuedCount = activeSlot
-        ? queuedArtifacts.filter((id) => id === activeSlot.id).length
-        : 0
+      const slot = artifacts[i] as ArtifactSlot | undefined
+      const isActive = slot?.type === 'active'
+      const isPassive = slot?.type === 'passive'
+      const queuedCount =
+        slot?.type === 'active'
+          ? queuedArtifacts.filter((id) => id === slot.id).length
+          : 0
 
-      const slotColor = activeSlot
+      const slotColor = isActive
         ? queuedCount > 0
           ? COLOR.GOLD
           : COLOR.WHITE
-        : passiveSlot
+        : isPassive
           ? COLOR.LIGHT_BROWN
           : COLOR.WHITE
-      const slotOpacity = passiveSlot ? 0.8 : 0.6
+      const slotOpacity = isPassive ? 0.8 : 0.6
 
       const bg = container.add([
         rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
@@ -100,8 +92,8 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         z(11),
       ])
 
-      if (activeSlot) {
-        const artifact = ARTIFACT.getArtifactById(activeSlot.id)
+      if (slot) {
+        const artifact = ARTIFACT.getArtifactById(slot.id)
         bg.add([
           sprite(artifact.icon),
           pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
@@ -110,7 +102,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
           z(12),
         ])
 
-        if (activeSlot.charges > 1) {
+        if (slot.type === 'active' && slot.charges > 1) {
           const badge = bg.add([
             rect(BADGE_SIZE, BADGE_SIZE, { radius: 4 }),
             pos(SLOT_SIZE - BADGE_SIZE - 4, 4),
@@ -118,31 +110,20 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
             z(13),
           ])
           badge.add([
-            text(String(activeSlot.charges), { size: 14 }),
+            text(String(slot.charges), { size: 14 }),
             pos(BADGE_SIZE / 2, BADGE_SIZE / 2),
             anchor('center'),
             color(COLOR.WHITE),
             z(14),
           ])
         }
-      } else if (passiveSlot) {
-        const artifact = ARTIFACT.getArtifactById(passiveSlot.id)
-        bg.add([
-          sprite(artifact.icon),
-          pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
-          anchor('center'),
-          scale(ICON_SCALE),
-          z(12),
-        ])
       }
 
       const queueHint =
         queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
-      const tooltipText = activeSlot
-        ? `${ARTIFACT.getArtifactById(activeSlot.id).name}${queueHint}\n${ARTIFACT.getArtifactById(activeSlot.id).description}`
-        : passiveSlot
-          ? `${ARTIFACT.getArtifactById(passiveSlot.id).name}\n${ARTIFACT.getArtifactById(passiveSlot.id).description}`
-          : 'Empty artifact slot'
+      const tooltipText = slot
+        ? `${ARTIFACT.getArtifactById(slot.id).name}${queueHint}\n${ARTIFACT.getArtifactById(slot.id).description}`
+        : 'Empty artifact slot'
 
       const tooltip = addTooltip({
         anchor: 'top',
@@ -150,7 +131,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         text: tooltipText,
       })
 
-      const slotId = activeSlot?.id ?? passiveSlot?.id ?? null
+      const slotId = slot?.id ?? null
       bg.onHover(() => {
         if (slotId) {
           setCursor('pointer')
@@ -172,11 +153,10 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
   }
 
   function update(
-    activeArtifacts: ActiveArtifactSlot[],
-    passiveArtifacts: PassiveArtifactSlot[] = [],
+    artifacts: ArtifactSlot[],
     queuedArtifacts: ActiveArtifactId[] = [],
   ) {
-    rebuildSlots(activeArtifacts, passiveArtifacts, queuedArtifacts)
+    rebuildSlots(artifacts, queuedArtifacts)
   }
 
   update([])
