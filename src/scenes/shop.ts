@@ -2,6 +2,7 @@ import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type { ArtifactId } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
+  addArtifactInventory,
   addGrid,
   addHeader,
   addShop,
@@ -72,12 +73,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   const artifactOfferIds = ARTIFACT.getRandomArtifacts(2)
   const passiveArtifactDisplays: { destroy: () => void }[] = []
-  const activeArtifactDisplays: { destroy: () => void }[] = []
 
   const ARTIFACT_ICON_SIZE = 48
   const ARTIFACT_PANEL_X = width() - 220
   const PASSIVE_ARTIFACT_PANEL_Y = 80
-  const ACTIVE_ARTIFACT_PANEL_Y = 160
 
   function sellArtifact(id: ArtifactId) {
     const artifact = ARTIFACT.getArtifactById(id)
@@ -126,15 +125,18 @@ scene(SCENE.SHOP, (state: ShopState) => {
     updateButtons()
   }
 
+  const activeArtifactInventory = addArtifactInventory({
+    onUse: (id: ArtifactId) => {
+      sellArtifact(id)
+    },
+  })
+
   function updateArtifactUI() {
     passiveArtifactDisplays.forEach((d) => {
       d.destroy()
     })
     passiveArtifactDisplays.length = 0
-    activeArtifactDisplays.forEach((d) => {
-      d.destroy()
-    })
-    activeArtifactDisplays.length = 0
+    activeArtifactInventory.update(activeArtifacts)
 
     passiveArtifacts.forEach((slot, i) => {
       const x = ARTIFACT_PANEL_X + i * (ARTIFACT_ICON_SIZE + 8)
@@ -148,21 +150,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
         },
       )
       passiveArtifactDisplays.push(display)
-    })
-
-    activeArtifacts.forEach((slot, i) => {
-      const x = ARTIFACT_PANEL_X + i * (ARTIFACT_ICON_SIZE + 8)
-      const display = createArtifactSlot(
-        x,
-        ACTIVE_ARTIFACT_PANEL_Y,
-        slot.id,
-        `${ARTIFACT.getArtifactById(slot.id).name}\nCharges: ${String(slot.charges)}\nClick to sell for $${String(ARTIFACT.getSellRefund(slot.id))} each`,
-        () => {
-          sellArtifact(slot.id)
-        },
-        String(slot.charges),
-      )
-      activeArtifactDisplays.push(display)
     })
   }
 
@@ -266,6 +253,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
       onContinue: () => {
         wheel.clearMode()
         shop.destroy()
+        activeArtifactInventory.destroy()
+        passiveArtifactDisplays.forEach((artifact) => {
+          artifact.destroy()
+        })
         go(SCENE.GAME, {
           ...state,
           activeArtifacts,
