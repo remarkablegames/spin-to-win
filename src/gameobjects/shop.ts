@@ -112,6 +112,9 @@ export function addShop(
         addSegmentButton.disable()
       }
     },
+    hideAddSegment() {
+      addSegmentButton.hide()
+    },
     updatePoolOfferLabel(index: 0 | 1, label: string, tooltip: string) {
       poolButtons[index].setLabel(label)
       poolButtons[index].setTooltip(tooltip)
@@ -123,12 +126,18 @@ export function addShop(
         poolButtons[index].disable()
       }
     },
+    hidePoolOffer(index: 0 | 1) {
+      poolButtons[index].hide()
+    },
     setArtifactOfferEnabled(index: 0 | 1, enabled: boolean) {
       if (enabled) {
         artifactOfferButtons[index].enable()
       } else {
         artifactOfferButtons[index].disable()
       }
+    },
+    hideArtifactOffer(index: 0 | 1) {
+      artifactOfferButtons[index].hide()
     },
     showFillTemplates(
       templates: FillTemplate[],

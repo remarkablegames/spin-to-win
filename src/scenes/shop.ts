@@ -151,14 +151,24 @@ scene(SCENE.SHOP, (state: ShopState) => {
         }
         wheel.addSegment(blank)
         addedSegment = true
+        shop.hideAddSegment()
         addToast('Blank Segment Added')
         updateButtons()
       },
       onPoolUpgrade: (upgrade: PoolUpgrade) => {
+        const index = poolOffers.indexOf(upgrade) as 0 | 1
+        const prevMoney = money
         handlePoolUpgrade(upgrade)
+        if (money !== prevMoney) {
+          shop.hidePoolOffer(index)
+        }
       },
       onArtifactOffer: (index) => {
+        const prevMoney = money
         buyArtifact(artifactOfferIds[index])
+        if (money !== prevMoney) {
+          shop.hideArtifactOffer(index)
+        }
       },
       onContinue: () => {
         wheel.clearMode()
