@@ -21,7 +21,7 @@ const PADDING = 10
 const BOTTOM_OFFSET = 16
 const ICON_SCALE = 0.8
 
-export interface ArtifactInventory {
+interface ArtifactInventory {
   destroy(): void
   update(
     activeArtifacts: ActiveArtifactSlot[],
@@ -29,15 +29,13 @@ export interface ArtifactInventory {
   ): void
 }
 
-interface AddArtifactInventoryOptions {
+interface AddArtifactOptions {
   onUse: (id: ActiveArtifactId) => void
   x?: number
   y?: number
 }
 
-export function addArtifactInventory(
-  options: AddArtifactInventoryOptions,
-): ArtifactInventory {
+export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
   const slotCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
   const totalWidth =
     slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2

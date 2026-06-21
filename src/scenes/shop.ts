@@ -2,7 +2,7 @@ import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type { ArtifactId } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
-  addArtifactInventory,
+  addArtifact,
   addGrid,
   addHeader,
   addShop,
@@ -125,7 +125,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
     updateButtons()
   }
 
-  const activeArtifactInventory = addArtifactInventory({
+  const activeArtifactInventory = addArtifact({
     onUse: (id: ArtifactId) => {
       sellArtifact(id)
     },

@@ -1,7 +1,7 @@
 import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type { ActiveArtifactId } from '../constants/artifacts'
 import {
-  addArtifactInventory,
+  addArtifact,
   addButton,
   addGrid,
   addHeader,
@@ -81,7 +81,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     color(COLOR.WHITE),
   ])
 
-  const artifactInventory = addArtifactInventory({
+  const artifactInventory = addArtifact({
     onUse: useArtifact,
   })
 
