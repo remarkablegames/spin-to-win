@@ -6,7 +6,7 @@ import type {
   ArtifactId,
   ArtifactSlot,
 } from '../constants/artifacts'
-import { getSpriteById } from '../utils'
+import { getArtifactById, getSpriteById } from '../utils'
 import { addTooltip } from './tooltip'
 
 const SLOT_SIZE = 64
@@ -86,7 +86,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       ])
 
       if (slot) {
-        const artifact = ARTIFACT.getArtifactById(slot.id)
+        const artifact = getArtifactById(slot.id)
         const spriteData = getSpriteById(artifact.icon)
         bg.add([
           sprite(artifact.icon, {
@@ -118,7 +118,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       const queueHint =
         queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
       const tooltipText = slot
-        ? `${ARTIFACT.getArtifactById(slot.id).name}${queueHint}\n${ARTIFACT.getArtifactById(slot.id).description}`
+        ? `${getArtifactById(slot.id).name}${queueHint}\n${getArtifactById(slot.id).description}`
         : 'Empty artifact slot'
 
       const tooltip = addTooltip({

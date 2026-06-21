@@ -12,6 +12,15 @@ import {
   pickFillTemplates,
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
+import {
+  addArtifactSlot,
+  getArtifactById,
+  getRandomArtifacts,
+  getSellRefund,
+  hasArtifact,
+  isActiveArtifact,
+  removeArtifactSlot,
+} from '../utils'
 
 interface ShopState {
   artifacts: ArtifactSlot[]
@@ -71,15 +80,15 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
 
-  const artifactOfferIds = ARTIFACT.getRandomArtifacts(2)
+  const artifactOfferIds = getRandomArtifacts(2)
 
   function sellArtifact(id: ArtifactId) {
-    const artifact = ARTIFACT.getArtifactById(id)
-    const refund = ARTIFACT.getSellRefund(id)
+    const artifact = getArtifactById(id)
+    const refund = getSellRefund(id)
     money += refund
     header.setMoney(money)
 
-    artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
+    artifacts = removeArtifactSlot(artifacts, id)
     addToast(`Sold ${artifact.name} for $${String(refund)}`)
 
     updateArtifactUI()
@@ -87,14 +96,14 @@ scene(SCENE.SHOP, (state: ShopState) => {
   }
 
   function buyArtifact(id: ArtifactId) {
-    const artifact = ARTIFACT.getArtifactById(id)
+    const artifact = getArtifactById(id)
     if (money < artifact.cost) {
       return
     }
 
     const previousLength = artifacts.length
-    artifacts = ARTIFACT.addArtifactSlot(artifacts, id)
-    if (artifacts.length === previousLength && !ARTIFACT.isActiveArtifact(id)) {
+    artifacts = addArtifactSlot(artifacts, id)
+    if (artifacts.length === previousLength && !isActiveArtifact(id)) {
       addToast(`You already own ${artifact.name}`)
       return
     }
@@ -394,11 +403,11 @@ scene(SCENE.SHOP, (state: ShopState) => {
       shop.setPoolOfferEnabled(i as 0 | 1, isPoolOfferEnabled(offer))
     })
     artifactOfferIds.forEach((id, i) => {
-      const artifact = ARTIFACT.getArtifactById(id)
+      const artifact = getArtifactById(id)
       const canAfford = money >= artifact.cost
-      const canAdd = ARTIFACT.isActiveArtifact(id)
+      const canAdd = isActiveArtifact(id)
         ? artifacts.length < ARTIFACT.ARTIFACT_SLOTS
-        : !ARTIFACT.hasArtifact(artifacts, id)
+        : !hasArtifact(artifacts, id)
       shop.setArtifactOfferEnabled(i as 0 | 1, canAfford && canAdd)
     })
   }

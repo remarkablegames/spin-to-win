@@ -1,4 +1,4 @@
-import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import { COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type {
   ActiveArtifactId,
   ArtifactId,
@@ -14,6 +14,14 @@ import {
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel, getDefaultSegments } from '../gameobjects/wheel'
+import {
+  addArtifactSlot,
+  getArtifactById,
+  getRandomArtifacts,
+  hasArtifact,
+  isActiveArtifact,
+  removeArtifactSlot,
+} from '../utils'
 
 const WHEEL_OFFSET = 30
 const BUTTON_OFFSET = 265
@@ -112,7 +120,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function useArtifact(id: ArtifactId) {
-    if (!ARTIFACT.isActiveArtifact(id)) {
+    if (!isActiveArtifact(id)) {
       return
     }
 
@@ -134,7 +142,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       wheel.extendSpin()
-      artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
+      artifacts = removeArtifactSlot(artifacts, id)
       addToast('Spin Extended')
       artifactInventory.update(artifacts, queuedArtifacts)
       return
@@ -146,7 +154,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       isBlankSelecting = true
-      artifacts = ARTIFACT.removeArtifactSlot(artifacts, id)
+      artifacts = removeArtifactSlot(artifacts, id)
       artifactInventory.update(artifacts, queuedArtifacts)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
@@ -168,15 +176,15 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function grantRandomArtifact() {
-    const artifactId = ARTIFACT.getRandomArtifacts(1)[0]
-    const artifact = ARTIFACT.getArtifactById(artifactId)
+    const artifactId = getRandomArtifacts(1)[0]
+    const artifact = getArtifactById(artifactId)
     const previousLength = artifacts.length
-    artifacts = ARTIFACT.addArtifactSlot(artifacts, artifactId)
+    artifacts = addArtifactSlot(artifacts, artifactId)
     if (artifacts.length > previousLength) {
       addToast(`Artifact: ${artifact.name}`)
     } else {
       addToast(
-        ARTIFACT.isActiveArtifact(artifactId)
+        isActiveArtifact(artifactId)
           ? 'Artifact inventory full'
           : `You already own ${artifact.name}`,
       )
@@ -241,7 +249,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       grantRandomArtifact()
     }
 
-    if (ARTIFACT.hasArtifact(artifacts, 'scoreGrowth') && segment.score !== 0) {
+    if (hasArtifact(artifacts, 'scoreGrowth') && segment.score !== 0) {
       const index = wheel.getWinningSegmentIndex()
       if (index >= 0 && index < wheel.segments.length) {
         wheel.segments[index].score += 5
@@ -250,7 +258,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     for (const queuedId of queuedArtifacts) {
-      artifacts = ARTIFACT.removeArtifactSlot(artifacts, queuedId)
+      artifacts = removeArtifactSlot(artifacts, queuedId)
     }
 
     queuedArtifacts = []
@@ -261,7 +269,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   function endRound() {
     money += passiveIncome
 
-    if (ARTIFACT.hasArtifact(artifacts, 'luckyCoin')) {
+    if (hasArtifact(artifacts, 'luckyCoin')) {
       money += spinsRemaining
       moneyDelta += spinsRemaining
     }
@@ -356,7 +364,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function startRound() {
     totalSpinsForRound = baseSpins + LEVEL.BONUS_SPINS + extraSpins
-    if (ARTIFACT.hasArtifact(artifacts, 'extraRoundSpin')) {
+    if (hasArtifact(artifacts, 'extraRoundSpin')) {
       totalSpinsForRound += 2
     }
     spinsRemaining = totalSpinsForRound

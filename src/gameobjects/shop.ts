@@ -1,6 +1,7 @@
-import { ARTIFACT, COLOR } from '../constants'
+import { COLOR } from '../constants'
 import type { ArtifactId } from '../constants/artifacts'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
+import { getArtifactById } from '../utils'
 import { addButton } from './button'
 
 const BUTTON_X = () => width() * 0.72
@@ -62,7 +63,7 @@ export function addShop(
   )
 
   const artifactOfferButtons = artifactOffers.map((id, i) => {
-    const artifact = ARTIFACT.getArtifactById(id)
+    const artifact = getArtifactById(id)
     return addButton({
       label: `${artifact.name} ($${String(artifact.cost)})`,
       icon: artifact.icon,
