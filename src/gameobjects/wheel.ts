@@ -415,7 +415,23 @@ export function addWheel(options: WheelOptions = {}) {
         currentMode.type !== 'none' &&
         isValidModeTarget(segment, currentMode)
 
-      const drawColor = isHoveredValid ? COLOR.GOLD : segment.color
+      const luminance =
+        0.299 * segment.color.r +
+        0.587 * segment.color.g +
+        0.114 * segment.color.b
+      const hoverColor =
+        luminance <= 128
+          ? rgb(
+              Math.min(255, segment.color.r + 80),
+              Math.min(255, segment.color.g + 80),
+              Math.min(255, segment.color.b + 80),
+            )
+          : rgb(
+              Math.max(0, segment.color.r - 80),
+              Math.max(0, segment.color.g - 80),
+              Math.max(0, segment.color.b - 80),
+            )
+      const drawColor = isHoveredValid ? hoverColor : segment.color
 
       drawPolygon({
         color: drawColor,
