@@ -439,6 +439,7 @@ export function addWheel(options: WheelOptions = {}) {
 
     drawCircle({
       color: COLOR.WHITE,
+      outline: { color: COLOR.BLACK, width: 3 },
       radius: 12,
     })
   })
