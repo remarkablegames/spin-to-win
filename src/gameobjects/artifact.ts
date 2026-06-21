@@ -37,14 +37,18 @@ interface SlotDisplay {
 }
 
 export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
+  const slotCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
+  const totalWidth =
+    slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2
   const totalHeight = SLOT_SIZE + PADDING * 2
+  const x = options.x ?? (width() - totalWidth) / 2 + PADDING
   const y = options.y ?? height() - totalHeight - BOTTOM_OFFSET + PADDING
 
-  const container = add([pos(0, y)])
+  const container = add([pos(x, y)])
 
-  let background = container.add([
-    rect(1, totalHeight, { radius: 8 }),
-    pos(0, -PADDING),
+  container.add([
+    rect(totalWidth, totalHeight, { radius: 8 }),
+    pos(-PADDING, -PADDING),
     color(COLOR.LIGHT_BROWN),
     z(10),
   ])
@@ -65,43 +69,33 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
     queuedArtifacts: ActiveArtifactId[],
   ) {
     clearSlots()
-    background.destroy()
 
-    const activeCount = ARTIFACT.ACTIVE_ARTIFACT_SLOTS
-    const totalSlots = activeCount + passiveArtifacts.length
-    const totalWidth =
-      Math.max(totalSlots, activeCount) * SLOT_SIZE +
-      (Math.max(totalSlots, activeCount) - 1) * SLOT_GAP +
-      PADDING * 2
-    const x = options.x ?? (width() - totalWidth) / 2 + PADDING
-
-    container.pos.x = x
-
-    background = container.add([
-      rect(totalWidth, totalHeight, { radius: 8 }),
-      pos(-PADDING, -PADDING),
-      color(COLOR.LIGHT_BROWN),
-      z(10),
-    ])
-
-    for (let i = 0; i < activeCount; i++) {
+    for (let i = 0; i < slotCount; i++) {
       const slotX = i * (SLOT_SIZE + SLOT_GAP)
       const activeSlot = activeArtifacts[i] as ActiveArtifactSlot | undefined
+      const passiveSlot = activeSlot
+        ? undefined
+        : (passiveArtifacts[i - activeArtifacts.length] as
+            | PassiveArtifactSlot
+            | undefined)
       const queuedCount = activeSlot
         ? queuedArtifacts.filter((id) => id === activeSlot.id).length
         : 0
 
+      const slotColor = activeSlot
+        ? queuedCount > 0
+          ? COLOR.GOLD
+          : COLOR.WHITE
+        : passiveSlot
+          ? COLOR.LIGHT_BROWN
+          : COLOR.WHITE
+      const slotOpacity = passiveSlot ? 0.8 : 0.6
+
       const bg = container.add([
         rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
         pos(slotX, 0),
-        color(
-          activeSlot
-            ? queuedCount > 0
-              ? COLOR.GOLD
-              : COLOR.WHITE
-            : COLOR.WHITE,
-        ),
-        opacity(0.6),
+        color(slotColor),
+        opacity(slotOpacity),
         area(),
         z(11),
       ])
@@ -131,13 +125,24 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
             z(14),
           ])
         }
+      } else if (passiveSlot) {
+        const artifact = ARTIFACT.getArtifactById(passiveSlot.id)
+        bg.add([
+          sprite(artifact.icon),
+          pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
+          anchor('center'),
+          scale(ICON_SCALE),
+          z(12),
+        ])
       }
 
       const queueHint =
         queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
       const tooltipText = activeSlot
         ? `${ARTIFACT.getArtifactById(activeSlot.id).name}${queueHint}\n${ARTIFACT.getArtifactById(activeSlot.id).description}`
-        : 'Empty artifact slot'
+        : passiveSlot
+          ? `${ARTIFACT.getArtifactById(passiveSlot.id).name}\n${ARTIFACT.getArtifactById(passiveSlot.id).description}`
+          : 'Empty artifact slot'
 
       const tooltip = addTooltip({
         anchor: 'top',
@@ -145,7 +150,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         text: tooltipText,
       })
 
-      const slotId = activeSlot?.id ?? null
+      const slotId = activeSlot?.id ?? passiveSlot?.id ?? null
       bg.onHover(() => {
         if (slotId) {
           setCursor('pointer')
@@ -164,49 +169,6 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
 
       slotDisplays.push({ background: bg, tooltip })
     }
-
-    passiveArtifacts.forEach((passiveSlot, i) => {
-      const slotX = (activeCount + i) * (SLOT_SIZE + SLOT_GAP)
-      const artifact = ARTIFACT.getArtifactById(passiveSlot.id)
-
-      const bg = container.add([
-        rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
-        pos(slotX, 0),
-        color(COLOR.LIGHT_BROWN),
-        opacity(0.8),
-        area(),
-        z(11),
-      ])
-
-      bg.add([
-        sprite(artifact.icon),
-        pos(SLOT_SIZE / 2, SLOT_SIZE / 2),
-        anchor('center'),
-        scale(ICON_SCALE),
-        z(12),
-      ])
-
-      const tooltip = addTooltip({
-        anchor: 'top',
-        target: bg,
-        text: `${artifact.name}\n${artifact.description}`,
-      })
-
-      const slotId = passiveSlot.id
-      bg.onHover(() => {
-        setCursor('pointer')
-        tooltip.show()
-      })
-      bg.onHoverEnd(() => {
-        setCursor('default')
-        tooltip.hide()
-      })
-      bg.onClick(() => {
-        options.onUse(slotId)
-      })
-
-      slotDisplays.push({ background: bg, tooltip })
-    })
   }
 
   function update(
