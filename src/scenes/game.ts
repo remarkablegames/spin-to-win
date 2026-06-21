@@ -15,6 +15,7 @@ interface GameState {
   passiveIncome?: number
   roundIndex?: number
   segments?: WheelSegment[]
+  wheelAngle?: number
 }
 
 scene(SCENE.GAME, (initialState?: GameState) => {
@@ -50,7 +51,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const header = addHeader()
 
   const wheelSegments = initialState?.segments ?? getDefaultSegments()
-  const wheel = addWheel(wheelSegments)
+  const wheel = addWheel(wheelSegments, undefined, initialState?.wheelAngle)
 
   add([
     sprite(SPRITE.POINTER, { width: 28, height: 28 }),
@@ -93,6 +94,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       passiveIncome,
       roundIndex,
       segments: wheel.segments,
+      wheelAngle: wheel.angle,
     })
   }
 
@@ -195,7 +197,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
     if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {
       roundIndex += 1
-      wheel.reset()
       startRound()
     } else {
       endLevel()

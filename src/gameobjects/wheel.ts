@@ -136,6 +136,7 @@ const ROTATIONS_MAX = 4
 export function addWheel(
   initialSegments?: WheelSegment[],
   wheelPos?: ReturnType<typeof vec2>,
+  initialAngle?: number,
 ) {
   const wheelSegments = initialSegments ?? getDefaultSegments()
 
@@ -144,7 +145,7 @@ export function addWheel(
 
   const wheel = add([
     pos(wheelPos ?? center()),
-    rotate(),
+    rotate(initialAngle ?? 0),
     timer(),
     {
       isSpinning: false,

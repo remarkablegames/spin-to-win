@@ -19,6 +19,7 @@ interface ShopState {
   passiveIncome: number
   roundIndex: number
   segments: WheelSegment[]
+  wheelAngle?: number
 }
 
 scene(SCENE.SHOP, (state: ShopState) => {
@@ -100,6 +101,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           extraSpins,
           passiveIncome,
           segments: wheel.segments,
+          wheelAngle: state.wheelAngle,
         })
       },
     },
