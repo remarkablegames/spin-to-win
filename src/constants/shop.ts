@@ -170,7 +170,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   {
     color: rgb(100, 200, 255),
     icon: { sprite: 'star', width: 30, height: 30 },
-    label: '\u00d71.25',
+    label: '+25%',
     money: 0,
     multiplier: 1.25,
     score: 0,
@@ -179,7 +179,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   {
     color: rgb(180, 100, 200),
     icon: { sprite: 'star', width: 30, height: 30 },
-    label: '\u00d70.75',
+    label: '-25%',
     money: 0,
     multiplier: 0.75,
     score: 0,

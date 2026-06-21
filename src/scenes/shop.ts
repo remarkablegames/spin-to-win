@@ -77,7 +77,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           blank: true,
           color: rgb(100, 100, 100),
           icon: { sprite: SPRITE.QUESTION_MARK, width: 24, height: 24 },
-          label: '?',
+          label: '',
           money: 0,
           score: 0,
           tooltip: 'Blank segment — fill it with an upgrade',
@@ -194,18 +194,19 @@ scene(SCENE.SHOP, (state: ShopState) => {
         const multiplierColor = isPositive
           ? rgb(100, 200, 255)
           : rgb(180, 100, 200)
+        const multiplierLabel = isPositive ? '+25%' : '-25%'
         const multiplierSegment: WheelSegment = {
           color: multiplierColor,
           icon: { sprite: SPRITE.STAR, width: 30, height: 30 },
-          label: `\u00d7${String(multiplierValue)}`,
+          label: multiplierLabel,
           money: 0,
           multiplier: multiplierValue,
           score: 0,
-          tooltip: `Multiply round score by ${String(multiplierValue)}`,
+          tooltip: `Multiply round score by ${String(multiplierValue)} (${multiplierLabel})`,
         }
         wheel.addSegment(multiplierSegment)
         state.segments.push(multiplierSegment)
-        addToast(`Added ×${String(multiplierValue)} Segment`)
+        addToast(`Added ${multiplierLabel} Segment`)
         updateButtons()
         break
       }

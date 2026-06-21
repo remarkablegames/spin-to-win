@@ -112,16 +112,20 @@ export function getDefaultSegments() {
 }
 
 export function formatSegmentLabel(segment: WheelSegment) {
-  if (segment.blank) {
-    return '?'
+  switch (true) {
+    case typeof segment.multiplier === 'number':
+      return segment.label
+
+    case !segment.score:
+      return `${segment.score >= 0 ? '+' : ''}${String(segment.score)}`
+
+    case !segment.money:
+      return `${segment.money >= 0 ? '+' : ''}$${String(segment.money)}`
+
+    case segment.blank:
+    default:
+      return ''
   }
-  if (segment.multiplier !== undefined) {
-    return `\u00d7${String(segment.multiplier)}`
-  }
-  if (segment.score !== 0) {
-    return `${segment.score >= 0 ? '+' : ''}${String(segment.score)}`
-  }
-  return `${segment.money >= 0 ? '+' : ''}$${String(segment.money)}`
 }
 
 const RADIUS = 250
