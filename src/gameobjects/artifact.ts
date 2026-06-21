@@ -68,20 +68,13 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       const slotX = i * (SLOT_SIZE + SLOT_GAP)
       const slot = artifacts[i] as ArtifactSlot | undefined
       const isActive = slot?.type === 'active'
-      const isPassive = slot?.type === 'passive'
       const queuedCount =
         slot?.type === 'active'
           ? queuedArtifacts.filter((id) => id === slot.id).length
           : 0
 
-      const slotColor = isActive
-        ? queuedCount > 0
-          ? COLOR.GOLD
-          : COLOR.WHITE
-        : isPassive
-          ? COLOR.LIGHT_BROWN
-          : COLOR.WHITE
-      const slotOpacity = isPassive ? 0.8 : 0.6
+      const slotColor = isActive && queuedCount > 0 ? COLOR.GOLD : COLOR.WHITE
+      const slotOpacity = 0.6
 
       const bg = container.add([
         rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
