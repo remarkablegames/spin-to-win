@@ -226,38 +226,50 @@ export function addWheel(
   function getSegmentAtMouse(mouse: ReturnType<typeof mousePos>) {
     const relative = mouse.sub(wheel.pos)
     const distance = Math.sqrt(relative.x ** 2 + relative.y ** 2)
-    if (distance > wheel.radius) return null
+    if (distance > wheel.radius) {
+      return null
+    }
 
     const wheelAngle = (wheel.angle * Math.PI) / 180
     const segmentAngle = (Math.PI * 2) / wheel.segments.length
     let mouseAngle = Math.atan2(relative.y, relative.x) - wheelAngle
     mouseAngle = mouseAngle % (Math.PI * 2)
-    if (mouseAngle < 0) mouseAngle += Math.PI * 2
+    if (mouseAngle < 0) {
+      mouseAngle += Math.PI * 2
+    }
 
     const index = Math.floor(mouseAngle / segmentAngle)
     return { segment: wheel.segments[index], index }
   }
 
   function isValidModeTarget(segment: WheelSegment, mode: WheelMode): boolean {
-    if (mode.type === 'upgrade') {
-      if (mode.upgradeType === 'score') return segment.score !== 0
-      return segment.money !== 0
+    switch (mode.type) {
+      case 'upgrade':
+        return mode.upgradeType === 'score'
+          ? segment.score !== 0
+          : segment.money !== 0
+      case 'fill':
+        return segment.blank === true
+      case 'delete':
+        return true
+      default:
+        return false
     }
-    if (mode.type === 'fill') return segment.blank === true
-    if (mode.type === 'delete') return true
-    return false
   }
 
   function getUpgradeTooltip(segment: WheelSegment, mode: WheelMode): string {
-    if (mode.type === 'upgrade') {
-      if (mode.upgradeType === 'score') {
-        return `${String(segment.score)} \u2192 ${String(segment.score + mode.amount)} \u00b7 click to upgrade`
-      }
-      return `$${String(segment.money)} \u2192 $${String(segment.money + mode.amount)} \u00b7 click to upgrade`
+    switch (mode.type) {
+      case 'upgrade':
+        return mode.upgradeType === 'score'
+          ? `${String(segment.score)} \u2192 ${String(segment.score + mode.amount)} \u00b7 click to upgrade`
+          : `$${String(segment.money)} \u2192 $${String(segment.money + mode.amount)} \u00b7 click to upgrade`
+      case 'fill':
+        return 'Click to fill this blank segment'
+      case 'delete':
+        return 'Click to delete this segment'
+      default:
+        return segment.tooltip
     }
-    if (mode.type === 'fill') return 'Click to fill this blank segment'
-    if (mode.type === 'delete') return 'Click to delete this segment'
-    return segment.tooltip
   }
 
   wheel.onUpdate(() => {
@@ -271,7 +283,9 @@ export function addWheel(
 
     if (!hit) {
       wheelTooltip.hide()
-      setCursor('default')
+      if (currentMode.type !== 'none') {
+        setCursor('default')
+      }
       return
     }
 
@@ -279,15 +293,9 @@ export function addWheel(
 
     if (currentMode.type !== 'none') {
       const valid = isValidModeTarget(segment, currentMode)
-      if (valid) {
-        setCursor('pointer')
-        wheelTooltip.setTarget(mouse)
-        wheelTooltip.show(getUpgradeTooltip(segment, currentMode))
-      } else {
-        setCursor('default')
-        wheelTooltip.setTarget(mouse)
-        wheelTooltip.show(segment.tooltip)
-      }
+      setCursor(valid ? 'pointer' : 'default')
+      wheelTooltip.setTarget(mouse)
+      wheelTooltip.show(getUpgradeTooltip(segment, currentMode))
     } else {
       wheelTooltip.setTarget(mouse)
       wheelTooltip.show(segment.tooltip)
@@ -295,14 +303,20 @@ export function addWheel(
   })
 
   onMousePress(() => {
-    if (isSpinning || currentMode.type === 'none') return
+    if (isSpinning || currentMode.type === 'none') {
+      return
+    }
 
     const mouse = mousePos()
     const hit = getSegmentAtMouse(mouse)
-    if (!hit) return
+    if (!hit) {
+      return
+    }
 
     const { segment } = hit
-    if (!isValidModeTarget(segment, currentMode)) return
+    if (!isValidModeTarget(segment, currentMode)) {
+      return
+    }
 
     const mode = currentMode
     currentMode = { type: 'none' }
