@@ -284,15 +284,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
     extraSpinCost,
   )
 
-  artifactOfferIds.forEach((id, i) => {
-    const artifact = ARTIFACT.getArtifactById(id)
-    shop.updateArtifactOfferLabel(
-      i as 0 | 1,
-      `${artifact.name} ($${String(artifact.cost)})`,
-      `${artifact.description}\nSell value: $${String(ARTIFACT.getSellRefund(id))}`,
-    )
-  })
-
   function getPoolOfferCost(upgrade: PoolUpgrade): number {
     switch (upgrade.id) {
       case 'upgradeScoreSegment':

@@ -15,6 +15,7 @@ export type Button = ReturnType<typeof addButton>
 interface AddButtonOptions {
   buttonColor?: Color
   height?: number
+  icon?: string
   label: string
   onClick: () => void
   shadowColor?: Color
@@ -34,13 +35,19 @@ export function addButton({
   tooltipAnchor,
   width = DEFAULT_WIDTH,
   height = DEFAULT_HEIGHT,
+  icon,
   buttonColor = COLOR.GREEN,
   shadowColor = COLOR.DARK_GREEN,
 }: AddButtonOptions) {
+  const ICON_SIZE = 24
+  const iconWidth = icon ? ICON_SIZE + HORIZONTAL_PADDING / 2 : 0
+
   function calcWidth(value: string) {
     return Math.max(
       width,
-      formatText({ size: 24, text: value }).width + HORIZONTAL_PADDING * 2,
+      formatText({ size: 24, text: value }).width +
+        HORIZONTAL_PADDING * 2 +
+        iconWidth,
     )
   }
 
@@ -67,9 +74,20 @@ export function addButton({
 
   const buttonLabel = button.add([
     text(label, { size: 24 }),
+    pos(iconWidth / 2, 0),
     anchor('center'),
     color(COLOR.WHITE),
   ])
+
+  if (icon) {
+    button.add([
+      sprite(icon),
+      pos(-button.width / 2 + ICON_SIZE / 2 + HORIZONTAL_PADDING / 2, 0),
+      anchor('center'),
+      scale(ICON_SIZE / 24),
+      color(COLOR.WHITE),
+    ])
+  }
 
   let enabled = true
   let hovered = false

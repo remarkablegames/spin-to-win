@@ -1,4 +1,4 @@
-import { COLOR } from '../constants'
+import { ARTIFACT, COLOR } from '../constants'
 import type { ArtifactId } from '../constants/artifacts'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
 import { addButton } from './button'
@@ -61,19 +61,21 @@ export function addShop(
     }),
   )
 
-  const artifactOfferButtons = artifactOffers.map((_, i) =>
-    addButton({
-      label: 'Artifact Offer',
+  const artifactOfferButtons = artifactOffers.map((id, i) => {
+    const artifact = ARTIFACT.getArtifactById(id)
+    return addButton({
+      label: `${artifact.name} ($${String(artifact.cost)})`,
+      icon: artifact.icon,
       x,
       y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + poolOffers.length + i),
       onClick: () => {
         callbacks.onArtifactOffer(i as 0 | 1)
       },
-      tooltip: 'Artifact offer',
+      tooltip: artifact.description,
       buttonColor: COLOR.GOLD,
       shadowColor: COLOR.DARK_BROWN,
-    }),
-  )
+    })
+  })
 
   const continueButton = addButton({
     label: 'Continue',
@@ -120,10 +122,6 @@ export function addShop(
       } else {
         poolButtons[index].disable()
       }
-    },
-    updateArtifactOfferLabel(index: 0 | 1, label: string, tooltip: string) {
-      artifactOfferButtons[index].setLabel(label)
-      artifactOfferButtons[index].setTooltip(tooltip)
     },
     setArtifactOfferEnabled(index: 0 | 1, enabled: boolean) {
       if (enabled) {
