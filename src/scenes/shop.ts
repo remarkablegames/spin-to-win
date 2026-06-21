@@ -1,10 +1,12 @@
-import { LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import type { ArtifactId } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
   addGrid,
   addHeader,
   addShop,
   addToast,
+  addTooltip,
   addWheel,
   drawPoolOffers,
   pickFillTemplates,
@@ -12,10 +14,12 @@ import {
 import type { WheelSegment } from '../gameobjects/wheel'
 
 interface ShopState {
+  activeArtifacts: ARTIFACT.ActiveArtifactSlot[]
   baseSpins: number
   levelIndex: number
   levelScore: number
   money: number
+  passiveArtifacts: ARTIFACT.PassiveArtifactSlot[]
   passiveIncome: number
   roundIndex: number
   segments: WheelSegment[]
@@ -32,6 +36,8 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let baseSpins = state.baseSpins
   let passiveIncome = state.passiveIncome
   let passiveIncomeUpgrades = 0
+  let activeArtifacts = state.activeArtifacts
+  let passiveArtifacts = state.passiveArtifacts
   let upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
   let upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
   let permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
@@ -64,6 +70,165 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
 
+  const artifactOfferIds = ARTIFACT.getRandomArtifacts(2)
+  const passiveArtifactDisplays: { destroy: () => void }[] = []
+  const activeArtifactDisplays: { destroy: () => void }[] = []
+
+  const ARTIFACT_ICON_SIZE = 48
+  const ARTIFACT_PANEL_X = width() - 220
+  const PASSIVE_ARTIFACT_PANEL_Y = 80
+  const ACTIVE_ARTIFACT_PANEL_Y = 160
+
+  function sellArtifact(id: ArtifactId) {
+    const artifact = ARTIFACT.getArtifactById(id)
+    const refund = ARTIFACT.getSellRefund(id)
+    money += refund
+    header.setMoney(money)
+
+    if (ARTIFACT.isActiveArtifact(id)) {
+      activeArtifacts = ARTIFACT.removeActiveArtifact(activeArtifacts, id)
+      addToast(`Sold ${artifact.name} for $${String(refund)}`)
+    } else {
+      passiveArtifacts = ARTIFACT.removePassiveArtifact(passiveArtifacts, id)
+      addToast(`Sold ${artifact.name} for $${String(refund)}`)
+    }
+
+    updateArtifactUI()
+    updateButtons()
+  }
+
+  function buyArtifact(id: ArtifactId) {
+    const artifact = ARTIFACT.getArtifactById(id)
+    if (money < artifact.cost) {
+      return
+    }
+
+    if (ARTIFACT.isActiveArtifact(id)) {
+      const previousLength = activeArtifacts.length
+      activeArtifacts = ARTIFACT.addActiveArtifact(activeArtifacts, id)
+      if (activeArtifacts.length === previousLength) {
+        addToast('You cannot buy any more artifacts')
+        return
+      }
+    } else {
+      const previousLength = passiveArtifacts.length
+      passiveArtifacts = ARTIFACT.addPassiveArtifact(passiveArtifacts, id)
+      if (passiveArtifacts.length === previousLength) {
+        addToast(`You already own ${artifact.name}`)
+        return
+      }
+    }
+
+    money -= artifact.cost
+    header.setMoney(money)
+    addToast(`Purchased ${artifact.name}`)
+    updateArtifactUI()
+    updateButtons()
+  }
+
+  function updateArtifactUI() {
+    passiveArtifactDisplays.forEach((d) => {
+      d.destroy()
+    })
+    passiveArtifactDisplays.length = 0
+    activeArtifactDisplays.forEach((d) => {
+      d.destroy()
+    })
+    activeArtifactDisplays.length = 0
+
+    passiveArtifacts.forEach((slot, i) => {
+      const x = ARTIFACT_PANEL_X + i * (ARTIFACT_ICON_SIZE + 8)
+      const display = createArtifactSlot(
+        x,
+        PASSIVE_ARTIFACT_PANEL_Y,
+        slot.id,
+        `${ARTIFACT.getArtifactById(slot.id).name}\nClick to sell for $${String(ARTIFACT.getSellRefund(slot.id))}`,
+        () => {
+          sellArtifact(slot.id)
+        },
+      )
+      passiveArtifactDisplays.push(display)
+    })
+
+    activeArtifacts.forEach((slot, i) => {
+      const x = ARTIFACT_PANEL_X + i * (ARTIFACT_ICON_SIZE + 8)
+      const display = createArtifactSlot(
+        x,
+        ACTIVE_ARTIFACT_PANEL_Y,
+        slot.id,
+        `${ARTIFACT.getArtifactById(slot.id).name}\nCharges: ${String(slot.charges)}\nClick to sell for $${String(ARTIFACT.getSellRefund(slot.id))} each`,
+        () => {
+          sellArtifact(slot.id)
+        },
+        String(slot.charges),
+      )
+      activeArtifactDisplays.push(display)
+    })
+  }
+
+  function createArtifactSlot(
+    x: number,
+    y: number,
+    id: ArtifactId,
+    tooltipText: string,
+    onClick: () => void,
+    badgeText?: string,
+  ) {
+    const container = add([pos(x, y)])
+    const bg = container.add([
+      rect(ARTIFACT_ICON_SIZE, ARTIFACT_ICON_SIZE, { radius: 6 }),
+      color(COLOR.WHITE),
+      area(),
+      z(10),
+    ])
+    const artifact = ARTIFACT.getArtifactById(id)
+    bg.add([
+      sprite(artifact.icon),
+      pos(ARTIFACT_ICON_SIZE / 2, ARTIFACT_ICON_SIZE / 2),
+      anchor('center'),
+      scale(0.7),
+      z(11),
+    ])
+    if (badgeText) {
+      bg.add([
+        rect(18, 18, { radius: 3 }),
+        pos(ARTIFACT_ICON_SIZE - 20, 2),
+        color(COLOR.BLACK),
+        z(12),
+      ])
+      bg.add([
+        text(badgeText, { size: 12 }),
+        pos(ARTIFACT_ICON_SIZE - 11, 11),
+        anchor('center'),
+        color(COLOR.WHITE),
+        z(13),
+      ])
+    }
+    const tooltip = addTooltip({
+      anchor: 'top',
+      target: container,
+      text: tooltipText,
+    })
+    bg.onHover(() => {
+      setCursor('pointer')
+      tooltip.show()
+    })
+    bg.onHoverEnd(() => {
+      setCursor('default')
+      tooltip.hide()
+    })
+    bg.onClick(() => {
+      onClick()
+    })
+    return {
+      destroy: () => {
+        container.destroy()
+      },
+    }
+  }
+
+  updateArtifactUI()
+
   const shop = addShop(
     {
       onExtraSpin: () => {
@@ -95,14 +260,19 @@ scene(SCENE.SHOP, (state: ShopState) => {
       onPoolUpgrade: (upgrade: PoolUpgrade) => {
         handlePoolUpgrade(upgrade)
       },
+      onArtifactOffer: (index) => {
+        buyArtifact(artifactOfferIds[index])
+      },
       onContinue: () => {
         wheel.clearMode()
         shop.destroy()
         go(SCENE.GAME, {
           ...state,
+          activeArtifacts,
           baseSpins,
           money,
           extraSpins,
+          passiveArtifacts,
           passiveIncome,
           segments: wheel.segments,
           wheelAngle: state.wheelAngle,
@@ -110,8 +280,18 @@ scene(SCENE.SHOP, (state: ShopState) => {
       },
     },
     poolOffers,
+    artifactOfferIds,
     extraSpinCost,
   )
+
+  artifactOfferIds.forEach((id, i) => {
+    const artifact = ARTIFACT.getArtifactById(id)
+    shop.updateArtifactOfferLabel(
+      i as 0 | 1,
+      `${artifact.name} ($${String(artifact.cost)})`,
+      `${artifact.description}\nSell value: $${String(ARTIFACT.getSellRefund(id))}`,
+    )
+  })
 
   function getPoolOfferCost(upgrade: PoolUpgrade): number {
     switch (upgrade.id) {
@@ -308,6 +488,14 @@ scene(SCENE.SHOP, (state: ShopState) => {
     shop.setAddSegmentEnabled(!addedSegment)
     poolOffers.forEach((offer, i) => {
       shop.setPoolOfferEnabled(i as 0 | 1, isPoolOfferEnabled(offer))
+    })
+    artifactOfferIds.forEach((id, i) => {
+      const artifact = ARTIFACT.getArtifactById(id)
+      const canAfford = money >= artifact.cost
+      const canAdd = ARTIFACT.isActiveArtifact(id)
+        ? activeArtifacts.length < ARTIFACT.ACTIVE_ARTIFACT_SLOTS
+        : !ARTIFACT.hasArtifact(passiveArtifacts, id)
+      shop.setArtifactOfferEnabled(i as 0 | 1, canAfford && canAdd)
     })
   }
 

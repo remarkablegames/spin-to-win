@@ -1,4 +1,5 @@
 import { COLOR } from '../constants'
+import type { ArtifactId } from '../constants/artifacts'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
 import { addButton } from './button'
 
@@ -12,6 +13,7 @@ export type Shop = ReturnType<typeof addShop>
 
 interface ShopCallbacks {
   onAddSegment: () => void
+  onArtifactOffer: (index: 0 | 1) => void
   onContinue: () => void
   onExtraSpin: () => void
   onPoolUpgrade: (upgrade: PoolUpgrade) => void
@@ -20,6 +22,7 @@ interface ShopCallbacks {
 export function addShop(
   callbacks: ShopCallbacks,
   poolOffers: [PoolUpgrade, PoolUpgrade],
+  artifactOffers: ArtifactId[],
   initialExtraSpinCost: number,
 ) {
   const x = BUTTON_X()
@@ -58,10 +61,26 @@ export function addShop(
     }),
   )
 
+  const artifactOfferButtons = artifactOffers.map((_, i) =>
+    addButton({
+      label: 'Artifact Offer',
+      x,
+      y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + poolOffers.length + i),
+      onClick: () => {
+        callbacks.onArtifactOffer(i as 0 | 1)
+      },
+      tooltip: 'Artifact offer',
+      buttonColor: COLOR.GOLD,
+      shadowColor: COLOR.DARK_BROWN,
+    }),
+  )
+
   const continueButton = addButton({
     label: 'Continue',
     x,
-    y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + poolOffers.length),
+    y:
+      BUTTON_START_Y +
+      BUTTON_Y_SPACING * (2 + poolOffers.length + artifactOffers.length),
     onClick: callbacks.onContinue,
     tooltip: 'Continue to the next round',
     buttonColor: COLOR.RED,
@@ -102,6 +121,17 @@ export function addShop(
         poolButtons[index].disable()
       }
     },
+    updateArtifactOfferLabel(index: 0 | 1, label: string, tooltip: string) {
+      artifactOfferButtons[index].setLabel(label)
+      artifactOfferButtons[index].setTooltip(tooltip)
+    },
+    setArtifactOfferEnabled(index: 0 | 1, enabled: boolean) {
+      if (enabled) {
+        artifactOfferButtons[index].enable()
+      } else {
+        artifactOfferButtons[index].disable()
+      }
+    },
     showFillTemplates(
       templates: FillTemplate[],
       onPick: (template: FillTemplate) => void,
@@ -134,6 +164,9 @@ export function addShop(
       extraSpinButton.destroy()
       addSegmentButton.destroy()
       poolButtons.forEach((b) => {
+        b.destroy()
+      })
+      artifactOfferButtons.forEach((b) => {
         b.destroy()
       })
       continueButton.destroy()

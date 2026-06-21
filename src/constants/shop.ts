@@ -101,6 +101,7 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
 ]
 
 export interface FillTemplate {
+  artifact?: boolean
   color: Color
   icon: { sprite: string; width: number; height: number }
   label: string
@@ -184,5 +185,14 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     multiplier: 0.75,
     score: 0,
     tooltip: 'Multiply round score by 0.75',
+  },
+  {
+    artifact: true,
+    color: rgb(200, 100, 200),
+    icon: { sprite: 'art', width: 30, height: 30 },
+    label: 'Artifact',
+    money: 0,
+    score: 0,
+    tooltip: 'Land here to gain a random artifact',
   },
 ]

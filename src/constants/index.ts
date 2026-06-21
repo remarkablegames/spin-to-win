@@ -1,3 +1,4 @@
+export * as ARTIFACT from './artifacts'
 export * as COLOR from './colors'
 export * as LEVEL from './level'
 export * as SCENE from './scene'
