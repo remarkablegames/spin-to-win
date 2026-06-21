@@ -48,7 +48,11 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setMoney(money)
 
   const wheelX = vec2(width() * 0.28, center().y)
-  const wheel = addWheel(state.segments, wheelX)
+  const wheel = addWheel({
+    segments: state.segments,
+    pos: wheelX,
+    angle: state.wheelAngle,
+  })
 
   add([
     sprite(SPRITE.POINTER, { width: 28, height: 28 }),

@@ -1,4 +1,4 @@
-import type { Color } from 'kaplay'
+import type { Color, Vec2 } from 'kaplay'
 
 import { COLOR, SPRITE } from '../constants'
 import { addTooltip } from './tooltip'
@@ -133,19 +133,21 @@ const SPIN_DURATION = 5
 const ROTATIONS_MIN = 2
 const ROTATIONS_MAX = 4
 
-export function addWheel(
-  initialSegments?: WheelSegment[],
-  wheelPos?: ReturnType<typeof vec2>,
-  initialAngle?: number,
-) {
-  const wheelSegments = initialSegments ?? getDefaultSegments()
+interface WheelOptions {
+  angle?: number
+  pos?: Vec2
+  segments?: WheelSegment[]
+}
+
+export function addWheel(options: WheelOptions = {}) {
+  const wheelSegments = options.segments ?? getDefaultSegments()
 
   let isSpinning = false
   let currentMode: WheelMode = { type: 'none' }
 
   const wheel = add([
-    pos(wheelPos ?? center()),
-    rotate(initialAngle ?? 0),
+    pos(options.pos ?? center()),
+    rotate(options.angle),
     timer(),
     {
       isSpinning: false,

@@ -51,7 +51,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const header = addHeader()
 
   const wheelSegments = initialState?.segments ?? getDefaultSegments()
-  const wheel = addWheel(wheelSegments, undefined, initialState?.wheelAngle)
+  const wheel = addWheel({
+    segments: wheelSegments,
+    angle: initialState?.wheelAngle,
+  })
 
   add([
     sprite(SPRITE.POINTER, { width: 28, height: 28 }),
