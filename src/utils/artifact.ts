@@ -105,21 +105,14 @@ export function addArtifactSlot(
     return artifacts
   }
 
-  if (isActiveArtifact(id)) {
-    const existing = artifacts.find(
-      (slot): slot is Extract<ArtifactSlot, { type: 'active' }> =>
-        slot.type === 'active' && slot.id === id,
-    )
-    if (existing) {
-      existing.charges += 1
-      return artifacts
-    }
-    return [...artifacts, { type: 'active', id, charges: 1 }]
-  }
-
   if (artifacts.some((slot) => slot.id === id)) {
     return artifacts
   }
+
+  if (isActiveArtifact(id)) {
+    return [...artifacts, { type: 'active', id, charges: 1 }]
+  }
+
   return [...artifacts, { type: 'passive', id }]
 }
 

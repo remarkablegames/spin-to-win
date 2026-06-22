@@ -17,8 +17,6 @@ import {
   getArtifactById,
   getRandomArtifacts,
   getSellRefund,
-  hasArtifact,
-  isActiveArtifact,
   removeArtifactSlot,
 } from '../utils'
 
@@ -103,12 +101,13 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
     const previousLength = artifacts.length
     artifacts = addArtifactSlot(artifacts, id)
-    if (artifacts.length === previousLength && !isActiveArtifact(id)) {
-      addToast(`You already own ${artifact.name}`)
-      return
-    }
     if (artifacts.length === previousLength) {
-      addToast("You can't buy any more artifacts")
+      const isFull = artifacts.length >= ARTIFACT.ARTIFACT_SLOTS
+      addToast(
+        isFull
+          ? "You can't buy any more artifacts"
+          : `You already own ${artifact.name}`,
+      )
       return
     }
 
@@ -405,9 +404,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
     artifactOfferIds.forEach((id, i) => {
       const artifact = getArtifactById(id)
       const canAfford = money >= artifact.cost
-      const canAdd = isActiveArtifact(id)
-        ? artifacts.length < ARTIFACT.ARTIFACT_SLOTS
-        : !hasArtifact(artifacts, id)
+      const canAdd =
+        artifacts.length < ARTIFACT.ARTIFACT_SLOTS &&
+        !artifacts.some((slot) => slot.id === id)
       shop.setArtifactOfferEnabled(i as 0 | 1, canAfford && canAdd)
     })
   }
