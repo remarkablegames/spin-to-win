@@ -16,7 +16,8 @@ import {
   getRandomArtifacts,
   hasArtifact,
   isActiveArtifact,
-  removeArtifactSlot,
+  rechargeArtifacts,
+  spendArtifactCharge,
 } from '../utils'
 
 const WHEEL_OFFSET = 30
@@ -138,7 +139,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       wheel.extendSpin()
-      artifacts = removeArtifactSlot(artifacts, id)
+      artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Extended')
       artifactInventory.update(artifacts, queuedArtifacts)
       return
@@ -150,7 +151,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       isBlankSelecting = true
-      artifacts = removeArtifactSlot(artifacts, id)
+      artifacts = spendArtifactCharge(artifacts, id)
       artifactInventory.update(artifacts, queuedArtifacts)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
@@ -254,7 +255,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     for (const queuedId of queuedArtifacts) {
-      artifacts = removeArtifactSlot(artifacts, queuedId)
+      artifacts = spendArtifactCharge(artifacts, queuedId)
     }
 
     queuedArtifacts = []
@@ -359,6 +360,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   })
 
   function startRound() {
+    artifacts = rechargeArtifacts(artifacts)
     totalSpinsForRound = baseSpins + LEVEL.BONUS_SPINS + extraSpins
     if (hasArtifact(artifacts, 'extraRoundSpin')) {
       totalSpinsForRound += 2

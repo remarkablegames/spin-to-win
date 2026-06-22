@@ -123,6 +123,27 @@ export function addArtifactSlot(
   return [...artifacts, { type: 'passive', id }]
 }
 
+export function spendArtifactCharge(
+  artifacts: ArtifactSlot[],
+  id: ActiveArtifactId,
+): ArtifactSlot[] {
+  return artifacts.map((slot) =>
+    slot.type === 'active' && slot.id === id
+      ? { ...slot, charges: Math.max(0, slot.charges - 1) }
+      : slot,
+  )
+}
+
+export function rechargeArtifacts(artifacts: ArtifactSlot[]): ArtifactSlot[] {
+  return artifacts.map((slot) => {
+    if (slot.type !== 'active') {
+      return slot
+    }
+    const def = ARTIFACT.ARTIFACTS[slot.id] as ActiveArtifact
+    return { ...slot, charges: def.maxCharges }
+  })
+}
+
 export function removeArtifactSlot(
   artifacts: ArtifactSlot[],
   id: ArtifactId,
