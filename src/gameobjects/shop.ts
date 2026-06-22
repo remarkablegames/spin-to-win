@@ -1,6 +1,6 @@
 import { COLOR } from '../constants'
-import type { ArtifactId } from '../constants/artifacts'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
+import type { ArtifactId } from '../types'
 import { getArtifactById } from '../utils'
 import { addButton } from './button'
 

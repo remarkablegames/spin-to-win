@@ -1,11 +1,7 @@
 import type { GameObj, PosComp } from 'kaplay'
 
 import { ARTIFACT, COLOR } from '../constants'
-import type {
-  ActiveArtifactId,
-  ArtifactId,
-  ArtifactSlot,
-} from '../constants/artifacts'
+import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
 import { getArtifactById, getSpriteById } from '../utils'
 import { addTooltip } from './tooltip'
 

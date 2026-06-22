@@ -1,5 +1,4 @@
 import { ARTIFACT, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
-import type { ArtifactId, ArtifactSlot } from '../constants/artifacts'
 import type { PoolUpgrade } from '../constants/shop'
 import {
   addArtifact,
@@ -12,6 +11,7 @@ import {
   pickFillTemplates,
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
+import type { ArtifactId, ArtifactSlot } from '../types'
 import {
   addArtifactSlot,
   getArtifactById,

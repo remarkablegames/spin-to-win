@@ -1,9 +1,4 @@
 import { COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
-import type {
-  ActiveArtifactId,
-  ArtifactId,
-  ArtifactSlot,
-} from '../constants/artifacts'
 import {
   addArtifact,
   addButton,
@@ -14,6 +9,7 @@ import {
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel, getDefaultSegments } from '../gameobjects/wheel'
+import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
 import {
   addArtifactSlot,
   getArtifactById,

@@ -1,3 +1,4 @@
+import { ARTIFACT } from '../constants'
 import type {
   ActiveArtifact,
   ActiveArtifactId,
@@ -7,15 +8,10 @@ import type {
   ArtifactSlot,
   PassiveArtifact,
   PassiveArtifactId,
-} from '../constants/artifacts'
-import {
-  ARTIFACT_SLOTS,
-  ARTIFACTS,
-  RARITY_WEIGHTS,
-} from '../constants/artifacts'
+} from '../types'
 
 export function getArtifactById(id: ArtifactId): Artifact {
-  return ARTIFACTS[id]
+  return ARTIFACT.ARTIFACTS[id]
 }
 
 export function isActiveArtifact(id: ArtifactId): id is ActiveArtifactId {
@@ -27,19 +23,19 @@ export function isPassiveArtifact(id: ArtifactId): id is PassiveArtifactId {
 }
 
 export function getActiveArtifacts(): ActiveArtifact[] {
-  return Object.values(ARTIFACTS).filter(
+  return Object.values(ARTIFACT.ARTIFACTS).filter(
     (artifact): artifact is ActiveArtifact => artifact.type === 'active',
   )
 }
 
 export function getPassiveArtifacts(): PassiveArtifact[] {
-  return Object.values(ARTIFACTS).filter(
+  return Object.values(ARTIFACT.ARTIFACTS).filter(
     (artifact): artifact is PassiveArtifact => artifact.type === 'passive',
   )
 }
 
 export function getArtifactsByRarity(rarity: ArtifactRarity): Artifact[] {
-  return Object.values(ARTIFACTS).filter(
+  return Object.values(ARTIFACT.ARTIFACTS).filter(
     (artifact) => artifact.rarity === rarity,
   )
 }
@@ -48,7 +44,7 @@ export function getRandomArtifacts(
   count: number,
   exclude: ArtifactId[] = [],
 ): ArtifactId[] {
-  const candidates = Object.values(ARTIFACTS).filter(
+  const candidates = Object.values(ARTIFACT.ARTIFACTS).filter(
     (artifact) => !exclude.includes(artifact.id),
   )
 
@@ -66,7 +62,10 @@ export function getRandomArtifacts(
 
     const remaining = candidates
       .filter((artifact) => !used.has(artifact.id))
-      .reduce((sum, artifact) => sum + RARITY_WEIGHTS[artifact.rarity], 0)
+      .reduce(
+        (sum, artifact) => sum + ARTIFACT.RARITY_WEIGHTS[artifact.rarity],
+        0,
+      )
     let roll = rand(0, remaining)
 
     for (const artifact of candidates) {
@@ -74,7 +73,7 @@ export function getRandomArtifacts(
         continue
       }
 
-      roll -= RARITY_WEIGHTS[artifact.rarity]
+      roll -= ARTIFACT.RARITY_WEIGHTS[artifact.rarity]
 
       if (roll <= 0) {
         result.push(artifact.id)
@@ -102,7 +101,7 @@ export function addArtifactSlot(
   artifacts: ArtifactSlot[],
   id: ArtifactId,
 ): ArtifactSlot[] {
-  if (artifacts.length >= ARTIFACT_SLOTS) {
+  if (artifacts.length >= ARTIFACT.ARTIFACT_SLOTS) {
     return artifacts
   }
 
