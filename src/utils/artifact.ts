@@ -148,17 +148,5 @@ export function removeArtifactSlot(
   artifacts: ArtifactSlot[],
   id: ArtifactId,
 ): ArtifactSlot[] {
-  if (isActiveArtifact(id)) {
-    return artifacts
-      .map((slot) =>
-        slot.type === 'active' && slot.id === id
-          ? { ...slot, charges: slot.charges - 1 }
-          : slot,
-      )
-      .filter(
-        (slot): slot is ArtifactSlot =>
-          slot.type !== 'active' || slot.charges > 0,
-      )
-  }
   return artifacts.filter((slot) => slot.id !== id)
 }
