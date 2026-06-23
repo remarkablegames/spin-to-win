@@ -4,7 +4,7 @@ import { COLOR } from '../constants'
 
 const PADDING_X = 12
 const PADDING_Y = 8
-const TEXT_SIZE = 18
+const TEXT_SIZE = 20
 const OFFSCREEN = -99999
 
 export interface Tooltip {
