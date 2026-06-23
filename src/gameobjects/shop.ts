@@ -4,7 +4,7 @@ import type { ArtifactId } from '../types'
 import { getArtifactById } from '../utils'
 import { addButton } from './button'
 
-const BUTTON_X = () => width() * 0.72
+const BUTTON_X = () => width() * 0.65
 const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 80
 const FILL_TEMPLATE_START_Y = () => height() * 0.35
