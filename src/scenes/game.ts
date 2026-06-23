@@ -111,7 +111,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     header.setLevel(levelIndex + 1)
     header.setRound(roundIndex + 1, level.roundsPerLevel)
     header.setScore(levelScore, level.targetScore)
-    header.setMoney(money, moneyDelta)
+    header.setMoney(money, passiveIncome)
     updateSpinButton()
   }
 
@@ -372,7 +372,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
     spinsRemaining = totalSpinsForRound
     extraSpins = 0
-    moneyDelta = passiveIncome
+    moneyDelta = 0
     queuedArtifacts = []
     blankSegmentIndex = null
     isBlankSelecting = false
