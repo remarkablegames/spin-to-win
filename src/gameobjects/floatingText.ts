@@ -2,7 +2,7 @@ import type { Color, Vec2 } from 'kaplay'
 
 import { COLOR } from '../constants'
 
-const TEXT_SIZE = 32
+const TEXT_SIZE = 64
 const FLOAT_DISTANCE = 80
 const SHADOW_OFFSET = 2
 export const FLOATING_TEXT_DURATION = 1
