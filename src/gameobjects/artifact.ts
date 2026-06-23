@@ -67,12 +67,10 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       const slotX = i * (SLOT_SIZE + SLOT_GAP)
       const slot = artifacts[i] as ArtifactSlot | undefined
       const isActive = slot?.type === 'active'
-      const queuedCount =
-        slot?.type === 'active'
-          ? queuedArtifacts.filter((id) => id === slot.id).length
-          : 0
+      const isQueued =
+        slot?.type === 'active' && queuedArtifacts.some((id) => id === slot.id)
 
-      const slotColor = isActive && queuedCount > 0 ? COLOR.GOLD : COLOR.WHITE
+      const slotColor = isActive && isQueued ? COLOR.GOLD : COLOR.WHITE
       const slotOpacity = 0.6
 
       const bg = container.add([
@@ -114,10 +112,8 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         }
       }
 
-      const queueHint =
-        queuedCount > 0 ? `\nQueued: ${String(queuedCount)}` : ''
       const tooltipText = slot
-        ? `${getArtifactById(slot.id).name}${queueHint}\n${getArtifactById(slot.id).description}`
+        ? `${getArtifactById(slot.id).name}\n${getArtifactById(slot.id).description}`
         : 'Empty artifact slot'
 
       const tooltip = addTooltip({
