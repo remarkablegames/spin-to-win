@@ -7,8 +7,8 @@ const LINE_HEIGHT = 28
 const CENTER_X = () => width() / 2
 const TOP_Y = 16
 
-const PROGRESS_BAR_WIDTH = 200
-const PROGRESS_BAR_HEIGHT = 8
+const PROGRESS_BAR_WIDTH = 250
+const PROGRESS_BAR_HEIGHT = 10
 
 export function addHeader() {
   add([rect(width(), HEADER_HEIGHT), pos(), color(COLOR.BROWN)])
