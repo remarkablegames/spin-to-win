@@ -60,8 +60,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   let money = initialState?.money ?? 0
   let moneyDelta = 0
   let extraSpins = initialState?.extraSpins ?? 0
-  let baseSpins =
-    initialState?.baseSpins ?? LEVEL.LEVELS[levelIndex].baseSpinsPerRound
+  let baseSpins = initialState?.baseSpins ?? LEVEL.BASE_SPINS
   let passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
   let spinsRemaining = 0
   let totalSpinsForRound = 0
@@ -373,7 +372,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function startRound() {
     artifacts = rechargeArtifacts(artifacts)
-    totalSpinsForRound = baseSpins + LEVEL.BONUS_SPINS + extraSpins
+    totalSpinsForRound = baseSpins + extraSpins
     if (hasArtifact(artifacts, 'extraRoundSpin')) {
       totalSpinsForRound += 2
     }
@@ -400,8 +399,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   }
 
   function continueFromShop() {
-    baseSpins =
-      initialState?.baseSpins ?? LEVEL.LEVELS[levelIndex].baseSpinsPerRound
+    baseSpins = initialState?.baseSpins ?? LEVEL.BASE_SPINS
     passiveIncome = initialState?.passiveIncome ?? SHOP.BASE_PASSIVE_INCOME
     artifacts = initialState?.artifacts ?? []
     if (roundIndex < LEVEL.LEVELS[levelIndex].roundsPerLevel - 1) {

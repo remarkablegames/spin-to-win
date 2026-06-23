@@ -22,7 +22,7 @@ import {
 
 interface ShopState {
   artifacts: ArtifactSlot[]
-  baseSpins: number
+  baseSpins?: number
   levelIndex: number
   levelScore: number
   money: number
@@ -39,7 +39,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
   let extraSpins = 0
   let addedSegment = false
-  let baseSpins = state.baseSpins
+  let baseSpins = state.baseSpins ?? LEVEL.BASE_SPINS
   let passiveIncome = state.passiveIncome
   let passiveIncomeUpgrades = 0
   let artifacts = state.artifacts
