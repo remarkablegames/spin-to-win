@@ -10,7 +10,8 @@ const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
 const BOTTOM_OFFSET = 16
-const HOLD_DURATION = 2
+const HOLD_TO_SELL_DURATION = 2
+const TOOLTIP_OFFSET_Y = -8
 
 interface ArtifactInventory {
   destroy(): void
@@ -120,7 +121,8 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
         : 'Empty artifact slot'
 
       const tooltip = addTooltip({
-        anchor: 'top',
+        anchor: 'bot',
+        offset: vec2(0, TOOLTIP_OFFSET_Y),
         target: bg,
         text: tooltipText,
       })
@@ -178,11 +180,11 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
             return
           }
           holdTimer += dt()
-          const ratio = Math.min(1, holdTimer / HOLD_DURATION)
+          const ratio = Math.min(1, holdTimer / HOLD_TO_SELL_DURATION)
           if (holdProgress) {
             holdProgress.width = SLOT_SIZE * ratio
           }
-          if (holdTimer >= HOLD_DURATION) {
+          if (holdTimer >= HOLD_TO_SELL_DURATION) {
             cancelHold()
             options.onUse(slotId)
           }
