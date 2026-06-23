@@ -121,6 +121,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   }
 
   const activeArtifactInventory = addArtifact({
+    holdToConfirm: true,
     onUse: (id) => {
       sellArtifact(id)
     },

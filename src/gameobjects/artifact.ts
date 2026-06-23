@@ -1,4 +1,4 @@
-import type { GameObj, PosComp } from 'kaplay'
+import type { GameObj, PosComp, RectComp } from 'kaplay'
 
 import { ARTIFACT, COLOR } from '../constants'
 import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
@@ -10,6 +10,7 @@ const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
 const BOTTOM_OFFSET = 16
+const HOLD_DURATION = 2
 
 interface ArtifactInventory {
   destroy(): void
@@ -17,6 +18,7 @@ interface ArtifactInventory {
 }
 
 interface AddArtifactOptions {
+  holdToConfirm?: boolean
   onUse: (id: ArtifactId) => void
   x?: number
   y?: number
@@ -124,21 +126,74 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       })
 
       const slotId = slot?.id ?? null
+
+      let holdProgress: GameObj<RectComp> | null = null
+      let holdTimer = 0
+      let isHolding = false
+      let isHovered = false
+
+      function cancelHold() {
+        isHolding = false
+        holdTimer = 0
+        holdProgress?.destroy()
+        holdProgress = null
+        tooltip.setText(tooltipText)
+      }
+
       bg.onHover(() => {
+        isHovered = true
         if (slotId) {
           setCursor('pointer')
           tooltip.show()
         }
       })
       bg.onHoverEnd(() => {
+        isHovered = false
         setCursor('default')
         tooltip.hide()
+        cancelHold()
       })
-      bg.onClick(() => {
-        if (slotId) {
-          options.onUse(slotId)
-        }
-      })
+
+      if (options.holdToConfirm) {
+        bg.onMousePress('left', () => {
+          if (!slotId || !isHovered) {
+            return
+          }
+          isHolding = true
+          holdTimer = 0
+          holdProgress = container.add([
+            rect(0, SLOT_SIZE, { radius: 6 }),
+            pos(slotX, 0),
+            color(COLOR.RED),
+            opacity(0.4),
+            z(15),
+          ])
+          tooltip.setText('Hold to sell...')
+        })
+        bg.onMouseRelease('left', () => {
+          cancelHold()
+        })
+        bg.onUpdate(() => {
+          if (!isHolding || !slotId) {
+            return
+          }
+          holdTimer += dt()
+          const ratio = Math.min(1, holdTimer / HOLD_DURATION)
+          if (holdProgress) {
+            holdProgress.width = SLOT_SIZE * ratio
+          }
+          if (holdTimer >= HOLD_DURATION) {
+            cancelHold()
+            options.onUse(slotId)
+          }
+        })
+      } else {
+        bg.onClick(() => {
+          if (slotId) {
+            options.onUse(slotId)
+          }
+        })
+      }
 
       slotDisplays.push({ background: bg, tooltip })
     }
