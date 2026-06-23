@@ -343,7 +343,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   })
 
   const skipButton = addButton({
-    label: 'Skip',
+    label: 'End',
     x: center().x,
     y: center().y + SKIP_BUTTON_OFFSET,
     onClick: () => {
@@ -351,20 +351,14 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         return
       }
 
-      spinsRemaining -= 1
+      spinsRemaining = 0
       queuedArtifacts = []
       blankSegmentIndex = null
       isBlankSelecting = false
       artifactInventory.update(artifacts, queuedArtifacts)
-      updateUI()
-
-      if (spinsRemaining > 0) {
-        updateSpinButton()
-      } else {
-        endRound()
-      }
+      endRound()
     },
-    tooltip: 'Skip this turn',
+    tooltip: 'End the round',
     tooltipAnchor: 'bot',
     buttonColor: COLOR.RED,
     shadowColor: COLOR.DARK_RED,
