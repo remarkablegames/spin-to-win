@@ -23,6 +23,10 @@ Play the game on:
 
 - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
 
+### Sounds
+
+- [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds)
+
 ## Prerequisites
 
 [nvm](https://github.com/nvm-sh/nvm#installing-and-updating):
