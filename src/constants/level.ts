@@ -9,4 +9,4 @@ export const LEVELS: Level[] = [
   { roundsPerLevel: 3, targetScore: 300 },
 ]
 
-export const BASE_SPINS = 1
+export const BASE_SPINS = 2
