@@ -6,6 +6,7 @@ export type ActiveArtifactId =
   | 'boostNextMoney'
   | 'boostNextMultiplier'
   | 'extendSpin'
+  | 'stopSpin'
   | 'skipNextNegative'
   | 'blankNextSegment'
 

@@ -141,6 +141,18 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       return
     }
 
+    if (id === 'stopSpin') {
+      if (!wheel.isSpinning) {
+        return
+      }
+
+      wheel.stopSpin()
+      artifacts = spendArtifactCharge(artifacts, id)
+      addToast('Spin Stopped')
+      artifactInventory.update(artifacts, queuedArtifacts)
+      return
+    }
+
     if (spinsRemaining <= 0) {
       return
     }

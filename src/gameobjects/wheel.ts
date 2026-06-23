@@ -47,6 +47,7 @@ interface WheelState {
   segments: WheelSegment[]
   addSegment(segment: WheelSegment): void
   extendSpin(): void
+  stopSpin(): void
   reset(): void
   resetSegments(): void
   spin(onComplete: (segment: WheelSegment) => void): void
@@ -207,6 +208,16 @@ export function addWheel(options: WheelOptions = {}) {
         const segmentAngle = (Math.PI * 2) / this.segments.length
         spinTarget += (segmentAngle * 180) / Math.PI
         startSpinTween(wheel.angle, spinTarget, SPIN_DURATION / 2)
+      },
+      stopSpin() {
+        if (!isSpinning) {
+          return
+        }
+
+        spinTween?.cancel()
+
+        spinTarget = wheel.angle
+        startSpinTween(wheel.angle, spinTarget, 0.3)
       },
       getWinningSegment() {
         return this.segments[this.getWinningSegmentIndex()]

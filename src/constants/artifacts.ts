@@ -6,6 +6,7 @@ import {
   GRAPE,
   HEART,
   PLUS,
+  POINTER,
   SPARK,
   STAR,
   TRASH,
@@ -67,6 +68,17 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     icon: ARROW.id,
     cost: 3,
     rarity: 'common',
+    maxCharges: 1,
+  },
+
+  stopSpin: {
+    id: 'stopSpin',
+    type: 'active',
+    name: 'Stop Spin',
+    description: 'Stops the wheel from spinning',
+    icon: POINTER.id,
+    cost: 6,
+    rarity: 'uncommon',
     maxCharges: 1,
   },
 
