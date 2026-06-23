@@ -18,3 +18,7 @@ export const GOLD = rgb(255, 200, 50)
 
 export const WHITE = rgb(255, 255, 255)
 export const BLACK = rgb(0, 0, 0)
+export const GREY = rgb(100, 100, 100)
+
+export const LIGHT_BLUE = rgb(100, 200, 255)
+export const PURPLE = rgb(180, 100, 200)

@@ -1,4 +1,4 @@
-import { ARTIFACT, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import type { PoolUpgrade } from '../constants/shop'
 import {
   addArtifact,
@@ -75,7 +75,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
     pos(wheelX.x, wheelX.y - wheel.radius - 12),
     anchor('center'),
     rotate(90),
-    color(rgb(255, 255, 255)),
   ])
 
   const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
@@ -153,7 +152,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         }
         const blank: WheelSegment = {
           blank: true,
-          color: rgb(100, 100, 100),
+          color: COLOR.GREY,
           icon: SPRITE.QUESTION_MARK.id,
           label: '',
           money: 0,
@@ -287,9 +286,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         const multiplierValue = isPositive
           ? SHOP.MULTIPLIER_SEGMENT_POSITIVE_VALUE
           : SHOP.MULTIPLIER_SEGMENT_NEGATIVE_VALUE
-        const multiplierColor = isPositive
-          ? rgb(100, 200, 255)
-          : rgb(180, 100, 200)
+        const multiplierColor = isPositive ? COLOR.LIGHT_BLUE : COLOR.PURPLE
         const multiplierLabel = isPositive ? '+25%' : '-25%'
         const multiplierSegment: WheelSegment = {
           color: multiplierColor,
