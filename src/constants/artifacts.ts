@@ -21,7 +21,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       'Doubles the score and money of the next spin, including negative effects.',
     icon: STAR.id,
-    cost: 12,
+    cost: 9,
     rarity: 'rare',
     maxCharges: 1,
   },
@@ -32,7 +32,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     name: 'Boost Next Score',
     description: 'The next spin gives +50% score.',
     icon: HEART.id,
-    cost: 5,
+    cost: 3,
     rarity: 'common',
     maxCharges: 1,
   },
@@ -43,7 +43,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     name: 'Boost Next Money',
     description: 'The next spin gives +50% money.',
     icon: COIN.id,
-    cost: 5,
+    cost: 6,
     rarity: 'common',
     maxCharges: 1,
   },
@@ -55,7 +55,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       'If the next spin lands on a multiplier segment, the multiplier value is increased by +0.25.',
     icon: SPARK.id,
-    cost: 8,
+    cost: 6,
     rarity: 'uncommon',
     maxCharges: 1,
   },
@@ -66,7 +66,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     name: 'Extend Spin',
     description: 'Move to the next wheel segment before a spin ends.',
     icon: ARROW.id,
-    cost: 6,
+    cost: 3,
     rarity: 'common',
     maxCharges: 1,
   },
@@ -78,7 +78,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       'If the next spin lands on a negative segment, ignore its effect.',
     icon: CROSS_MARK.id,
-    cost: 8,
+    cost: 6,
     rarity: 'uncommon',
     maxCharges: 1,
   },
@@ -90,7 +90,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       'Select a segment before the next spin. That segment is treated as blank for that spin.',
     icon: TRASH.id,
-    cost: 7,
+    cost: 6,
     rarity: 'uncommon',
     maxCharges: 1,
   },
@@ -101,7 +101,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     name: 'Lucky Coin',
     description: 'At the end of each round, each unused spin gives +$1.',
     icon: COIN.id,
-    cost: 10,
+    cost: 9,
     rarity: 'rare',
   },
 
@@ -122,7 +122,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       "Each time the wheel lands on a segment with a score value, that segment's score is permanently increased by +5.",
     icon: GRAPE.id,
-    cost: 10,
+    cost: 9,
     rarity: 'rare',
   },
 }
