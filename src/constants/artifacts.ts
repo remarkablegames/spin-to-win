@@ -25,6 +25,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'rare',
     maxCharges: 1,
   },
+
   boostNextScore: {
     id: 'boostNextScore',
     type: 'active',
@@ -35,6 +36,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'common',
     maxCharges: 1,
   },
+
   boostNextMoney: {
     id: 'boostNextMoney',
     type: 'active',
@@ -45,6 +47,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'common',
     maxCharges: 1,
   },
+
   boostNextMultiplier: {
     id: 'boostNextMultiplier',
     type: 'active',
@@ -56,17 +59,18 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'uncommon',
     maxCharges: 1,
   },
+
   extendSpin: {
     id: 'extendSpin',
     type: 'active',
     name: 'Extend Spin',
-    description:
-      'During a spin, adds one extra segment worth of rotation so the wheel lands on the next segment.',
+    description: 'Move to the next wheel segment before a spin ends.',
     icon: ARROW.id,
     cost: 6,
     rarity: 'common',
     maxCharges: 1,
   },
+
   skipNextNegative: {
     id: 'skipNextNegative',
     type: 'active',
@@ -78,6 +82,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'uncommon',
     maxCharges: 1,
   },
+
   blankNextSegment: {
     id: 'blankNextSegment',
     type: 'active',
@@ -89,6 +94,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     rarity: 'uncommon',
     maxCharges: 1,
   },
+
   luckyCoin: {
     id: 'luckyCoin',
     type: 'passive',
@@ -98,6 +104,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     cost: 10,
     rarity: 'rare',
   },
+
   extraRoundSpin: {
     id: 'extraRoundSpin',
     type: 'passive',
@@ -107,6 +114,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     cost: 12,
     rarity: 'rare',
   },
+
   scoreGrowth: {
     id: 'scoreGrowth',
     type: 'passive',

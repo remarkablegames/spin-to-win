@@ -121,10 +121,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       return
     }
 
-    if (spinsRemaining <= 0) {
-      return
-    }
-
     const slot = artifacts.find(
       (s): s is Extract<ArtifactSlot, { type: 'active' }> =>
         s.type === 'active' && s.id === id,
@@ -142,6 +138,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Extended')
       artifactInventory.update(artifacts, queuedArtifacts)
+      return
+    }
+
+    if (spinsRemaining <= 0) {
       return
     }
 
