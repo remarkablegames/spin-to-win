@@ -70,8 +70,9 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       const isQueued =
         slot?.type === 'active' && queuedArtifacts.some((id) => id === slot.id)
 
+      const isUsed = slot?.type === 'active' && slot.charges === 0
       const slotColor = isActive && isQueued ? COLOR.GOLD : COLOR.WHITE
-      const slotOpacity = 0.6
+      const slotOpacity = isUsed ? 0.2 : 0.6
 
       const bg = container.add([
         rect(SLOT_SIZE, SLOT_SIZE, { radius: 6 }),
