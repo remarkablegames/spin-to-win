@@ -4,7 +4,7 @@ import { COLOR } from '../constants'
 
 const TEXT_SIZE = 32
 const FLOAT_DISTANCE = 80
-const DURATION = 1
+export const FLOATING_TEXT_DURATION = 1
 const FADE_DURATION = 0.5
 
 interface AddFloatingTextOptions {
@@ -20,14 +20,14 @@ export function addFloatingText(options: AddFloatingTextOptions) {
     anchor('center'),
     color(options.color ?? COLOR.WHITE),
     opacity(1),
-    lifespan(DURATION, { fade: FADE_DURATION }),
+    lifespan(FLOATING_TEXT_DURATION, { fade: FADE_DURATION }),
     z(200),
   ])
 
   tween(
     options.pos.y,
     options.pos.y - FLOAT_DISTANCE,
-    DURATION,
+    FLOATING_TEXT_DURATION,
     (y: number) => {
       obj.pos.y = y
     },

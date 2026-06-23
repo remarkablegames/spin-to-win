@@ -7,6 +7,7 @@ import {
   addHeader,
   addToast,
   addWheel,
+  FLOATING_TEXT_DURATION,
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel, getDefaultSegments } from '../gameobjects/wheel'
@@ -324,6 +325,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       isSpinning = false
       isBlankSelecting = false
 
+      let showedFloat = false
       if (!segment.blank) {
         const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET)
         if (segment.multiplier !== undefined) {
@@ -333,6 +335,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
             color: pct >= 0 ? COLOR.LIGHT_BLUE : COLOR.PURPLE,
             pos: wheelPos,
           })
+          showedFloat = true
         } else if (segment.score !== 0) {
           addFloatingText({
             text:
@@ -342,6 +345,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
             color: segment.score > 0 ? COLOR.LIGHT_GREEN : COLOR.RED,
             pos: wheelPos,
           })
+          showedFloat = true
         } else if (segment.money !== 0) {
           addFloatingText({
             text:
@@ -351,6 +355,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
             color: segment.money > 0 ? COLOR.GREEN : COLOR.RED,
             pos: wheelPos,
           })
+          showedFloat = true
         }
       }
 
@@ -358,6 +363,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         spinButton.enable()
         skipButton.enable()
         updateSpinButton()
+      } else if (showedFloat) {
+        wait(FLOATING_TEXT_DURATION, endRound)
       } else {
         endRound()
       }
