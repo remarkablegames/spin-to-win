@@ -2,6 +2,7 @@ import { COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
 import {
   addArtifact,
   addButton,
+  addFloatingText,
   addGrid,
   addHeader,
   addToast,
@@ -322,6 +323,36 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       updateUI()
       isSpinning = false
       isBlankSelecting = false
+
+      if (!segment.blank) {
+        const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET)
+        if (segment.multiplier !== undefined) {
+          const pct = Math.round((segment.multiplier - 1) * 100)
+          addFloatingText({
+            text: pct >= 0 ? `+${String(pct)}%` : `${String(pct)}%`,
+            color: pct >= 0 ? COLOR.LIGHT_BLUE : COLOR.PURPLE,
+            pos: wheelPos,
+          })
+        } else if (segment.score !== 0) {
+          addFloatingText({
+            text:
+              segment.score > 0
+                ? `+${String(segment.score)}`
+                : String(segment.score),
+            color: segment.score > 0 ? COLOR.LIGHT_GREEN : COLOR.RED,
+            pos: wheelPos,
+          })
+        } else if (segment.money !== 0) {
+          addFloatingText({
+            text:
+              segment.money > 0
+                ? `+$${String(segment.money)}`
+                : `-$${String(Math.abs(segment.money))}`,
+            color: segment.money > 0 ? COLOR.GREEN : COLOR.RED,
+            pos: wheelPos,
+          })
+        }
+      }
 
       if (spinsRemaining > 0) {
         spinButton.enable()

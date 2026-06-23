@@ -1,5 +1,6 @@
 export * from './artifact'
 export * from './button'
+export * from './floatingText'
 export * from './grid'
 export * from './header'
 export * from './shop'
