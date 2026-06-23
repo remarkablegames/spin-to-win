@@ -20,9 +20,9 @@ import {
   spendArtifactCharge,
 } from '../utils'
 
-const WHEEL_OFFSET = 30
-const BUTTON_OFFSET = 265
-const SKIP_BUTTON_OFFSET = BUTTON_OFFSET + 65
+const WHEEL_OFFSET = 45
+const SPIN_BUTTON_OFFSET = 255
+const END_BUTTON_OFFSET = SPIN_BUTTON_OFFSET + 65
 
 interface GameState {
   artifacts?: ArtifactSlot[]
@@ -336,7 +336,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const spinButton = addButton({
     label: 'Spin',
     x: center().x,
-    y: center().y + BUTTON_OFFSET,
+    y: center().y + SPIN_BUTTON_OFFSET,
     onClick: spin,
     tooltip: '1 spin remaining',
     tooltipAnchor: 'bot',
@@ -345,7 +345,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const skipButton = addButton({
     label: 'End',
     x: center().x,
-    y: center().y + SKIP_BUTTON_OFFSET,
+    y: center().y + END_BUTTON_OFFSET,
     onClick: () => {
       if (isSpinning || spinsRemaining <= 0) {
         return
