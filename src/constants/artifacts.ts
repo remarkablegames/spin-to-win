@@ -12,7 +12,7 @@ import {
   TRASH,
 } from './sprite'
 
-export const ARTIFACT_SLOTS = 3
+export const ARTIFACT_SLOTS = 5
 
 export const ARTIFACTS: Record<ArtifactId, Artifact> = {
   doubleNextSegment: {
