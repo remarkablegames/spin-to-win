@@ -1,7 +1,10 @@
-import { SCENE, SPRITE } from '../constants'
+import { SCENE, SOUND, SPRITE } from '../constants'
 
 scene(SCENE.PRELOAD, () => {
   const font = loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
+  const sounds = Object.values(SOUND).map((sound) =>
+    loadSound(sound.id, sound.src),
+  )
 
   loadSprite(SPRITE.ARROW.id, '/icons/arrow.png')
   loadSprite(SPRITE.ART.id, '/icons/art.png')
@@ -18,7 +21,7 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.STAR.id, '/sprites/star.png')
   loadSprite(SPRITE.TRASH.id, '/icons/trash.png')
 
-  font.then(() => {
+  void Promise.all([font, ...sounds]).then(() => {
     go(SCENE.GAME)
   })
 })

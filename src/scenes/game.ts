@@ -1,4 +1,4 @@
-import { COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import { COLOR, LEVEL, SCENE, SHOP, SOUND, SPRITE } from '../constants'
 import {
   addArtifact,
   addButton,
@@ -18,6 +18,9 @@ import {
   getRandomArtifacts,
   hasArtifact,
   isActiveArtifact,
+  playRewardSound,
+  playSound,
+  playWheelTick,
   rechargeArtifacts,
   spendArtifactCharge,
 } from '../utils'
@@ -78,6 +81,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const wheel = addWheel({
     segments: wheelSegments,
     angle: initialState?.wheelAngle,
+    onSpinTick: playWheelTick,
     pos: vec2(center().x, center().y - WHEEL_OFFSET),
   })
 
@@ -119,6 +123,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function useArtifact(id: ArtifactId) {
     if (!isActiveArtifact(id)) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
@@ -127,49 +132,58 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         s.type === 'active' && s.id === id,
     )
     if (!slot || slot.charges <= 0) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
     if (id === 'extendSpin') {
       if (!wheel.isSpinning) {
+        playSound(SOUND.INVALID_ACTION.id)
         return
       }
 
       wheel.extendSpin()
       artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Extended')
+      playSound(SOUND.ARTIFACT.id)
       artifactInventory.update(artifacts, queuedArtifacts)
       return
     }
 
     if (id === 'stopSpin') {
       if (!wheel.isSpinning) {
+        playSound(SOUND.INVALID_ACTION.id)
         return
       }
 
       wheel.stopSpin()
       artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Stopped')
+      playSound(SOUND.ARTIFACT.id)
       artifactInventory.update(artifacts, queuedArtifacts)
       return
     }
 
     if (spinsRemaining <= 0) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
     if (id === 'blankNextSegment') {
       if (isSpinning || isBlankSelecting) {
+        playSound(SOUND.INVALID_ACTION.id)
         return
       }
 
       isBlankSelecting = true
       artifacts = spendArtifactCharge(artifacts, id)
       artifactInventory.update(artifacts, queuedArtifacts)
+      playSound(SOUND.ARTIFACT.id)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
         isBlankSelecting = false
         addToast(`Segment Blanked: ${segment.label}`)
+        playSound(SOUND.ARTIFACT.id)
       })
       return
     }
@@ -178,10 +192,12 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       (queuedId) => queuedId === id,
     ).length
     if (queuedCount >= slot.charges) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
     queuedArtifacts.push(id)
+    playSound(SOUND.ARTIFACT.id)
     artifactInventory.update(artifacts, queuedArtifacts)
   }
 
@@ -192,6 +208,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     artifacts = addArtifactSlot(artifacts, artifactId)
     if (artifacts.length > previousLength) {
       addToast(`Artifact: ${artifact.name}`)
+      playSound(SOUND.ARTIFACT.id)
     } else {
       addToast(
         isActiveArtifact(artifactId)
@@ -309,6 +326,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function spin() {
     if (isSpinning || spinsRemaining <= 0) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
@@ -321,6 +339,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
     wheel.spin((segment) => {
       applyArtifactEffects(segment)
+      playRewardSound(segment)
       updateUI()
       isSpinning = false
       isBlankSelecting = false
@@ -386,6 +405,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     y: center().y + END_BUTTON_OFFSET,
     onClick: () => {
       if (isSpinning || spinsRemaining <= 0) {
+        playSound(SOUND.INVALID_ACTION.id)
         return
       }
 

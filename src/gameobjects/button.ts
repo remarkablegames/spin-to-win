@@ -1,7 +1,7 @@
 import type { Anchor, Color } from 'kaplay'
 
-import { COLOR } from '../constants'
-import { getSpriteById } from '../utils'
+import { COLOR, SOUND } from '../constants'
+import { getSpriteById, playSound } from '../utils'
 import { addTooltip } from './tooltip'
 
 const DEFAULT_WIDTH = 120
@@ -116,7 +116,10 @@ export function addButton({
 
   button.onClick(() => {
     if (enabled) {
+      playSound(SOUND.BUTTON_CLICK.id)
       onClick()
+    } else {
+      playSound(SOUND.INVALID_ACTION.id)
     }
   })
 
@@ -129,6 +132,7 @@ export function addButton({
     }
 
     setCursor('pointer')
+    playSound(SOUND.BUTTON_HOVER.id)
     button.scale = vec2(1.1)
     shadow.scale = vec2(1.1)
     buttonTooltip?.show()

@@ -152,6 +152,7 @@ const ROTATIONS_MAX = 4
 
 interface WheelOptions {
   angle?: number
+  onSpinTick?: () => void
   pos?: Vec2
   segments?: WheelSegment[]
 }
@@ -164,6 +165,7 @@ export function addWheel(options: WheelOptions = {}) {
   let spinTween: TweenController | null = null
   let spinOnComplete: ((segment: WheelSegment) => void) | null = null
   let spinTarget = 0
+  let lastSpinTickSegmentIndex = -1
 
   const wheel: GameObj<PosComp & RotateComp & TimerComp & WheelState> = add([
     pos(options.pos ?? center()),
@@ -192,6 +194,7 @@ export function addWheel(options: WheelOptions = {}) {
         isSpinning = true
         this.isSpinning = true
         spinOnComplete = onComplete
+        lastSpinTickSegmentIndex = this.getWinningSegmentIndex()
 
         const fullRotations = randi(ROTATIONS_MIN, ROTATIONS_MAX)
         const extraAngle = rand(0, 360)
@@ -257,12 +260,25 @@ export function addWheel(options: WheelOptions = {}) {
   ])
 
   function startSpinTween(from: number, to: number, duration: number) {
+    function updateSpinTick() {
+      if (!options.onSpinTick) {
+        return
+      }
+
+      const segmentIndex = wheel.getWinningSegmentIndex()
+      if (segmentIndex !== lastSpinTickSegmentIndex) {
+        lastSpinTickSegmentIndex = segmentIndex
+        options.onSpinTick()
+      }
+    }
+
     const tween = wheel.tween(
       from,
       to,
       duration,
       (angle: number) => {
         wheel.angle = angle
+        updateSpinTick()
       },
       easings.easeOutCubic,
     )

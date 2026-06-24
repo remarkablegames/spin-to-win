@@ -1,4 +1,12 @@
-import { ARTIFACT, COLOR, LEVEL, SCENE, SHOP, SPRITE } from '../constants'
+import {
+  ARTIFACT,
+  COLOR,
+  LEVEL,
+  SCENE,
+  SHOP,
+  SOUND,
+  SPRITE,
+} from '../constants'
 import type { PoolUpgrade } from '../constants/shop'
 import {
   addArtifact,
@@ -17,6 +25,7 @@ import {
   getArtifactById,
   getRandomArtifacts,
   getSellRefund,
+  playSound,
   removeArtifactSlot,
 } from '../utils'
 
@@ -89,6 +98,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
     artifacts = removeArtifactSlot(artifacts, id)
     addToast(`Sold ${artifact.name} for $${String(refund)}`)
+    playSound(SOUND.SHOP_PURCHASE.id)
 
     updateArtifactUI()
     updateButtons()
@@ -97,6 +107,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   function buyArtifact(id: ArtifactId) {
     const artifact = getArtifactById(id)
     if (money < artifact.cost) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
@@ -109,12 +120,14 @@ scene(SCENE.SHOP, (state: ShopState) => {
           ? "You can't buy any more artifacts"
           : `You already own ${artifact.name}`,
       )
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
     money -= artifact.cost
     header.setMoney(money)
     addToast(`Purchased ${artifact.name}`)
+    playSound(SOUND.SHOP_PURCHASE.id)
     updateArtifactUI()
     updateButtons()
   }
@@ -136,6 +149,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
     {
       onExtraSpin: () => {
         if (money < extraSpinCost) {
+          playSound(SOUND.INVALID_ACTION.id)
           return
         }
         money -= extraSpinCost
@@ -144,10 +158,12 @@ scene(SCENE.SHOP, (state: ShopState) => {
         header.setMoney(money)
         shop.updateExtraSpinCost(extraSpinCost)
         addToast('Extra Spin Purchased')
+        playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
       },
       onAddSegment: () => {
         if (addedSegment) {
+          playSound(SOUND.INVALID_ACTION.id)
           return
         }
         const blank: WheelSegment = {
@@ -163,6 +179,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         addedSegment = true
         shop.hideAddSegment()
         addToast('Blank Segment Added')
+        playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
       },
       onPoolUpgrade: (upgrade: PoolUpgrade) => {
@@ -221,6 +238,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   function handlePoolUpgrade(upgrade: PoolUpgrade) {
     const cost = getPoolOfferCost(upgrade)
     if (money < cost) {
+      playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
@@ -237,8 +255,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
           `Spend $${String(upgradeScoreCost)} to boost a score segment by +${String(SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
         )
         addToast('Select a score segment on the wheel')
+        playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setUpgradeMode('score', SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT, () => {
           addToast('Score Segment Upgraded')
+          playSound(SOUND.SHOP_PURCHASE.id)
           updateButtons()
         })
         updateButtons()
@@ -254,8 +274,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
           `Spend $${String(upgradeMoneyCost)} to boost a money segment by +$${String(SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
         )
         addToast('Select a money segment on the wheel')
+        playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setUpgradeMode('money', SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT, () => {
           addToast('Money Segment Upgraded')
+          playSound(SOUND.SHOP_PURCHASE.id)
           updateButtons()
         })
         updateButtons()
@@ -266,6 +288,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         header.setMoney(money)
         const templates = pickFillTemplates(SHOP.FILL_TEMPLATES, 3)
         addToast('Select a blank segment on the wheel')
+        playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setFillMode((segment: WheelSegment) => {
           shop.showFillTemplates(templates, (template) => {
             const idx = wheel.segments.indexOf(segment)
@@ -273,6 +296,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
               wheel.segments[idx] = { ...template }
             }
             addToast(`Filled: ${template.label}`)
+            playSound(SOUND.SHOP_PURCHASE.id)
             updateButtons()
           })
         })
@@ -299,6 +323,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         }
         wheel.addSegment(multiplierSegment)
         addToast(`Added ${multiplierLabel} Segment`)
+        playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
         break
       }
@@ -313,6 +338,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           `Spend $${String(permanentSpinCost)} to permanently add +1 spin to every round`,
         )
         addToast('+1 Permanent Spin Added')
+        playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
         break
       }
@@ -326,12 +352,14 @@ scene(SCENE.SHOP, (state: ShopState) => {
           `Spend $${String(deleteSegmentCost)} to permanently remove a segment from the wheel`,
         )
         addToast('Select a segment to delete')
+        playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setDeleteMode((segment: WheelSegment) => {
           const idx = wheel.segments.indexOf(segment)
           if (idx !== -1) {
             wheel.segments.splice(idx, 1)
           }
           addToast('Segment Deleted')
+          playSound(SOUND.SHOP_PURCHASE.id)
           updateButtons()
         })
         updateButtons()
@@ -339,6 +367,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
       case 'upgradePassiveIncome': {
         if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {
+          playSound(SOUND.INVALID_ACTION.id)
           return
         }
         money -= cost
@@ -356,6 +385,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           )
         }
         addToast(`Passive Income now $${String(passiveIncome)}/round`)
+        playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
         break
       }
