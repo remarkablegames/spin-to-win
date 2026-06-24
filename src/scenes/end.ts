@@ -38,11 +38,22 @@ scene(SCENE.END, (state: EndState) => {
     color(resultColor),
   ])
 
+  const canAdvance = isWin && !isLastLevel
+
   addButton({
     buttonColor: COLOR.GREEN,
-    label: 'Restart',
+    label: canAdvance ? 'Next Level' : 'Restart',
     onClick: () => {
-      go(SCENE.GAME)
+      go(
+        SCENE.GAME,
+        canAdvance
+          ? {
+              levelIndex: state.levelIndex + 1,
+              money: state.money,
+              roundIndex: -1,
+            }
+          : undefined,
+      )
     },
     shadowColor: COLOR.DARK_GREEN,
     x: center().x,
