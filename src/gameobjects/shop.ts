@@ -12,6 +12,7 @@ const FILL_TEMPLATE_START_Y = () => height() * 0.35
 const FILL_TEMPLATE_X = () => width() * 0.5
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
   addMultiplierSegment: SPRITE.SPARKLES.id,
+  cloneSegment: SPRITE.COPY.id,
   deleteSegment: SPRITE.TRASH.id,
   fillBlank: SPRITE.QUESTION_MARK.id,
   permanentBaseSpin: SPRITE.PLUS.id,

@@ -18,6 +18,12 @@ export const COIN: Sprite = {
   height: 30, // 34
 }
 
+export const COPY: Sprite = {
+  id: 'copy',
+  width: 32, // 64
+  height: 32, // 64
+}
+
 export const CROSS_MARK: Sprite = {
   id: 'cross_mark',
   width: 36, // 64

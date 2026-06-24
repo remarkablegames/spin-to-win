@@ -9,6 +9,7 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.ARROW.id, '/icons/arrow.png')
   loadSprite(SPRITE.ART.id, '/icons/art.png')
   loadSprite(SPRITE.COIN.id, '/sprites/coin.png')
+  loadSprite(SPRITE.COPY.id, '/icons/copy.png')
   loadSprite(SPRITE.CROSS_MARK.id, '/icons/cross_mark.png')
   loadSprite(SPRITE.FIRE.id, '/sprites/fire.png')
   loadSprite(SPRITE.GRAPE.id, '/sprites/grape.png')

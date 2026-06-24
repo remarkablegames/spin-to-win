@@ -26,6 +26,8 @@ export const MULTIPLIER_SEGMENT_POSITIVE_CHANCE = 0.7
 export const MULTIPLIER_SEGMENT_POSITIVE_VALUE = 1.25
 export const MULTIPLIER_SEGMENT_NEGATIVE_VALUE = 0.75
 
+export const CLONE_SEGMENT_BASE_COST = 10
+
 export const PERMANENT_BASE_SPIN_BASE_COST = 10
 export const PERMANENT_BASE_SPIN_COST_INCREMENT = 5
 
@@ -38,6 +40,7 @@ export type PoolUpgradeId =
   | 'upgradeMoneySegment'
   | 'fillBlank'
   | 'addMultiplierSegment'
+  | 'cloneSegment'
   | 'permanentBaseSpin'
   | 'deleteSegment'
   | 'upgradePassiveIncome'
@@ -56,49 +59,63 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
     weight: 25,
     label: `Upgrade Score Segment ($${String(UPGRADE_SCORE_SEGMENT_BASE_COST)})`,
     baseCost: UPGRADE_SCORE_SEGMENT_BASE_COST,
-    tooltip: `Spend $${String(UPGRADE_SCORE_SEGMENT_BASE_COST)} to boost a score segment by +${String(UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
+    tooltip: `Boost a score segment by +${String(UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
   },
+
   {
     id: 'upgradeMoneySegment',
     weight: 25,
     label: `Upgrade Money Segment ($${String(UPGRADE_MONEY_SEGMENT_BASE_COST)})`,
     baseCost: UPGRADE_MONEY_SEGMENT_BASE_COST,
-    tooltip: `Spend $${String(UPGRADE_MONEY_SEGMENT_BASE_COST)} to boost a money segment by +$${String(UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
+    tooltip: `Boost a money segment by +$${String(UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
   },
+
   {
     id: 'fillBlank',
     weight: 20,
     label: `Fill Blank Segment ($${String(FILL_BLANK_BASE_COST)})`,
     baseCost: FILL_BLANK_BASE_COST,
-    tooltip: `Spend $${String(FILL_BLANK_BASE_COST)} to fill a blank segment with a new effect`,
+    tooltip: `Fill a blank segment with a new effect`,
   },
+
   {
     id: 'addMultiplierSegment',
     weight: 20,
     label: `Add Multiplier Segment ($${String(ADD_MULTIPLIER_SEGMENT_COST)})`,
     baseCost: ADD_MULTIPLIER_SEGMENT_COST,
-    tooltip: `Spend $${String(ADD_MULTIPLIER_SEGMENT_COST)} to add a score multiplier segment to the wheel`,
+    tooltip: `Add a score multiplier segment to the wheel`,
   },
+
+  {
+    id: 'cloneSegment',
+    weight: 12,
+    label: `Clone Segment ($${String(CLONE_SEGMENT_BASE_COST)})`,
+    baseCost: CLONE_SEGMENT_BASE_COST,
+    tooltip: `Duplicate an existing wheel segment`,
+  },
+
   {
     id: 'permanentBaseSpin',
     weight: 15,
     label: `Permanent Base Spin ($${String(PERMANENT_BASE_SPIN_BASE_COST)})`,
     baseCost: PERMANENT_BASE_SPIN_BASE_COST,
-    tooltip: `Spend $${String(PERMANENT_BASE_SPIN_BASE_COST)} to permanently add +1 spin to every round`,
+    tooltip: `Permanently add +1 spin to every round`,
   },
+
   {
     id: 'deleteSegment',
     weight: 8,
     label: `Delete Segment ($${String(DELETE_SEGMENT_BASE_COST)})`,
     baseCost: DELETE_SEGMENT_BASE_COST,
-    tooltip: `Spend $${String(DELETE_SEGMENT_BASE_COST)} to permanently remove a segment from the wheel`,
+    tooltip: `Permanently remove a segment from the wheel`,
   },
+
   {
     id: 'upgradePassiveIncome',
     weight: 10,
     label: `Upgrade Income ($${String(PASSIVE_INCOME_UPGRADE_BASE_COST)})`,
     baseCost: PASSIVE_INCOME_UPGRADE_BASE_COST,
-    tooltip: `Spend $${String(PASSIVE_INCOME_UPGRADE_BASE_COST)} to earn +$${String(PASSIVE_INCOME_UPGRADE_AMOUNT)} more money each round`,
+    tooltip: `Earn +$${String(PASSIVE_INCOME_UPGRADE_AMOUNT)} more money each round`,
   },
 ]
 
@@ -122,6 +139,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 10,
     tooltip: 'Score 10 points',
   },
+
   {
     color: rgb(128, 128, 128),
     icon: GRAPE.id,
@@ -130,6 +148,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 25,
     tooltip: 'Score 25 points',
   },
+
   {
     color: rgb(30, 144, 255),
     icon: STAR.id,
@@ -138,6 +157,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 50,
     tooltip: 'Score 50 points',
   },
+
   {
     color: rgb(255, 215, 0),
     icon: COIN.id,
@@ -146,6 +166,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 0,
     tooltip: 'Earn $3',
   },
+
   {
     color: rgb(60, 179, 113),
     icon: COIN.id,
@@ -154,6 +175,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 0,
     tooltip: 'Earn $5',
   },
+
   {
     color: rgb(220, 20, 60),
     icon: SKULLER.id,
@@ -162,6 +184,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: -15,
     tooltip: 'Lose 15 points',
   },
+
   {
     color: rgb(139, 0, 0),
     icon: MONEY_BAG.id,
@@ -170,6 +193,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 0,
     tooltip: 'Pay $3',
   },
+
   {
     color: rgb(100, 200, 255),
     icon: STAR.id,
@@ -179,6 +203,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 0,
     tooltip: 'Multiply round score by 1.25',
   },
+
   {
     color: rgb(180, 100, 200),
     icon: STAR.id,
@@ -188,6 +213,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     score: 0,
     tooltip: 'Multiply round score by 0.75',
   },
+
   {
     artifact: true,
     color: rgb(200, 100, 200),

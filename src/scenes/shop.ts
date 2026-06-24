@@ -327,6 +327,20 @@ scene(SCENE.SHOP, (state: ShopState) => {
         updateButtons()
         break
       }
+      case 'cloneSegment': {
+        money -= cost
+        header.setMoney(money)
+        addToast('Select a segment to clone')
+        playSound(SOUND.SHOP_PURCHASE.id)
+        wheel.setSelectMode((segment: WheelSegment) => {
+          wheel.addSegment({ ...segment })
+          addToast(`Cloned: ${segment.label}`)
+          playSound(SOUND.SHOP_PURCHASE.id)
+          updateButtons()
+        })
+        updateButtons()
+        break
+      }
       case 'permanentBaseSpin': {
         money -= cost
         baseSpins += 1
