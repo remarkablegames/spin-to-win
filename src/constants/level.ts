@@ -40,6 +40,7 @@ export const LEVELS: Level[] = [
     },
     targetScore: 100,
   },
+
   {
     roundsPerLevel: 3,
     shop: {
@@ -54,9 +55,10 @@ export const LEVELS: Level[] = [
         upgradeScoreSegment: 1.25,
       },
     },
-    targetScore: 200,
+    targetScore: 500,
   },
-  { roundsPerLevel: 3, targetScore: 300 },
+
+  { roundsPerLevel: 3, targetScore: 1000 },
 ]
 
 export const BASE_SPINS = 3
