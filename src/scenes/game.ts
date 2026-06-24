@@ -29,6 +29,17 @@ const WHEEL_OFFSET = 45
 const SPIN_BUTTON_OFFSET = 255
 const END_BUTTON_OFFSET = SPIN_BUTTON_OFFSET + 65
 
+type SegmentSnapshot = WheelSegment & { index: number }
+
+interface ResolvedSegmentEffect {
+  money: number
+  multiplier?: number
+  preview: boolean
+  score: number
+  segmentIndex: number
+  skipped: boolean
+}
+
 interface GameState {
   artifacts?: ArtifactSlot[]
   baseSpins?: number
@@ -73,6 +84,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   let artifacts: ArtifactSlot[] = initialState?.artifacts ?? []
   let queuedArtifacts: ActiveArtifactId[] = []
   let blankSegmentIndex: number | null = null
+  let temporarySegmentSnapshots: SegmentSnapshot[] = []
   let isBlankSelecting = false
 
   const header = addHeader()
@@ -124,6 +136,197 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   function updateArtifactInventoryAfterClick() {
     wait(0, () => {
       artifactInventory.update(artifacts, queuedArtifacts)
+    })
+  }
+
+  function snapshotSegment(index: number) {
+    if (
+      temporarySegmentSnapshots.some((snapshot) => snapshot.index === index)
+    ) {
+      return
+    }
+
+    temporarySegmentSnapshots.push({
+      ...wheel.segments[index],
+      index,
+    })
+  }
+
+  function restoreTemporarySegments() {
+    temporarySegmentSnapshots.forEach(({ index, ...segment }) => {
+      if (index >= 0 && index < wheel.segments.length) {
+        wheel.segments[index] = segment
+      }
+    })
+    temporarySegmentSnapshots = []
+  }
+
+  function resetTemporaryArtifactState() {
+    restoreTemporarySegments()
+    queuedArtifacts = []
+    blankSegmentIndex = null
+    isBlankSelecting = false
+  }
+
+  function previewBlankSegment(index: number) {
+    snapshotSegment(index)
+    wheel.segments[index] = {
+      blank: true,
+      color: COLOR.GREY,
+      icon: SPRITE.QUESTION_MARK.id,
+      label: '',
+      money: 0,
+      score: 0,
+      tooltip: 'Blanked for next spin',
+    }
+  }
+
+  function formatMultiplierLabel(multiplier: number) {
+    return `${multiplier >= 1 ? '+' : ''}${String(Math.round((multiplier - 1) * 100))}%`
+  }
+
+  function previewQueuedArtifactEffects() {
+    wheel.segments.forEach((segment, index) => {
+      if (index === blankSegmentIndex || segment.blank) {
+        return
+      }
+
+      const hasNegativeEffect = segment.score < 0 || segment.money < 0
+      if (queuedArtifacts.includes('skipNextNegative') && hasNegativeEffect) {
+        snapshotSegment(index)
+        wheel.segments[index] = {
+          ...segment,
+          blank: true,
+          color: COLOR.GREY,
+          icon: SPRITE.QUESTION_MARK.id,
+          label: '',
+          money: 0,
+          multiplier: undefined,
+          score: 0,
+          tooltip: 'Skipped by artifact',
+        }
+        return
+      }
+
+      const preview = { ...segment }
+
+      if (queuedArtifacts.includes('boostNextScore') && preview.score !== 0) {
+        preview.score = Math.round(preview.score * 1.5)
+      }
+
+      if (queuedArtifacts.includes('boostNextMoney') && preview.money !== 0) {
+        preview.money = Math.round(preview.money * 1.5)
+      }
+
+      if (
+        queuedArtifacts.includes('boostNextMultiplier') &&
+        preview.multiplier !== undefined
+      ) {
+        preview.multiplier += 0.25
+      }
+
+      if (queuedArtifacts.includes('doubleNextSegment')) {
+        preview.score *= 2
+        preview.money *= 2
+      }
+
+      const changed =
+        preview.score !== segment.score ||
+        preview.money !== segment.money ||
+        preview.multiplier !== segment.multiplier
+
+      if (!changed) {
+        return
+      }
+
+      snapshotSegment(index)
+      wheel.segments[index] = {
+        ...preview,
+        label:
+          preview.multiplier !== undefined
+            ? formatMultiplierLabel(preview.multiplier)
+            : formatSegmentLabel(preview),
+      }
+    })
+  }
+
+  function rebuildTemporarySegmentPreviews() {
+    const currentBlankSegmentIndex = blankSegmentIndex
+    restoreTemporarySegments()
+
+    if (currentBlankSegmentIndex !== null) {
+      previewBlankSegment(currentBlankSegmentIndex)
+    }
+
+    previewQueuedArtifactEffects()
+  }
+
+  function previewResolvedSegmentEffect(
+    index: number,
+    effect: ResolvedSegmentEffect,
+  ) {
+    if (!effect.preview) {
+      return
+    }
+
+    const segment = wheel.segments[index]
+
+    snapshotSegment(index)
+
+    if (effect.skipped) {
+      wheel.segments[index] = {
+        ...segment,
+        blank: true,
+        color: COLOR.GREY,
+        icon: SPRITE.QUESTION_MARK.id,
+        label: '',
+        money: 0,
+        multiplier: undefined,
+        score: 0,
+        tooltip: 'Skipped by artifact',
+      }
+      return
+    }
+
+    const changed =
+      effect.score !== segment.score ||
+      effect.money !== segment.money ||
+      effect.multiplier !== segment.multiplier
+
+    if (!changed) {
+      return
+    }
+
+    const effectLabel =
+      effect.multiplier !== undefined
+        ? formatMultiplierLabel(effect.multiplier)
+        : formatSegmentLabel({
+            ...segment,
+            money: effect.money,
+            score: effect.score,
+          })
+
+    wheel.segments[index] = {
+      ...segment,
+      label: effectLabel,
+      money: effect.money,
+      multiplier: effect.multiplier,
+      score: effect.score,
+    }
+  }
+
+  function restoreTemporarySegmentsAfterResult(
+    shouldWait: boolean,
+    onComplete: () => void,
+  ) {
+    if (!shouldWait) {
+      onComplete()
+      return
+    }
+
+    wait(FLOATING_TEXT_DURATION, () => {
+      restoreTemporarySegments()
+      onComplete()
     })
   }
 
@@ -187,6 +390,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       playSound(SOUND.ARTIFACT.id)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
+        rebuildTemporarySegmentPreviews()
         isBlankSelecting = false
         addToast(`Segment Blanked: ${segment.label}`)
         playSound(SOUND.ARTIFACT.id)
@@ -199,6 +403,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     ).length
     if (queuedCount > 0) {
       queuedArtifacts = queuedArtifacts.filter((queuedId) => queuedId !== id)
+      rebuildTemporarySegmentPreviews()
       playSound(SOUND.ARTIFACT.id)
       updateArtifactInventoryAfterClick()
       return
@@ -210,6 +415,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     queuedArtifacts.push(id)
+    rebuildTemporarySegmentPreviews()
     playSound(SOUND.ARTIFACT.id)
     updateArtifactInventoryAfterClick()
   }
@@ -233,7 +439,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     artifactInventory.update(artifacts, queuedArtifacts)
   }
 
-  function applyArtifactEffects(segment: WheelSegment) {
+  function applyArtifactEffects(
+    segment: WheelSegment,
+    segmentIndex: number,
+  ): ResolvedSegmentEffect {
+    const usedQueuedArtifacts = [...queuedArtifacts]
     let finalScore = segment.score
     let finalMoney = segment.money
     let finalMultiplier = segment.multiplier
@@ -304,6 +514,15 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     queuedArtifacts = []
     blankSegmentIndex = null
     artifactInventory.update(artifacts, queuedArtifacts)
+
+    return {
+      money: finalMoney,
+      multiplier: finalMultiplier,
+      preview: skipEffect || usedQueuedArtifacts.length > 0,
+      score: finalScore,
+      segmentIndex,
+      skipped: skipEffect,
+    }
   }
 
   function endRound() {
@@ -350,8 +569,13 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     artifactInventory.update(artifacts, queuedArtifacts)
     updateSpinButton()
 
-    wheel.spin((segment) => {
-      applyArtifactEffects(segment)
+    wheel.spin(() => {
+      const segmentIndex = wheel.getWinningSegmentIndex()
+      restoreTemporarySegments()
+
+      const segment = wheel.segments[segmentIndex]
+      const effect = applyArtifactEffects(segment, segmentIndex)
+      previewResolvedSegmentEffect(effect.segmentIndex, effect)
       playRewardSound(segment)
       if (segment.endRound) {
         spinsRemaining = 0
@@ -361,7 +585,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       isBlankSelecting = false
 
       let showedFloat = false
-      if (!segment.blank) {
+      if (!effect.skipped && !segment.blank) {
         const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET)
         if (segment.endRound) {
           addFloatingText({
@@ -370,46 +594,50 @@ scene(SCENE.GAME, (initialState?: GameState) => {
             pos: wheelPos,
           })
           showedFloat = true
-        } else if (segment.multiplier !== undefined) {
-          const pct = Math.round((segment.multiplier - 1) * 100)
+        } else if (effect.multiplier !== undefined) {
+          const pct = Math.round((effect.multiplier - 1) * 100)
           addFloatingText({
             text: pct >= 0 ? `+${String(pct)}%` : `${String(pct)}%`,
             color: pct >= 0 ? COLOR.LIGHT_BLUE : COLOR.PURPLE,
             pos: wheelPos,
           })
           showedFloat = true
-        } else if (segment.score !== 0) {
+        } else if (effect.score !== 0) {
           addFloatingText({
             text:
-              segment.score > 0
-                ? `+${String(segment.score)}`
-                : String(segment.score),
-            color: segment.score > 0 ? COLOR.LIGHT_GREEN : COLOR.RED,
+              effect.score > 0
+                ? `+${String(effect.score)}`
+                : String(effect.score),
+            color: effect.score > 0 ? COLOR.LIGHT_GREEN : COLOR.RED,
             pos: wheelPos,
           })
           showedFloat = true
-        } else if (segment.money !== 0) {
+        } else if (effect.money !== 0) {
           addFloatingText({
             text:
-              segment.money > 0
-                ? `+$${String(segment.money)}`
-                : `-$${String(Math.abs(segment.money))}`,
-            color: segment.money > 0 ? COLOR.GREEN : COLOR.RED,
+              effect.money > 0
+                ? `+$${String(effect.money)}`
+                : `-$${String(Math.abs(effect.money))}`,
+            color: effect.money > 0 ? COLOR.GREEN : COLOR.RED,
             pos: wheelPos,
           })
           showedFloat = true
         }
       }
 
-      if (spinsRemaining > 0) {
-        spinButton.enable()
-        skipButton.enable()
-        updateSpinButton()
-      } else if (showedFloat) {
-        wait(FLOATING_TEXT_DURATION, endRound)
-      } else {
-        endRound()
-      }
+      const shouldWaitForResult =
+        temporarySegmentSnapshots.length > 0 ||
+        (spinsRemaining <= 0 && showedFloat)
+
+      restoreTemporarySegmentsAfterResult(shouldWaitForResult, () => {
+        if (spinsRemaining > 0) {
+          spinButton.enable()
+          skipButton.enable()
+          updateSpinButton()
+        } else {
+          endRound()
+        }
+      })
     })
   }
 
@@ -433,9 +661,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       spinsRemaining = 0
-      queuedArtifacts = []
-      blankSegmentIndex = null
-      isBlankSelecting = false
+      resetTemporaryArtifactState()
       artifactInventory.update(artifacts, queuedArtifacts)
       endRound()
     },
@@ -454,9 +680,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     spinsRemaining = totalSpinsForRound
     extraSpins = 0
     moneyDelta = 0
-    queuedArtifacts = []
-    blankSegmentIndex = null
-    isBlankSelecting = false
+    resetTemporaryArtifactState()
     artifactInventory.update(artifacts, queuedArtifacts)
     updateUI()
     spinButton.show()
