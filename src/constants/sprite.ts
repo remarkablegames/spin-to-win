@@ -1,5 +1,11 @@
 import type { Sprite } from '../types'
 
+export const APPLE: Sprite = {
+  id: 'apple',
+  width: 30, // 32
+  height: 30, // 32
+}
+
 export const ARROW: Sprite = {
   id: 'arrow',
   width: 30, // 41

@@ -6,6 +6,7 @@ scene(SCENE.PRELOAD, () => {
     loadSound(sound.id, sound.src),
   )
 
+  loadSprite(SPRITE.APPLE.id, '/sprites/apple.png')
   loadSprite(SPRITE.ARROW.id, '/icons/arrow.png')
   loadSprite(SPRITE.ART.id, '/icons/art.png')
   loadSprite(SPRITE.COIN.id, '/sprites/coin.png')
