@@ -336,6 +336,14 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       return
     }
 
+    if (id === 'blankNextSegment' && isBlankSelecting) {
+      isBlankSelecting = false
+      wheel.clearMode()
+      playSound(SOUND.ARTIFACT.id)
+      updateArtifactInventoryAfterClick()
+      return
+    }
+
     const slot = artifacts.find(
       (s): s is Extract<ArtifactSlot, { type: 'active' }> =>
         s.type === 'active' && s.id === id,
@@ -379,19 +387,20 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
 
     if (id === 'blankNextSegment') {
-      if (isSpinning || isBlankSelecting) {
+      if (isSpinning) {
         playSound(SOUND.INVALID_ACTION.id)
         return
       }
 
       isBlankSelecting = true
-      artifacts = spendArtifactCharge(artifacts, id)
       updateArtifactInventoryAfterClick()
       playSound(SOUND.ARTIFACT.id)
       wheel.setSelectMode((segment, index) => {
+        artifacts = spendArtifactCharge(artifacts, id)
         blankSegmentIndex = index
         rebuildTemporarySegmentPreviews()
         isBlankSelecting = false
+        updateArtifactInventoryAfterClick()
         addToast(`Segment Blanked: ${segment.label}`)
         playSound(SOUND.ARTIFACT.id)
       })
