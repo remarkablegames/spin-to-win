@@ -25,6 +25,7 @@ Play the game on:
 
 ### Sounds
 
+- [Cash Register (Kaching) - Sound Effect](https://pixabay.com/sound-effects/film-special-effects-cash-register-kaching-sound-effect-125042/)
 - [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds)
 
 ## Prerequisites
