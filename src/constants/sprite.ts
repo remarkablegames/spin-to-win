@@ -84,6 +84,12 @@ export const SPARK: Sprite = {
   height: 23, // 21
 }
 
+export const SPARKLES: Sprite = {
+  id: 'sparkles',
+  width: 32, // 58
+  height: 32, // 58
+}
+
 export const STAR: Sprite = {
   id: 'star',
   width: 30, // 40

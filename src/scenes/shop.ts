@@ -173,7 +173,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           label: '',
           money: 0,
           score: 0,
-          tooltip: 'Blank segment — fill it with an upgrade',
+          tooltip: 'Blank segment (fill it with an upgrade)',
         }
         wheel.addSegment(blank)
         addedSegment = true

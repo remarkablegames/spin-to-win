@@ -1,5 +1,6 @@
-import { COLOR } from '../constants'
+import { COLOR, SPRITE } from '../constants'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
+import type { PoolUpgradeId } from '../constants/shop'
 import type { ArtifactId } from '../types'
 import { getArtifactById } from '../utils'
 import { addButton } from './button'
@@ -9,6 +10,15 @@ const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 80
 const FILL_TEMPLATE_START_Y = () => height() * 0.35
 const FILL_TEMPLATE_X = () => width() * 0.5
+const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
+  addMultiplierSegment: SPRITE.SPARKLES.id,
+  deleteSegment: SPRITE.TRASH.id,
+  fillBlank: SPRITE.QUESTION_MARK.id,
+  permanentBaseSpin: SPRITE.PLUS.id,
+  upgradeMoneySegment: SPRITE.COIN.id,
+  upgradePassiveIncome: SPRITE.COIN.id,
+  upgradeScoreSegment: SPRITE.HEART.id,
+}
 
 export type Shop = ReturnType<typeof addShop>
 
@@ -30,6 +40,7 @@ export function addShop(
 
   const extraSpinButton = addButton({
     label: `Extra Spin ($${String(initialExtraSpinCost)})`,
+    icon: SPRITE.PLUS.id,
     x,
     y: BUTTON_START_Y,
     onClick: callbacks.onExtraSpin,
@@ -40,6 +51,7 @@ export function addShop(
 
   const addSegmentButton = addButton({
     label: 'Add Blank Segment (Free)',
+    icon: SPRITE.QUESTION_MARK.id,
     x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING,
     onClick: callbacks.onAddSegment,
@@ -51,6 +63,7 @@ export function addShop(
   const poolButtons = poolOffers.map((offer, i) =>
     addButton({
       label: offer.label,
+      icon: POOL_UPGRADE_ICONS[offer.id],
       x,
       y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + i),
       onClick: () => {
@@ -150,6 +163,7 @@ export function addShop(
       fillTemplateButtons = templates.map((template, i) =>
         addButton({
           label: template.label,
+          icon: template.icon,
           x: fx,
           y: startY + BUTTON_Y_SPACING * i,
           onClick: () => {
