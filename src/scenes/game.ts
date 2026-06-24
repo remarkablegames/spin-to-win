@@ -353,6 +353,9 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     wheel.spin((segment) => {
       applyArtifactEffects(segment)
       playRewardSound(segment)
+      if (segment.endRound) {
+        spinsRemaining = 0
+      }
       updateUI()
       isSpinning = false
       isBlankSelecting = false
@@ -360,7 +363,14 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       let showedFloat = false
       if (!segment.blank) {
         const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET)
-        if (segment.multiplier !== undefined) {
+        if (segment.endRound) {
+          addFloatingText({
+            text: 'End',
+            color: COLOR.RED,
+            pos: wheelPos,
+          })
+          showedFloat = true
+        } else if (segment.multiplier !== undefined) {
           const pct = Math.round((segment.multiplier - 1) * 100)
           addFloatingText({
             text: pct >= 0 ? `+${String(pct)}%` : `${String(pct)}%`,

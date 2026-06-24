@@ -24,6 +24,12 @@ export const CROSS_MARK: Sprite = {
   height: 36, // 64
 }
 
+export const FIRE: Sprite = {
+  id: 'fire',
+  width: 30, // 38
+  height: 34, // 43
+}
+
 export const GRAPE: Sprite = {
   id: 'grape',
   width: 30, // 37

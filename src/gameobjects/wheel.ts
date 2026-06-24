@@ -16,6 +16,7 @@ export interface WheelSegment {
   artifact?: boolean
   blank?: boolean
   color: Color
+  endRound?: boolean
   icon: string
   label: string
   money: number
@@ -101,7 +102,7 @@ export const SEGMENTS: WheelSegment[] = [
   },
   {
     color: rgb(220, 20, 60),
-    icon: SPRITE.SKULLER.id,
+    icon: SPRITE.FIRE.id,
     label: '-25',
     money: 0,
     score: -25,
@@ -122,6 +123,15 @@ export const SEGMENTS: WheelSegment[] = [
     money: -3,
     score: 0,
     tooltip: 'Pay $3',
+  },
+  {
+    color: rgb(200, 50, 50),
+    endRound: true,
+    icon: SPRITE.SKULLER.id,
+    label: 'End',
+    money: 0,
+    score: 0,
+    tooltip: 'End the round',
   },
 ]
 

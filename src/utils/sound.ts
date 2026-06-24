@@ -40,6 +40,11 @@ export function playRewardSound(segment: WheelSegment) {
     return
   }
 
+  if (segment.endRound) {
+    playSound(SOUND.NEGATIVE_REWARD.id)
+    return
+  }
+
   if (segment.multiplier !== undefined) {
     playSound(
       segment.multiplier < 1
