@@ -47,9 +47,3 @@ Add a single-scene Kaplay prototype where the player clicks a "Spin" button to r
 - Segment text can be rendered as small rotated text labels centered on each wedge.
 - Use `onUpdate()` or `tween()` (via `lerp` manually or Kaplay's `tween` helper if available) to drive rotation. Since the project is on a recent Kaplay version, we should use whichever animation API the library exposes.
 - Keep strict TypeScript typing; no `any`.
-
-## Verification
-
-- `npm run lint:tsc` passes.
-- `npm run lint:fix` passes.
-- `npm start` opens the game and the wheel spins, lands, and updates the score.

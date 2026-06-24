@@ -107,9 +107,3 @@ Introduce a persistent artifact system that gives players both active consumable
 - `src/scenes/game.ts` (inventory UI, active artifact consumption, passive effects)
 - `src/scenes/shop.ts` (artifact offer handler, relic panel, state carry-over)
 - `src/gameobjects/index.ts` (export any new artifact UI helpers)
-
-## Verification
-
-- `npm run lint:tsc` passes with no new errors.
-- `npm run lint:fix` passes.
-- Manually play through a round: buy or obtain an artifact, confirm it appears in the UI, and confirm its effect applies.
