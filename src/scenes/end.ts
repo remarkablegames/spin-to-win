@@ -42,18 +42,18 @@ scene(SCENE.END, (state: EndState) => {
 
   addButton({
     buttonColor: COLOR.GREEN,
-    label: canAdvance ? 'Next Level' : 'Restart',
+    label: canAdvance ? 'Next Level' : 'Main Menu',
     onClick: () => {
-      go(
-        SCENE.GAME,
-        canAdvance
-          ? {
-              levelIndex: state.levelIndex + 1,
-              money: state.money,
-              roundIndex: -1,
-            }
-          : undefined,
-      )
+      if (!canAdvance) {
+        go(SCENE.TITLE)
+        return
+      }
+
+      go(SCENE.GAME, {
+        levelIndex: state.levelIndex + 1,
+        money: state.money,
+        roundIndex: -1,
+      })
     },
     shadowColor: COLOR.DARK_GREEN,
     x: center().x,

@@ -164,6 +164,7 @@ interface WheelOptions {
   angle?: number
   onSpinTick?: () => void
   pos?: Vec2
+  radius?: number
   segments?: WheelSegment[]
 }
 
@@ -183,7 +184,7 @@ export function addWheel(options: WheelOptions = {}) {
     timer(),
     {
       isSpinning: false,
-      radius: RADIUS,
+      radius: options.radius ?? RADIUS,
       segments: wheelSegments,
       addSegment(segment: WheelSegment) {
         this.segments.push(segment)

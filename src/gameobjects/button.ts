@@ -114,6 +114,11 @@ export function addButton({
     shadow.opacity = enabled ? 1 : 0.5
   }
 
+  function setButtonScale(value: number) {
+    button.scale = vec2(value)
+    shadow.scale = vec2(value)
+  }
+
   button.onClick(() => {
     if (enabled) {
       playSound(SOUND.BUTTON_CLICK.id)
@@ -133,8 +138,7 @@ export function addButton({
 
     setCursor('pointer')
     playSound(SOUND.BUTTON_HOVER.id)
-    button.scale = vec2(1.1)
-    shadow.scale = vec2(1.1)
+    setButtonScale(1.1)
     buttonTooltip?.show()
   })
 
@@ -148,8 +152,7 @@ export function addButton({
     }
 
     setCursor('default')
-    button.scale = vec2(1)
-    shadow.scale = vec2(1)
+    setButtonScale(1)
   })
 
   return {
@@ -162,8 +165,7 @@ export function addButton({
 
       if (hovered) {
         setCursor('not-allowed')
-        button.scale = vec2(1)
-        shadow.scale = vec2(1)
+        setButtonScale(1)
         buttonTooltip?.hide()
       }
     },

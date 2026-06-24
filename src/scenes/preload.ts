@@ -27,6 +27,6 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.TRASH.id, '/icons/trash.png')
 
   void Promise.all([font, ...sounds]).then(() => {
-    go(SCENE.GAME)
+    go(SCENE.TITLE)
   })
 })
