@@ -210,7 +210,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           extraSpins,
           passiveIncome,
           segments: wheel.segments,
-          wheelAngle: state.wheelAngle,
+          wheelAngle: wheel.angle,
         })
       },
     },

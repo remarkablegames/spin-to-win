@@ -1,10 +1,18 @@
 import { COLOR, LEVEL, SCENE } from '../constants'
 import { addButton, addGrid, addHeader } from '../gameobjects'
+import type { WheelSegment } from '../gameobjects/wheel'
+import type { ArtifactSlot } from '../types'
 
 interface EndState {
+  artifacts?: ArtifactSlot[]
+  baseSpins?: number
+  extraSpins?: number
   levelIndex: number
   levelScore: number
   money: number
+  passiveIncome?: number
+  segments?: WheelSegment[]
+  wheelAngle?: number
 }
 
 const BUTTON_OFFSET = 64
@@ -50,9 +58,16 @@ scene(SCENE.END, (state: EndState) => {
       }
 
       go(SCENE.GAME, {
+        artifacts: state.artifacts,
+        baseSpins: state.baseSpins,
+        extraSpins: state.extraSpins,
         levelIndex: state.levelIndex + 1,
+        levelScore: state.levelScore,
         money: state.money,
+        passiveIncome: state.passiveIncome,
         roundIndex: -1,
+        segments: state.segments,
+        wheelAngle: state.wheelAngle,
       })
     },
     shadowColor: COLOR.DARK_GREEN,

@@ -59,9 +59,15 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
     if ((initialState.roundIndex ?? 0) >= level.roundsPerLevel - 1) {
       go(SCENE.END, {
+        artifacts: initialState.artifacts,
+        baseSpins: initialState.baseSpins,
+        extraSpins: initialState.extraSpins,
         levelIndex: initialState.levelIndex,
         levelScore: initialState.levelScore,
         money: initialState.money,
+        passiveIncome: initialState.passiveIncome,
+        segments: initialState.segments,
+        wheelAngle: initialState.wheelAngle,
       })
       return
     }
@@ -559,9 +565,15 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function endLevel() {
     go(SCENE.END, {
+      artifacts,
+      baseSpins,
+      extraSpins,
       levelIndex,
       levelScore,
       money,
+      passiveIncome,
+      segments: wheel.segments,
+      wheelAngle: wheel.angle,
     })
   }
 
@@ -701,8 +713,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   function startLevel(index: number) {
     levelIndex = index
     roundIndex = 0
-    levelScore = carryOver
-    wheel.reset()
+    levelScore = initialState?.levelScore ?? carryOver
+    if (!initialState?.segments) {
+      wheel.reset()
+    }
     startRound()
   }
 
