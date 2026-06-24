@@ -121,6 +121,12 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     updateSpinButton()
   }
 
+  function updateArtifactInventoryAfterClick() {
+    wait(0, () => {
+      artifactInventory.update(artifacts, queuedArtifacts)
+    })
+  }
+
   function useArtifact(id: ArtifactId) {
     if (!isActiveArtifact(id)) {
       playSound(SOUND.INVALID_ACTION.id)
@@ -146,7 +152,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Extended')
       playSound(SOUND.ARTIFACT.id)
-      artifactInventory.update(artifacts, queuedArtifacts)
+      updateArtifactInventoryAfterClick()
       return
     }
 
@@ -160,7 +166,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       artifacts = spendArtifactCharge(artifacts, id)
       addToast('Spin Stopped')
       playSound(SOUND.ARTIFACT.id)
-      artifactInventory.update(artifacts, queuedArtifacts)
+      updateArtifactInventoryAfterClick()
       return
     }
 
@@ -177,7 +183,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
       isBlankSelecting = true
       artifacts = spendArtifactCharge(artifacts, id)
-      artifactInventory.update(artifacts, queuedArtifacts)
+      updateArtifactInventoryAfterClick()
       playSound(SOUND.ARTIFACT.id)
       wheel.setSelectMode((segment, index) => {
         blankSegmentIndex = index
@@ -191,6 +197,13 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     const queuedCount = queuedArtifacts.filter(
       (queuedId) => queuedId === id,
     ).length
+    if (queuedCount > 0) {
+      queuedArtifacts = queuedArtifacts.filter((queuedId) => queuedId !== id)
+      playSound(SOUND.ARTIFACT.id)
+      updateArtifactInventoryAfterClick()
+      return
+    }
+
     if (queuedCount >= slot.charges) {
       playSound(SOUND.INVALID_ACTION.id)
       return
@@ -198,7 +211,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
     queuedArtifacts.push(id)
     playSound(SOUND.ARTIFACT.id)
-    artifactInventory.update(artifacts, queuedArtifacts)
+    updateArtifactInventoryAfterClick()
   }
 
   function grantRandomArtifact() {
