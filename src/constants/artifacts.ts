@@ -6,8 +6,8 @@ import {
   GRAPE,
   HEART,
   PLUS,
-  POINTER,
   SPARK,
+  SPIDER_WEB,
   STAR,
   TRASH,
 } from './sprite'
@@ -76,7 +76,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     type: 'active',
     name: 'Stop Spin',
     description: 'Stops the wheel from spinning',
-    icon: POINTER.id,
+    icon: SPIDER_WEB.id,
     cost: 6,
     rarity: 'uncommon',
     maxCharges: 1,

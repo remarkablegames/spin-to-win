@@ -18,6 +18,7 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.POINTER.id, '/icons/play.png')
   loadSprite(SPRITE.QUESTION_MARK.id, '/icons/question_mark.png')
   loadSprite(SPRITE.SKULLER.id, '/sprites/skuller.png')
+  loadSprite(SPRITE.SPIDER_WEB.id, '/sprites/spider_web.png')
   loadSprite(SPRITE.SPARK.id, '/sprites/spark.png')
   loadSprite(SPRITE.STAR.id, '/sprites/star.png')
   loadSprite(SPRITE.TRASH.id, '/icons/trash.png')

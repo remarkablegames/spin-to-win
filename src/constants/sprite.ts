@@ -72,6 +72,12 @@ export const SKULLER: Sprite = {
   height: 30, // 65
 }
 
+export const SPIDER_WEB: Sprite = {
+  id: 'spider_web',
+  width: 32, // 64
+  height: 32, // 64
+}
+
 export const SPARK: Sprite = {
   id: 'spark',
   width: 20, // 18
