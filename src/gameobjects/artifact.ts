@@ -1,8 +1,8 @@
-import type { GameObj, PosComp, RectComp } from 'kaplay'
+import type { AudioPlay, GameObj, PosComp, RectComp } from 'kaplay'
 
-import { ARTIFACT, COLOR } from '../constants'
+import { ARTIFACT, COLOR, SOUND } from '../constants'
 import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
-import { getArtifactById, getSpriteById } from '../utils'
+import { getArtifactById, getSpriteById, playSound } from '../utils'
 import { addTooltip } from './tooltip'
 
 const SLOT_SIZE = 64
@@ -130,12 +130,15 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
       let holdTimer = 0
       let isHolding = false
       let isHovered = false
+      let holdSound: AudioPlay | null = null
 
       function cancelHold() {
         isHolding = false
         holdTimer = 0
         holdProgress?.destroy()
         holdProgress = null
+        holdSound?.stop()
+        holdSound = null
         tooltip.setText(tooltipText)
       }
 
@@ -160,6 +163,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
           }
           isHolding = true
           holdTimer = 0
+          holdSound = playSound(SOUND.ARTIFACT_HOLD.id, { loop: true })
           holdProgress = container.add([
             rect(0, SLOT_SIZE, { radius: 6 }),
             pos(slotX, 0),

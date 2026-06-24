@@ -42,6 +42,12 @@ export const ARTIFACT: Sound = {
   volume: 0.5,
 }
 
+export const ARTIFACT_HOLD: Sound = {
+  id: 'artifactHold',
+  src: '/sounds/bong_001.mp3',
+  volume: 0.25,
+}
+
 export const SHOP_PURCHASE: Sound = {
   id: 'shopPurchase',
   src: '/sounds/kaching.mp3',

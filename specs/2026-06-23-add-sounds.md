@@ -11,6 +11,7 @@ Add sound effects to the game using Kaplay `loadSound` and `play`.
 - Negative reward: `error_008.mp3`
 - Invalid/blocked action: `error_006.mp3`
 - Artifact gained/used: `drop_004.mp3`
+- Artifact hold-to-sell loop: `bong_001.mp3`
 - Shop purchase: `kaching.mp3`
 
 ## Approach
@@ -37,3 +38,4 @@ Tick sound should be synced to actual wheel segment crossings, not a fixed timer
 - `addWheel` accepts an `onSpinTick` callback.
 - `src/scenes/game.ts` wires wheel ticks, reward sounds, artifact sounds, and invalid action sounds.
 - `src/scenes/shop.ts` wires purchase sounds and invalid action sounds.
+- Shop artifact hold-to-sell starts a looping `bong_001.mp3` sound and stops it on release, hover exit, or completed sale.
