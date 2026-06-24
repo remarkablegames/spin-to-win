@@ -86,9 +86,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
     rotate(90),
   ])
 
-  const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES)
+  const levelShopConfig = LEVEL.LEVELS[state.levelIndex].shop
+  const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES, levelShopConfig)
 
-  const artifactOfferIds = getRandomArtifacts(2)
+  const artifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
 
   function sellArtifact(id: ArtifactId) {
     const artifact = getArtifactById(id)

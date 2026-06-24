@@ -1,4 +1,5 @@
 import { COLOR, SPRITE } from '../constants'
+import type { LevelShopConfig } from '../constants/level'
 import type { FillTemplate, PoolUpgrade } from '../constants/shop'
 import type { PoolUpgradeId } from '../constants/shop'
 import type { ArtifactId } from '../types'
@@ -200,15 +201,26 @@ export function addShop(
 
 export function drawPoolOffers(
   poolUpgrades: PoolUpgrade[],
+  shopConfig?: LevelShopConfig,
 ): [PoolUpgrade, PoolUpgrade] {
+  function getLevelWeight(upgrade: PoolUpgrade): number {
+    return (
+      upgrade.weight *
+      (shopConfig?.poolUpgradeWeightMultipliers?.[upgrade.id] ?? 1)
+    )
+  }
+
   function pickOne(exclude?: PoolUpgrade): PoolUpgrade {
     const available = exclude
       ? poolUpgrades.filter((u) => u !== exclude)
       : poolUpgrades
-    const availableWeight = available.reduce((sum, u) => sum + u.weight, 0)
+    const availableWeight = available.reduce(
+      (sum, u) => sum + getLevelWeight(u),
+      0,
+    )
     let roll = rand(0, availableWeight)
     for (const upgrade of available) {
-      roll -= upgrade.weight
+      roll -= getLevelWeight(upgrade)
       if (roll <= 0) return upgrade
     }
     return available[available.length - 1]

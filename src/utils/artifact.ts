@@ -1,4 +1,5 @@
 import { ARTIFACT } from '../constants'
+import type { LevelShopConfig } from '../constants/level'
 import type {
   ActiveArtifact,
   ActiveArtifactId,
@@ -43,10 +44,18 @@ export function getArtifactsByRarity(rarity: ArtifactRarity): Artifact[] {
 export function getRandomArtifacts(
   count: number,
   exclude: ArtifactId[] = [],
+  shopConfig?: LevelShopConfig,
 ): ArtifactId[] {
-  const candidates = Object.values(ARTIFACT.ARTIFACTS).filter(
+  const allCandidates = Object.values(ARTIFACT.ARTIFACTS).filter(
     (artifact) => !exclude.includes(artifact.id),
   )
+  const maxArtifactCost = shopConfig?.maxArtifactCost
+  const availableCandidates =
+    maxArtifactCost !== undefined
+      ? allCandidates.filter((artifact) => artifact.cost <= maxArtifactCost)
+      : allCandidates
+  const candidates =
+    availableCandidates.length >= count ? availableCandidates : allCandidates
 
   if (candidates.length === 0) {
     return []
@@ -55,6 +64,18 @@ export function getRandomArtifacts(
   const result: ArtifactId[] = []
   const used = new Set<ArtifactId>()
 
+  function getLevelWeight(artifact: Artifact): number {
+    const rarityWeight = ARTIFACT.RARITY_WEIGHTS[artifact.rarity]
+    const costMultiplier =
+      shopConfig?.artifactCostWeightMultipliers?.find(
+        ({ maxCost, minCost }) =>
+          (minCost === undefined || artifact.cost >= minCost) &&
+          (maxCost === undefined || artifact.cost <= maxCost),
+      )?.multiplier ?? 1
+
+    return rarityWeight * costMultiplier
+  }
+
   for (let i = 0; i < count; i++) {
     if (candidates.length === used.size) {
       break
@@ -62,10 +83,7 @@ export function getRandomArtifacts(
 
     const remaining = candidates
       .filter((artifact) => !used.has(artifact.id))
-      .reduce(
-        (sum, artifact) => sum + ARTIFACT.RARITY_WEIGHTS[artifact.rarity],
-        0,
-      )
+      .reduce((sum, artifact) => sum + getLevelWeight(artifact), 0)
     let roll = rand(0, remaining)
 
     for (const artifact of candidates) {
@@ -73,7 +91,7 @@ export function getRandomArtifacts(
         continue
       }
 
-      roll -= ARTIFACT.RARITY_WEIGHTS[artifact.rarity]
+      roll -= getLevelWeight(artifact)
 
       if (roll <= 0) {
         result.push(artifact.id)
