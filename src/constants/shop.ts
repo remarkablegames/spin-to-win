@@ -201,7 +201,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     money: 0,
     multiplier: 1.25,
     score: 0,
-    tooltip: 'Multiply round score by 1.25',
+    tooltip: 'Total score ×1.25',
   },
 
   {
@@ -211,7 +211,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     money: 0,
     multiplier: 0.75,
     score: 0,
-    tooltip: 'Multiply round score by 0.75',
+    tooltip: 'Total score ×0.75',
   },
 
   {

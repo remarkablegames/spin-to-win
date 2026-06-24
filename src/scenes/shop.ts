@@ -320,7 +320,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           money: 0,
           multiplier: multiplierValue,
           score: 0,
-          tooltip: `Multiply round score by ${String(multiplierValue)} (${multiplierLabel})`,
+          tooltip: `Total score ×${String(multiplierValue)}`,
         }
         wheel.addSegment(multiplierSegment)
         addToast(`Added ${multiplierLabel} Segment`)
