@@ -23,6 +23,10 @@ Play the game on:
 
 - [Roboto Mono](https://fonts.google.com/specimen/Roboto+Mono)
 
+### Music
+
+- [Free Music Second Dealing by みんなの創作支援サイトＴスタ/T-STUDIO](https://t-studio-tst.itch.io/free-music-second-dealing)
+
 ### Sounds
 
 - [Cash Register (Kaching) - Sound Effect](https://pixabay.com/sound-effects/film-special-effects-cash-register-kaching-sound-effect-125042/)
