@@ -69,14 +69,6 @@ export type Wheel = ReturnType<typeof addWheel>
 
 export const SEGMENTS: WheelSegment[] = [
   {
-    color: rgb(255, 99, 71),
-    icon: SPRITE.HEART.id,
-    label: '+10',
-    money: 0,
-    score: 10,
-    tooltip: 'Score 10 points',
-  },
-  {
     color: rgb(128, 128, 128),
     icon: SPRITE.GRAPE.id,
     label: '+25',
@@ -133,6 +125,15 @@ export const SEGMENTS: WheelSegment[] = [
     score: 0,
     tooltip: 'End the round',
   },
+  {
+    color: COLOR.LIGHT_BLUE,
+    icon: SPRITE.LIGHTNING.id,
+    label: '+25%',
+    money: 0,
+    multiplier: 1.25,
+    score: 0,
+    tooltip: 'Total score ×1.25',
+  },
 ]
 
 export function getDefaultSegments() {
@@ -159,6 +160,9 @@ const RADIUS = 250
 const SPIN_DURATION = 5
 const ROTATIONS_MIN = 2
 const ROTATIONS_MAX = 4
+const SEGMENT_LABEL_SIZE = 20
+const SEGMENT_ICON_TEXT_GAP = 4
+const SEGMENT_LABEL_RADIUS_RATIO = 0.62
 
 interface WheelOptions {
   angle?: number
@@ -477,29 +481,40 @@ export function addWheel(options: WheelOptions = {}) {
         pts: arcPoints,
       })
 
+      const spriteData = getSpriteById(segment.icon)
+      const iconWidth = spriteData.width
+      const textWidth = formatText({
+        size: SEGMENT_LABEL_SIZE,
+        text: segment.label,
+      }).width
+      const totalWidth = iconWidth + SEGMENT_ICON_TEXT_GAP + textWidth
       const midAngle = startAngle + segmentAngle / 2
-      const labelRadius = wheel.radius * 0.65
+
+      const labelRadius = wheel.radius * SEGMENT_LABEL_RADIUS_RATIO
       const labelPos = vec2(
         Math.cos(midAngle) * labelRadius,
         Math.sin(midAngle) * labelRadius,
       )
+      const labelAngle = (midAngle * 180) / Math.PI
+      const shouldFlipLabel = labelAngle > 90 && labelAngle < 270
+      const rotation = shouldFlipLabel ? labelAngle + 180 : labelAngle
 
-      const textWidth = formatText({ size: 20, text: segment.label }).width
-      const halfOffset = textWidth / 2
+      pushTransform()
+      pushTranslate(labelPos)
+      pushRotate(rotation)
 
-      const spriteData = getSpriteById(segment.icon)
       drawSprite({
         anchor: 'center',
-        pos: vec2(labelPos.x - halfOffset, labelPos.y),
+        pos: vec2(-totalWidth / 2 + iconWidth / 2, 0),
         sprite: segment.icon,
-        width: spriteData.width,
+        width: iconWidth,
         height: spriteData.height,
       })
 
-      const textPos = vec2(labelPos.x + halfOffset, labelPos.y)
+      const textPos = vec2(totalWidth / 2 - textWidth / 2, 0)
       const textOpts = {
         anchor: 'center' as const,
-        size: 20,
+        size: SEGMENT_LABEL_SIZE,
         text: segment.label,
       }
       const outlineOffset = 2
@@ -526,6 +541,8 @@ export function addWheel(options: WheelOptions = {}) {
         color: COLOR.WHITE,
         pos: textPos,
       })
+
+      popTransform()
     })
 
     wheel.segments.forEach((_: WheelSegment, index: number) => {

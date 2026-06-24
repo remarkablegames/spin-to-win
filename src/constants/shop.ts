@@ -1,6 +1,16 @@
 import type { Color } from 'kaplay'
 
-import { ART, COIN, GRAPE, HEART, MONEY_BAG, SKULLER, STAR } from './sprite'
+import {
+  ART,
+  COIN,
+  GRAPE,
+  HEART,
+  LIGHTNING,
+  MONEY_BAG,
+  SKULLER,
+  SPIKE,
+  STAR,
+} from './sprite'
 
 export const BASE_PASSIVE_INCOME = 3
 export const PASSIVE_INCOME_UPGRADE_AMOUNT = 1
@@ -24,7 +34,7 @@ export const FILL_BLANK_BASE_COST = 4
 export const ADD_MULTIPLIER_SEGMENT_COST = 8
 export const MULTIPLIER_SEGMENT_POSITIVE_CHANCE = 0.7
 export const MULTIPLIER_SEGMENT_POSITIVE_VALUE = 1.25
-export const MULTIPLIER_SEGMENT_NEGATIVE_VALUE = 0.75
+export const MULTIPLIER_SEGMENT_NEGATIVE_VALUE = 0.85
 
 export const CLONE_SEGMENT_BASE_COST = 10
 
@@ -196,7 +206,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
 
   {
     color: rgb(100, 200, 255),
-    icon: STAR.id,
+    icon: LIGHTNING.id,
     label: '+25%',
     money: 0,
     multiplier: 1.25,
@@ -206,12 +216,12 @@ export const FILL_TEMPLATES: FillTemplate[] = [
 
   {
     color: rgb(180, 100, 200),
-    icon: STAR.id,
-    label: '-25%',
+    icon: SPIKE.id,
+    label: '-15%',
     money: 0,
-    multiplier: 0.75,
+    multiplier: 0.85,
     score: 0,
-    tooltip: 'Total score ×0.75',
+    tooltip: 'Total score ×0.85',
   },
 
   {

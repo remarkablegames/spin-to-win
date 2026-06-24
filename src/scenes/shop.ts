@@ -312,10 +312,10 @@ scene(SCENE.SHOP, (state: ShopState) => {
           ? SHOP.MULTIPLIER_SEGMENT_POSITIVE_VALUE
           : SHOP.MULTIPLIER_SEGMENT_NEGATIVE_VALUE
         const multiplierColor = isPositive ? COLOR.LIGHT_BLUE : COLOR.PURPLE
-        const multiplierLabel = isPositive ? '+25%' : '-25%'
+        const multiplierLabel = isPositive ? '+25%' : '-15%'
         const multiplierSegment: WheelSegment = {
           color: multiplierColor,
-          icon: SPRITE.STAR.id,
+          icon: isPositive ? SPRITE.LIGHTNING.id : SPRITE.SPIKE.id,
           label: multiplierLabel,
           money: 0,
           multiplier: multiplierValue,

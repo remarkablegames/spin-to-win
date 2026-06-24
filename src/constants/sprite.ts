@@ -54,6 +54,12 @@ export const HEART: Sprite = {
   height: 26, // 34
 }
 
+export const LIGHTNING: Sprite = {
+  id: 'lightning',
+  width: 22, // 30
+  height: 30, // 41
+}
+
 export const MONEY_BAG: Sprite = {
   id: 'money_bag',
   width: 36, // 60
@@ -88,6 +94,12 @@ export const SPIDER_WEB: Sprite = {
   id: 'spider_web',
   width: 32, // 64
   height: 32, // 64
+}
+
+export const SPIKE: Sprite = {
+  id: 'spike',
+  width: 32, // 64
+  height: 11, // 21
 }
 
 export const SPARK: Sprite = {
