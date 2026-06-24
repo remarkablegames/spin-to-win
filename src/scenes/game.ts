@@ -191,14 +191,25 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     return `${multiplier >= 1 ? '+' : ''}${String(Math.round((multiplier - 1) * 100))}%`
   }
 
+  function isNegativeSegment(segment: WheelSegment) {
+    return (
+      segment.score < 0 ||
+      segment.money < 0 ||
+      segment.endRound === true ||
+      (segment.multiplier !== undefined && segment.multiplier < 1)
+    )
+  }
+
   function previewQueuedArtifactEffects() {
     wheel.segments.forEach((segment, index) => {
       if (index === blankSegmentIndex || segment.blank) {
         return
       }
 
-      const hasNegativeEffect = segment.score < 0 || segment.money < 0
-      if (queuedArtifacts.includes('skipNextNegative') && hasNegativeEffect) {
+      if (
+        queuedArtifacts.includes('skipNextNegative') &&
+        isNegativeSegment(segment)
+      ) {
         snapshotSegment(index)
         wheel.segments[index] = {
           ...segment,
@@ -474,7 +485,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     if (
       !skipEffect &&
       queuedArtifacts.includes('skipNextNegative') &&
-      (finalScore < 0 || finalMoney < 0)
+      isNegativeSegment(segment)
     ) {
       skipEffect = true
     }
@@ -598,7 +609,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       const effect = applyArtifactEffects(segment, segmentIndex)
       previewResolvedSegmentEffect(effect.segmentIndex, effect)
       playRewardSound(segment)
-      if (segment.endRound) {
+      if (segment.endRound && !effect.skipped) {
         spinsRemaining = 0
       }
       updateUI()
