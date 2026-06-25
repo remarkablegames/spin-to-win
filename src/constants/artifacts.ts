@@ -89,7 +89,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     description:
       'If the next spin lands on a negative segment, ignore its effect',
     icon: CROSS_MARK.id,
-    cost: 3,
+    cost: 6,
     rarity: 'uncommon',
     maxCharges: 1,
   },
