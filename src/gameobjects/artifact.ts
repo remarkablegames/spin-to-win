@@ -3,6 +3,7 @@ import type { AudioPlay, GameObj, PosComp, RectComp } from 'kaplay'
 import { ARTIFACT, COLOR, SOUND } from '../constants'
 import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
 import { getArtifactById, getSpriteById, playSound } from '../utils'
+import { getSellRefund } from '../utils/artifact'
 import { addTooltip } from './tooltip'
 
 const SLOT_SIZE = 64
@@ -171,7 +172,8 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
             opacity(0.4),
             z(15),
           ])
-          tooltip.setText('Hold to sell...')
+          const sellPrice = getSellRefund(slotId)
+          tooltip.setText(`Hold to sell... (+$${String(sellPrice)})`)
         })
         bg.onMouseRelease('left', () => {
           cancelHold()
