@@ -130,7 +130,3 @@ The cover scene renders the wheel on a 1024×1024 canvas for use as a logo or co
 ```
 http://localhost:5173/?scene=cover
 ```
-
-## License
-
-[MIT](LICENSE)
