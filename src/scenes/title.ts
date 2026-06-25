@@ -19,12 +19,12 @@ scene(SCENE.TITLE, () => {
   addMuteButton()
   addGrid()
 
-  add([
-    text('Spin to Win', { size: 56 }),
-    pos(center().x, TITLE_Y),
-    anchor('center'),
-    color(COLOR.GOLD),
-  ])
+  addShadowText({
+    color: COLOR.GOLD,
+    pos: { x: center().x, y: TITLE_Y },
+    size: 56,
+    text: 'Spin to Win',
+  })
 
   addShadowText({
     color: COLOR.LIGHT_BROWN,
