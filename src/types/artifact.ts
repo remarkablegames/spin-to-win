@@ -10,7 +10,11 @@ export type ActiveArtifactId =
   | 'skipNextNegative'
   | 'blankNextSegment'
 
-export type PassiveArtifactId = 'luckyCoin' | 'extraRoundSpin' | 'scoreGrowth'
+export type PassiveArtifactId =
+  | 'luckyCoin'
+  | 'extraRoundSpin'
+  | 'scoreGrowth'
+  | 'segmentCollector'
 
 export type ArtifactId = ActiveArtifactId | PassiveArtifactId
 

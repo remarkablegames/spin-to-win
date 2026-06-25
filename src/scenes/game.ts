@@ -569,6 +569,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       moneyDelta += spinsRemaining
     }
 
+    if (hasArtifact(artifacts, 'segmentCollector')) {
+      const segmentBonus = wheel.segments.length * 2
+      levelScore += segmentBonus
+    }
+
     header.setMoney(money, moneyDelta)
 
     go(SCENE.SHOP, {

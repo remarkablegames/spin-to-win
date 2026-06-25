@@ -136,6 +136,17 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     cost: 9,
     rarity: 'rare',
   },
+
+  segmentCollector: {
+    id: 'segmentCollector',
+    type: 'passive',
+    name: 'Segment Collector',
+    description:
+      'Gain +2 points at the end of the round for each wheel segment you own',
+    icon: STAR.id,
+    cost: 9,
+    rarity: 'rare',
+  },
 }
 
 export const RARITY_WEIGHTS: Record<ArtifactRarity, number> = {
