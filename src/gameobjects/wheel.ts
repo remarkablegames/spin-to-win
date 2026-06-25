@@ -19,9 +19,9 @@ export interface WheelSegment {
   endRound?: boolean
   icon: string
   label: string
-  money: number
+  money?: number
   multiplier?: number
-  score: number
+  score?: number
   tooltip: string
 }
 
@@ -72,7 +72,6 @@ export const SEGMENTS: WheelSegment[] = [
     color: rgb(128, 128, 128),
     icon: SPRITE.GRAPE.id,
     label: '+25',
-    money: 0,
     score: 25,
     tooltip: 'Score 25 points',
   },
@@ -80,7 +79,6 @@ export const SEGMENTS: WheelSegment[] = [
     color: rgb(220, 20, 60),
     icon: SPRITE.FIRE.id,
     label: '-25',
-    money: 0,
     score: -25,
     tooltip: 'Lose 25 points',
   },
@@ -88,7 +86,6 @@ export const SEGMENTS: WheelSegment[] = [
     color: rgb(30, 144, 255),
     icon: SPRITE.STAR.id,
     label: '+50',
-    money: 0,
     score: 50,
     tooltip: 'Score 50 points',
   },
@@ -97,7 +94,6 @@ export const SEGMENTS: WheelSegment[] = [
     icon: SPRITE.COIN.id,
     label: '+$5',
     money: 5,
-    score: 0,
     tooltip: 'Earn $5',
   },
   {
@@ -105,14 +101,12 @@ export const SEGMENTS: WheelSegment[] = [
     icon: SPRITE.MONEY_BAG.id,
     label: '-$3',
     money: -3,
-    score: 0,
     tooltip: 'Pay $3',
   },
   {
     color: rgb(60, 179, 113),
     icon: SPRITE.APPLE.id,
     label: '+15',
-    money: 0,
     score: 15,
     tooltip: 'Score 15 points',
   },
@@ -121,17 +115,13 @@ export const SEGMENTS: WheelSegment[] = [
     endRound: true,
     icon: SPRITE.SKULLER.id,
     label: 'End',
-    money: 0,
-    score: 0,
     tooltip: 'End the round',
   },
   {
     color: COLOR.LIGHT_BLUE,
     icon: SPRITE.LIGHTNING.id,
     label: '+25%',
-    money: 0,
     multiplier: 1.25,
-    score: 0,
     tooltip: 'Total score ×1.25',
   },
 ]
@@ -145,11 +135,11 @@ export function formatSegmentLabel(segment: WheelSegment) {
     return segment.label
   }
 
-  if (segment.score !== 0) {
+  if (typeof segment.score === 'number') {
     return `${segment.score >= 0 ? '+' : ''}${String(segment.score)}`
   }
 
-  if (segment.money !== 0) {
+  if (typeof segment.money === 'number') {
     return `${segment.money >= 0 ? '+' : ''}$${String(segment.money)}`
   }
 
@@ -331,8 +321,8 @@ export function addWheel(options: WheelOptions = {}) {
     switch (mode.type) {
       case 'upgrade':
         return mode.upgradeType === 'score'
-          ? segment.score !== 0
-          : segment.money !== 0
+          ? segment.score !== undefined
+          : segment.money !== undefined
       case 'fill':
         return segment.blank === true
       case 'delete':
@@ -348,8 +338,8 @@ export function addWheel(options: WheelOptions = {}) {
     switch (mode.type) {
       case 'upgrade':
         return mode.upgradeType === 'score'
-          ? `${String(segment.score)} \u2192 ${String(segment.score + mode.amount)} \u00b7 click to upgrade`
-          : `$${String(segment.money)} \u2192 $${String(segment.money + mode.amount)} \u00b7 click to upgrade`
+          ? `${String(segment.score ?? 0)} → ${String((segment.score ?? 0) + mode.amount)}`
+          : `$${String(segment.money ?? 0)} → $${String((segment.money ?? 0) + mode.amount)}`
       case 'fill':
         return 'Click to fill this blank segment'
       case 'delete':
@@ -419,9 +409,9 @@ export function addWheel(options: WheelOptions = {}) {
 
     if (mode.type === 'upgrade') {
       if (mode.upgradeType === 'score') {
-        segment.score += mode.amount
+        segment.score = (segment.score ?? 0) + mode.amount
       } else {
-        segment.money += mode.amount
+        segment.money = (segment.money ?? 0) + mode.amount
       }
       segment.label = formatSegmentLabel(segment)
     }

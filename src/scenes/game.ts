@@ -185,8 +185,6 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       color: COLOR.GREY,
       icon: SPRITE.QUESTION_MARK.id,
       label: '',
-      money: 0,
-      score: 0,
       tooltip: 'Blanked for next spin',
     }
   }
@@ -197,8 +195,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   function isNegativeSegment(segment: WheelSegment) {
     return (
-      segment.score < 0 ||
-      segment.money < 0 ||
+      (segment.score ?? 0) < 0 ||
+      (segment.money ?? 0) < 0 ||
       segment.endRound === true ||
       (segment.multiplier !== undefined && segment.multiplier < 1)
     )
@@ -221,9 +219,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
           color: COLOR.GREY,
           icon: SPRITE.QUESTION_MARK.id,
           label: '',
-          money: 0,
           multiplier: undefined,
-          score: 0,
           tooltip: 'Skipped by artifact',
         }
         return
@@ -231,11 +227,17 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
       const preview = { ...segment }
 
-      if (queuedArtifacts.includes('boostNextScore') && preview.score !== 0) {
+      if (
+        queuedArtifacts.includes('boostNextScore') &&
+        preview.score !== undefined
+      ) {
         preview.score = Math.round(preview.score * 1.5)
       }
 
-      if (queuedArtifacts.includes('boostNextMoney') && preview.money !== 0) {
+      if (
+        queuedArtifacts.includes('boostNextMoney') &&
+        preview.money !== undefined
+      ) {
         preview.money = Math.round(preview.money * 1.5)
       }
 
@@ -247,8 +249,12 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       }
 
       if (queuedArtifacts.includes('doubleNextSegment')) {
-        preview.score *= 2
-        preview.money *= 2
+        if (preview.score !== undefined) {
+          preview.score *= 2
+        }
+        if (preview.money !== undefined) {
+          preview.money *= 2
+        }
       }
 
       const changed =
@@ -474,8 +480,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     segmentIndex: number,
   ): ResolvedSegmentEffect {
     const usedQueuedArtifacts = [...queuedArtifacts]
-    let finalScore = segment.score
-    let finalMoney = segment.money
+    let finalScore = segment.score ?? 0
+    let finalMoney = segment.money ?? 0
     let finalMultiplier = segment.multiplier
     let skipEffect = false
 
@@ -529,10 +535,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       grantRandomArtifact()
     }
 
-    if (hasArtifact(artifacts, 'scoreGrowth') && segment.score !== 0) {
+    if (hasArtifact(artifacts, 'scoreGrowth') && segment.score !== undefined) {
       const index = wheel.getWinningSegmentIndex()
       if (index >= 0 && index < wheel.segments.length) {
-        wheel.segments[index].score += 5
+        wheel.segments[index].score = (wheel.segments[index].score ?? 0) + 5
         wheel.segments[index].label = formatSegmentLabel(wheel.segments[index])
       }
     }

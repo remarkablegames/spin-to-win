@@ -131,9 +131,9 @@ export interface FillTemplate {
   endRound?: boolean
   icon: string
   label: string
-  money: number
+  money?: number
   multiplier?: number
-  score: number
+  score?: number
   tooltip: string
 }
 
@@ -142,7 +142,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(255, 99, 71),
     icon: HEART.id,
     label: '+10',
-    money: 0,
     score: 10,
     tooltip: 'Score 10 points',
   },
@@ -151,7 +150,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(128, 128, 128),
     icon: GRAPE.id,
     label: '+25',
-    money: 0,
     score: 25,
     tooltip: 'Score 25 points',
   },
@@ -160,7 +158,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(30, 144, 255),
     icon: STAR.id,
     label: '+50',
-    money: 0,
     score: 50,
     tooltip: 'Score 50 points',
   },
@@ -170,7 +167,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     icon: COIN.id,
     label: '+$3',
     money: 3,
-    score: 0,
     tooltip: 'Earn $3',
   },
 
@@ -179,7 +175,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     icon: COIN.id,
     label: '+$5',
     money: 5,
-    score: 0,
     tooltip: 'Earn $5',
   },
 
@@ -187,7 +182,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(220, 20, 60),
     icon: SKULLER.id,
     label: '-15',
-    money: 0,
     score: -15,
     tooltip: 'Lose 15 points',
   },
@@ -197,7 +191,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     icon: MONEY_BAG.id,
     label: '-$3',
     money: -3,
-    score: 0,
     tooltip: 'Pay $3',
   },
 
@@ -205,9 +198,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(100, 200, 255),
     icon: LIGHTNING.id,
     label: '+25%',
-    money: 0,
     multiplier: 1.25,
-    score: 0,
     tooltip: 'Total score ×1.25',
   },
 
@@ -215,9 +206,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(180, 100, 200),
     icon: SPIKE.id,
     label: '-15%',
-    money: 0,
     multiplier: 0.85,
-    score: 0,
     tooltip: 'Total score ×0.85',
   },
 
@@ -226,8 +215,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(200, 100, 200),
     icon: HOME.id,
     label: 'Artifact',
-    money: 0,
-    score: 0,
     tooltip: 'Land here to gain a random artifact',
   },
 
@@ -235,7 +222,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(34, 139, 34),
     icon: APPLE.id,
     label: '+5',
-    money: 0,
     score: 5,
     tooltip: 'Score 5 points',
   },
@@ -244,7 +230,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(65, 105, 225),
     icon: STAR.id,
     label: '+35',
-    money: 0,
     score: 35,
     tooltip: 'Score 35 points',
   },
@@ -254,7 +239,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     icon: COIN.id,
     label: '+$8',
     money: 8,
-    score: 0,
     tooltip: 'Earn $8',
   },
 
@@ -263,7 +247,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     icon: TGA.id,
     label: '-$5',
     money: -5,
-    score: 0,
     tooltip: 'Pay $5',
   },
 
@@ -271,7 +254,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(255, 69, 0),
     icon: PUMPKA.id,
     label: '-10',
-    money: 0,
     score: -10,
     tooltip: 'Lose 10 points',
   },
@@ -280,9 +262,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(255, 165, 0),
     icon: SPARK.id,
     label: '+10%',
-    money: 0,
     multiplier: 1.1,
-    score: 0,
     tooltip: 'Total score ×1.1',
   },
 
@@ -290,9 +270,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     color: rgb(120, 120, 140),
     icon: KARAT.id,
     label: '-10%',
-    money: 0,
     multiplier: 0.9,
-    score: 0,
     tooltip: 'Total score ×0.9',
   },
 
@@ -301,8 +279,6 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     endRound: true,
     icon: SKULLER.id,
     label: 'End',
-    money: 0,
-    score: 0,
     tooltip: 'End the round',
   },
 ]

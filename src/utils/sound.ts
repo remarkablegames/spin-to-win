@@ -63,12 +63,12 @@ export function playRewardSound(segment: WheelSegment) {
     return
   }
 
-  if (segment.score < 0 || segment.money < 0) {
+  if ((segment.score ?? 0) < 0 || (segment.money ?? 0) < 0) {
     playSound(SOUND.NEGATIVE_REWARD.id)
     return
   }
 
-  if (segment.score > 0 || segment.money > 0) {
+  if ((segment.score ?? 0) > 0 || (segment.money ?? 0) > 0) {
     playSound(SOUND.POSITIVE_REWARD.id)
   }
 }

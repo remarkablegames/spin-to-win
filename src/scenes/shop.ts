@@ -174,8 +174,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
           color: COLOR.GREY,
           icon: SPRITE.QUESTION_MARK.id,
           label: '',
-          money: 0,
-          score: 0,
           tooltip: 'Blank segment (fill it with an upgrade)',
         }
         wheel.addSegment(blank)
@@ -325,9 +323,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
           color: multiplierColor,
           icon: isPositive ? SPRITE.LIGHTNING.id : SPRITE.SPIKE.id,
           label: multiplierLabel,
-          money: 0,
           multiplier: multiplierValue,
-          score: 0,
           tooltip: `Total score ×${String(multiplierValue)}`,
         }
         wheel.addSegment(multiplierSegment)
@@ -416,15 +412,15 @@ scene(SCENE.SHOP, (state: ShopState) => {
   }
 
   function hasScoreSegments() {
-    return wheel.segments.some((s) => s.score !== 0)
+    return wheel.segments.some(({ score }) => score !== undefined)
   }
 
   function hasMoneySegments() {
-    return wheel.segments.some((s) => s.money !== 0)
+    return wheel.segments.some(({ money }) => money !== undefined)
   }
 
   function hasBlankSegments() {
-    return wheel.segments.some((s) => s.blank === true)
+    return wheel.segments.some(({ blank }) => blank === true)
   }
 
   function isPoolOfferEnabled(upgrade: PoolUpgrade): boolean {
