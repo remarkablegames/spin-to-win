@@ -108,7 +108,7 @@ export function addShop(
 
   const rerollButton = addButton({
     label: `Reroll ($${String(SHOP.REROLL_BASE_COST)})`,
-    icon: SPRITE.SPARKLES.id,
+    icon: SPRITE.HISTORY.id,
     x,
     y:
       BUTTON_START_Y +
