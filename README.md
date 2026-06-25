@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/favicon.png" width="200" alt="Spin to Win">
+  <img src="public/favicon.png" width="300" alt="Spin to Win">
 </p>
 
 # Spin to Win
