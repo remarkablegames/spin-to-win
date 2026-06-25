@@ -241,10 +241,10 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   {
     color: rgb(65, 105, 225),
     icon: STAR.id,
-    label: '+75',
+    label: '+35',
     money: 0,
-    score: 75,
-    tooltip: 'Score 75 points',
+    score: 35,
+    tooltip: 'Score 35 points',
   },
 
   {
