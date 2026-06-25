@@ -113,6 +113,7 @@ You can jump to a scene by adding `?scene=<name>` to the URL.
 | Scene   | URL params (all optional)                                                      |
 | ------- | ------------------------------------------------------------------------------ |
 | `title` | _(none)_                                                                       |
+| `cover` | _(none)_                                                                       |
 | `game`  | `level`, `round`, `score`, `money`, `baseSpins`, `extraSpins`, `passiveIncome` |
 | `shop`  | `level`, `round`, `score`, `money`, `passiveIncome`, `baseSpins`               |
 | `end`   | `level`, `score`, `money`, `baseSpins`, `extraSpins`, `passiveIncome`          |
@@ -129,6 +130,14 @@ http://localhost:5173/?scene=game&level=1&money=50
 
 ```
 http://localhost:5173/?scene=shop&level=0&round=1&score=100&money=50&passiveIncome=5
+```
+
+### Cover
+
+The cover scene renders the wheel on a 1024×1024 canvas for use as a logo or cover image.
+
+```
+http://localhost:5173/?scene=cover
 ```
 
 ## License
