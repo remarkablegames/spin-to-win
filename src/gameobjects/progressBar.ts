@@ -54,7 +54,12 @@ export function addProgressBar({
       currentRatio = Math.min(1, Math.max(0, ratio))
       fill.width = width * currentRatio
     },
-    animateTo(ratio: number, duration: number, onComplete?: () => void) {
+    animateTo(
+      ratio: number,
+      duration: number,
+      onComplete?: () => void,
+      onUpdate?: (ratio: number) => void,
+    ) {
       const targetRatio = Math.min(1, Math.max(0, ratio))
       const startRatio = currentRatio
       tween(
@@ -64,6 +69,7 @@ export function addProgressBar({
         (value) => {
           currentRatio = value
           fill.width = width * value
+          onUpdate?.(value)
         },
         easings.easeOutCubic,
       ).onEnd(() => {

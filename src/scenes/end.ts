@@ -29,7 +29,8 @@ const PROGRESS_BAR_WIDTH = 400
 const PROGRESS_BAR_HEIGHT = 20
 const TITLE_Y = 175
 const PROGRESS_BAR_Y = 225
-const SUBMIT_BUTTON_Y = 300
+const SCORE_LABEL_Y = 270
+const SUBMIT_BUTTON_Y = 335
 
 scene(SCENE.END, (state: EndState) => {
   addMuteButton()
@@ -56,6 +57,22 @@ scene(SCENE.END, (state: EndState) => {
     text: 'Level End',
   })
 
+  const scoreLabel = add([
+    text(
+      `[numerator]0[/numerator][denominator]/${String(level.targetScore)}[/denominator]`,
+      {
+        align: 'center',
+        size: 26,
+        styles: {
+          denominator: { color: COLOR.BROWN },
+          numerator: { color: COLOR.GOLD },
+        },
+      },
+    ),
+    pos(center().x, SCORE_LABEL_Y),
+    anchor('center'),
+  ])
+
   const centerBar = addProgressBar({
     x: center().x,
     y: PROGRESS_BAR_Y,
@@ -78,49 +95,57 @@ scene(SCENE.END, (state: EndState) => {
         ANIMATE_DURATION * finalRatio,
       )
       header.animateScore(animateDuration)
-      centerBar.animateTo(finalRatio, animateDuration, () => {
-        tickLoop.cancel()
+      centerBar.animateTo(
+        finalRatio,
+        animateDuration,
+        () => {
+          tickLoop.cancel()
 
-        playSound(isWin ? SOUND.LEVEL_COMPLETE.id : SOUND.LEVEL_FAILED.id)
+          playSound(isWin ? SOUND.LEVEL_COMPLETE.id : SOUND.LEVEL_FAILED.id)
 
-        const resultLabel = isWin
-          ? isLastLevel
-            ? 'You Won!'
-            : 'Level Complete!'
-          : 'Level Failed'
-        titleText.text = resultLabel
-        titleText.color = isWin ? COLOR.LIGHT_GREEN : COLOR.RED
-        titleShadow.text = resultLabel
+          const resultLabel = isWin
+            ? isLastLevel
+              ? 'You Won!'
+              : 'Level Complete!'
+            : 'Level Failed'
+          titleText.text = resultLabel
+          titleText.color = isWin ? COLOR.GREEN : COLOR.RED
+          titleShadow.text = resultLabel
 
-        const canAdvance = isWin && !isLastLevel
+          const canAdvance = isWin && !isLastLevel
 
-        addButton({
-          buttonColor: isWin ? COLOR.GREEN : COLOR.RED,
-          label: canAdvance ? 'Next Level' : isWin ? 'Main Menu' : 'Restart',
-          onClick: () => {
-            if (!canAdvance) {
-              go(SCENE.TITLE)
-              return
-            }
+          addButton({
+            buttonColor: isWin ? COLOR.GREEN : COLOR.RED,
+            label: canAdvance ? 'Next Level' : isWin ? 'Main Menu' : 'Restart',
+            onClick: () => {
+              if (!canAdvance) {
+                go(SCENE.TITLE)
+                return
+              }
 
-            go(SCENE.GAME, {
-              artifacts: state.artifacts,
-              baseSpins: state.baseSpins,
-              extraSpins: state.extraSpins,
-              levelIndex: state.levelIndex + 1,
-              levelScore: carryOverScore,
-              money: state.money,
-              passiveIncome: state.passiveIncome,
-              roundIndex: -1,
-              segments: state.segments,
-              wheelAngle: state.wheelAngle,
-            })
-          },
-          shadowColor: isWin ? COLOR.DARK_GREEN : COLOR.DARK_RED,
-          x: center().x,
-          y: SUBMIT_BUTTON_Y,
-        })
-      })
+              go(SCENE.GAME, {
+                artifacts: state.artifacts,
+                baseSpins: state.baseSpins,
+                extraSpins: state.extraSpins,
+                levelIndex: state.levelIndex + 1,
+                levelScore: carryOverScore,
+                money: state.money,
+                passiveIncome: state.passiveIncome,
+                roundIndex: -1,
+                segments: state.segments,
+                wheelAngle: state.wheelAngle,
+              })
+            },
+            shadowColor: isWin ? COLOR.DARK_GREEN : COLOR.DARK_RED,
+            x: center().x,
+            y: SUBMIT_BUTTON_Y,
+          })
+        },
+        (ratio) => {
+          const current = Math.round(ratio * level.targetScore)
+          scoreLabel.text = `[numerator]${String(current)}[/numerator][denominator]/${String(level.targetScore)}[/denominator]`
+        },
+      )
     },
     shadowColor: COLOR.DARK_GREEN,
     x: center().x,
