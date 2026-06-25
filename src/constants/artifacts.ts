@@ -110,7 +110,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     id: 'luckyCoin',
     type: 'passive',
     name: 'Lucky Coin',
-    description: 'Each unused spin gives +$1 at the end of the round',
+    description: 'Unused spins give +$1 at the end of the round',
     icon: SUN.id,
     cost: 9,
     rarity: 'rare',
@@ -141,8 +141,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     id: 'segmentCollector',
     type: 'passive',
     name: 'Segment Collector',
-    description:
-      'Gain +2 points at the end of the round for each wheel segment you own',
+    description: 'Each wheel segment gives +2 score at the end of the round',
     icon: STAR.id,
     cost: 9,
     rarity: 'rare',

@@ -96,6 +96,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   let blankSegmentIndex: number | null = null
   let temporarySegmentSnapshots: SegmentSnapshot[] = []
   let isBlankSelecting = false
+  let pendingUnusedSpins: number | null = null
 
   const header = addHeader()
 
@@ -561,12 +562,12 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
   }
 
-  function endRound() {
+  function endRound(unusedSpins = 0) {
     money += passiveIncome
 
     if (hasArtifact(artifacts, 'luckyCoin')) {
-      money += spinsRemaining
-      moneyDelta += spinsRemaining
+      money += unusedSpins
+      moneyDelta += unusedSpins
     }
 
     if (hasArtifact(artifacts, 'segmentCollector')) {
@@ -625,6 +626,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       previewResolvedSegmentEffect(effect.segmentIndex, effect)
       playRewardSound(segment)
       if (segment.endRound && !effect.skipped) {
+        pendingUnusedSpins = spinsRemaining
         spinsRemaining = 0
       }
       updateUI()
@@ -682,7 +684,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
           skipButton.enable()
           updateSpinButton()
         } else {
-          endRound()
+          endRound(pendingUnusedSpins ?? 0)
+          pendingUnusedSpins = null
         }
       })
     })
@@ -707,10 +710,11 @@ scene(SCENE.GAME, (initialState?: GameState) => {
         return
       }
 
+      const unusedSpins = spinsRemaining
       spinsRemaining = 0
       resetTemporaryArtifactState()
       artifactInventory.update(artifacts, queuedArtifacts)
-      endRound()
+      endRound(unusedSpins)
     },
     tooltip: 'End the round',
     tooltipAnchor: 'bot',
