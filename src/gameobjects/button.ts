@@ -130,6 +130,7 @@ export function addButton({
 
   button.onHover(() => {
     hovered = true
+    buttonTooltip?.show()
 
     if (!enabled) {
       setCursor('not-allowed')
@@ -139,7 +140,6 @@ export function addButton({
     setCursor('pointer')
     playSound(SOUND.BUTTON_HOVER.id)
     setButtonScale(1.1)
-    buttonTooltip?.show()
   })
 
   button.onHoverEnd(() => {
@@ -166,7 +166,7 @@ export function addButton({
       if (hovered) {
         setCursor('not-allowed')
         setButtonScale(1)
-        buttonTooltip?.hide()
+        buttonTooltip?.show()
       }
     },
     enable() {
