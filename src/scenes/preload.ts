@@ -1,10 +1,10 @@
-import { SCENE, SOUND, SPRITE } from '../constants'
+import { MUSIC, SCENE, SOUND, SPRITE } from '../constants'
 
 scene(SCENE.PRELOAD, () => {
   const font = loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
-  const sounds = Object.values(SOUND).map((sound) =>
-    loadSound(sound.id, sound.src),
-  )
+
+  Object.values(SOUND).forEach((sound) => void loadSound(sound.id, sound.src))
+  Object.values(MUSIC).forEach((music) => void loadSound(music.id, music.src))
 
   loadSprite(SPRITE.APPLE.id, '/sprites/apple.png')
   loadSprite(SPRITE.ARROW.id, '/icons/arrow.png')
@@ -26,9 +26,11 @@ scene(SCENE.PRELOAD, () => {
   loadSprite(SPRITE.SPARK.id, '/sprites/spark.png')
   loadSprite(SPRITE.SPARKLES.id, '/sprites/sparkles.png')
   loadSprite(SPRITE.STAR.id, '/sprites/star.png')
+  loadSprite(SPRITE.SOUNDS.id, '/icons/sounds.png')
+  loadSprite(SPRITE.SOUNDS_OUTLINE.id, '/icons/sounds-o.png')
   loadSprite(SPRITE.TRASH.id, '/icons/trash.png')
 
-  void Promise.all([font, ...sounds]).then(() => {
+  void font.then(() => {
     go(SCENE.TITLE)
   })
 })

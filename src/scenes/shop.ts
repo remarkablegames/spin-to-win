@@ -12,6 +12,7 @@ import {
   addArtifact,
   addGrid,
   addHeader,
+  addMuteButton,
   addShop,
   addToast,
   addWheel,
@@ -44,6 +45,7 @@ interface ShopState {
 }
 
 scene(SCENE.SHOP, (state: ShopState) => {
+  addMuteButton()
   addGrid()
 
   let money = state.money

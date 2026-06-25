@@ -5,6 +5,7 @@ import {
   addFloatingText,
   addGrid,
   addHeader,
+  addMuteButton,
   addToast,
   addWheel,
   FLOATING_TEXT_DURATION,
@@ -18,6 +19,7 @@ import {
   getRandomArtifacts,
   hasArtifact,
   isActiveArtifact,
+  playMusic,
   playRewardSound,
   playSound,
   playWheelTick,
@@ -73,6 +75,8 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     }
   }
 
+  playMusic()
+  addMuteButton()
   addGrid()
 
   let levelIndex = initialState?.levelIndex ?? 0

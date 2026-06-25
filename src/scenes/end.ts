@@ -1,5 +1,5 @@
 import { COLOR, LEVEL, SCENE } from '../constants'
-import { addButton, addGrid, addHeader } from '../gameobjects'
+import { addButton, addGrid, addHeader, addMuteButton } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import type { ArtifactSlot } from '../types'
 
@@ -19,6 +19,7 @@ const BUTTON_OFFSET = 64
 const RESULT_TEXT_TOP = 200
 
 scene(SCENE.END, (state: EndState) => {
+  addMuteButton()
   addGrid()
 
   const header = addHeader()

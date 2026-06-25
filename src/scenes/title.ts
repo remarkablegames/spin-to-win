@@ -1,5 +1,5 @@
 import { COLOR, SCENE, SPRITE } from '../constants'
-import { addButton, addGrid, addWheel } from '../gameobjects'
+import { addButton, addGrid, addMuteButton, addWheel } from '../gameobjects'
 
 const TITLE_Y = 130
 const TAGLINE_Y = 180
@@ -11,6 +11,7 @@ const TAGLINE_SHADOW_OFFSET = 2
 const WHEEL_ROTATION_SPEED = 8
 
 scene(SCENE.TITLE, () => {
+  addMuteButton()
   addGrid()
 
   add([

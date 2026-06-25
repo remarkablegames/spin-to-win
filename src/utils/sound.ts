@@ -1,8 +1,17 @@
-import type { AudioPlayOpt } from 'kaplay'
+import type { AudioPlay, AudioPlayOpt } from 'kaplay'
 
-import { SOUND } from '../constants'
+import { MUSIC, SOUND } from '../constants'
 import type { WheelSegment } from '../gameobjects/wheel'
 import type { Sound } from '../types'
+
+let backgroundMusic: AudioPlay | null = null
+
+export function playMusic() {
+  backgroundMusic ??= play(MUSIC.SECOND_DEALING.id, {
+    loop: true,
+    volume: MUSIC.SECOND_DEALING.volume,
+  })
+}
 
 type SoundId = Sound['id']
 

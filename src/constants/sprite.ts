@@ -120,6 +120,18 @@ export const STAR: Sprite = {
   height: 30, // 40
 }
 
+export const SOUNDS: Sprite = {
+  id: 'sounds',
+  width: 32, // 64
+  height: 32, // 64
+}
+
+export const SOUNDS_OUTLINE: Sprite = {
+  id: 'sounds_outline',
+  width: 32, // 64
+  height: 32, // 64
+}
+
 export const TRASH: Sprite = {
   id: 'trash',
   width: 32, // 64

@@ -1,6 +1,7 @@
 export * as ARTIFACT from './artifacts'
 export * as COLOR from './colors'
 export * as LEVEL from './level'
+export * as MUSIC from './music'
 export * as SCENE from './scene'
 export * as SHOP from './shop'
 export * as SOUND from './sound'
