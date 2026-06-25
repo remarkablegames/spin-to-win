@@ -5,6 +5,7 @@ import {
   addHeader,
   addMuteButton,
   addProgressBar,
+  addShadowText,
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import type { ArtifactSlot } from '../types'
@@ -26,11 +27,9 @@ const ANIMATE_DURATION = 1.5
 const SCORE_FILL_INTERVAL = 0.1
 const PROGRESS_BAR_WIDTH = 400
 const PROGRESS_BAR_HEIGHT = 20
-const LABEL_Y = 175
-const PROGRESS_BAR_Y = 210
-const SUBMIT_BUTTON_Y = 260
-const RESULT_Y = 320
-const NEXT_BUTTON_Y = 375
+const TITLE_Y = 175
+const PROGRESS_BAR_Y = 225
+const SUBMIT_BUTTON_Y = 300
 
 scene(SCENE.END, (state: EndState) => {
   addMuteButton()
@@ -49,12 +48,13 @@ scene(SCENE.END, (state: EndState) => {
   header.setScore(state.levelScore, level.targetScore)
   header.setMoney(state.money)
 
-  add([
-    text('Level End', { align: 'center', size: 24 }),
-    pos(center().x, LABEL_Y),
-    anchor('center'),
-    color(COLOR.GOLD),
-  ])
+  const { text: titleText, shadow: titleShadow } = addShadowText({
+    align: 'center',
+    color: COLOR.GOLD,
+    pos: { x: center().x, y: TITLE_Y },
+    size: 36,
+    text: 'Level End',
+  })
 
   const centerBar = addProgressBar({
     x: center().x,
@@ -82,16 +82,11 @@ scene(SCENE.END, (state: EndState) => {
         const resultLabel = isWin
           ? isLastLevel
             ? 'You Won!'
-            : 'Level Complete'
+            : 'Level Complete!'
           : 'Level Failed'
-        const resultColor = isWin ? COLOR.GOLD : COLOR.RED
-
-        add([
-          text(resultLabel, { align: 'center', size: 32 }),
-          pos(center().x, RESULT_Y),
-          anchor('center'),
-          color(resultColor),
-        ])
+        titleText.text = resultLabel
+        titleText.color = isWin ? COLOR.LIGHT_GREEN : COLOR.RED
+        titleShadow.text = resultLabel
 
         const canAdvance = isWin && !isLastLevel
 
@@ -119,7 +114,7 @@ scene(SCENE.END, (state: EndState) => {
           },
           shadowColor: isWin ? COLOR.DARK_GREEN : COLOR.DARK_RED,
           x: center().x,
-          y: NEXT_BUTTON_Y,
+          y: SUBMIT_BUTTON_Y,
         })
       })
     },

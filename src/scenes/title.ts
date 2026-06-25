@@ -1,5 +1,11 @@
 import { COLOR, SCENE, SPRITE } from '../constants'
-import { addButton, addGrid, addMuteButton, addWheel } from '../gameobjects'
+import {
+  addButton,
+  addGrid,
+  addMuteButton,
+  addShadowText,
+  addWheel,
+} from '../gameobjects'
 
 const TITLE_Y = 130
 const TAGLINE_Y = 180
@@ -7,7 +13,6 @@ const WHEEL_RADIUS = 230
 const WHEEL_Y_OFFSET = 0
 const PLAY_BUTTON_Y_OFFSET = 285
 const POINTER_OFFSET = 14
-const TAGLINE_SHADOW_OFFSET = 2
 const WHEEL_ROTATION_SPEED = 8
 
 scene(SCENE.TITLE, () => {
@@ -21,20 +26,14 @@ scene(SCENE.TITLE, () => {
     color(COLOR.GOLD),
   ])
 
-  add([
-    text('Spin. Score. Repeat.', { size: 24 }),
-    pos(center().x + TAGLINE_SHADOW_OFFSET, TAGLINE_Y + TAGLINE_SHADOW_OFFSET),
-    anchor('center'),
-    color(COLOR.DARK_BROWN),
-    opacity(0.8),
-  ])
-
-  add([
-    text('Spin. Score. Repeat.', { size: 24 }),
-    pos(center().x, TAGLINE_Y),
-    anchor('center'),
-    color(COLOR.LIGHT_BROWN),
-  ])
+  addShadowText({
+    color: COLOR.LIGHT_BROWN,
+    pos: { x: center().x, y: TAGLINE_Y },
+    shadowColor: COLOR.DARK_BROWN,
+    shadowOpacity: 0.8,
+    size: 24,
+    text: 'Spin. Score. Repeat.',
+  })
 
   const wheelPos = vec2(center().x, center().y + WHEEL_Y_OFFSET)
   const wheel = addWheel({
