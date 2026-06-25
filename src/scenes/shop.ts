@@ -179,10 +179,30 @@ scene(SCENE.SHOP, (state: ShopState) => {
           tooltip: 'Blank segment (fill it with an upgrade)',
         }
         wheel.addSegment(blank)
+        const newIndex = wheel.segments.length - 1
+        const targetIndex = randi(0, wheel.segments.length)
+        const [blankSegment] = wheel.segments.splice(newIndex, 1)
+        wheel.segments.splice(targetIndex, 0, blankSegment)
         addedSegment = true
         shop.hideAddSegment()
         addToast('Blank Segment Added')
         playSound(SOUND.SHOP_PURCHASE.id)
+        updateButtons()
+      },
+      onFillBlank: () => {
+        if (!hasBlankSegments()) {
+          playSound(SOUND.INVALID_ACTION.id)
+          return
+        }
+        const blankIndices = wheel.segments
+          .map((segment, index) => (segment.blank ? index : -1))
+          .filter((index) => index !== -1)
+        const template = pickFillTemplates(SHOP.FILL_TEMPLATES, 1)[0]
+        const idx = blankIndices[randi(0, blankIndices.length)]
+        wheel.segments[idx] = { ...template }
+        addToast(`Filled: ${template.label}`)
+        playSound(SOUND.SHOP_PURCHASE.id)
+        shop.hideFillBlank()
         updateButtons()
       },
       onPoolUpgrade: (upgrade: PoolUpgrade) => {
@@ -282,26 +302,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
           addToast('Money Segment Upgraded')
           playSound(SOUND.SHOP_PURCHASE.id)
           updateButtons()
-        })
-        updateButtons()
-        break
-      }
-      case 'fillBlank': {
-        money -= cost
-        header.setMoney(money)
-        const templates = pickFillTemplates(SHOP.FILL_TEMPLATES, 3)
-        addToast('Select a blank segment on the wheel')
-        playSound(SOUND.SHOP_PURCHASE.id)
-        wheel.setFillMode((segment: WheelSegment) => {
-          shop.showFillTemplates(templates, (template) => {
-            const idx = wheel.segments.indexOf(segment)
-            if (idx !== -1) {
-              wheel.segments[idx] = { ...template }
-            }
-            addToast(`Filled: ${template.label}`)
-            playSound(SOUND.SHOP_PURCHASE.id)
-            updateButtons()
-          })
         })
         updateButtons()
         break
@@ -431,8 +431,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
         return hasScoreSegments()
       case 'upgradeMoneySegment':
         return hasMoneySegments()
-      case 'fillBlank':
-        return hasBlankSegments()
       case 'deleteSegment':
         return wheel.segments.length > SHOP.DELETE_SEGMENT_MIN_SEGMENTS
       case 'upgradePassiveIncome':
@@ -445,6 +443,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   function updateButtons() {
     shop.setExtraSpinEnabled(money >= extraSpinCost)
     shop.setAddSegmentEnabled(!addedSegment)
+    shop.setFillBlankEnabled(hasBlankSegments())
     poolOffers.forEach((offer, i) => {
       shop.setPoolOfferEnabled(i as 0 | 1, isPoolOfferEnabled(offer))
     })

@@ -1,7 +1,10 @@
 import { COLOR, SPRITE } from '../constants'
 import type { LevelShopConfig } from '../constants/level'
-import type { FillTemplate, PoolUpgrade } from '../constants/shop'
-import type { PoolUpgradeId } from '../constants/shop'
+import type {
+  FillTemplate,
+  PoolUpgrade,
+  PoolUpgradeId,
+} from '../constants/shop'
 import type { ArtifactId } from '../types'
 import { getArtifactById } from '../utils'
 import { addButton } from './button'
@@ -9,13 +12,10 @@ import { addButton } from './button'
 const BUTTON_X = () => width() * 0.65
 const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 80
-const FILL_TEMPLATE_START_Y = () => height() * 0.35
-const FILL_TEMPLATE_X = () => width() * 0.5
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
   addMultiplierSegment: SPRITE.SPARKLES.id,
   cloneSegment: SPRITE.COPY.id,
   deleteSegment: SPRITE.TRASH.id,
-  fillBlank: SPRITE.QUESTION_MARK.id,
   permanentBaseSpin: SPRITE.PLUS.id,
   upgradeMoneySegment: SPRITE.COIN.id,
   upgradePassiveIncome: SPRITE.COIN.id,
@@ -29,6 +29,7 @@ interface ShopCallbacks {
   onArtifactOffer: (index: 0 | 1) => void
   onContinue: () => void
   onExtraSpin: () => void
+  onFillBlank: () => void
   onPoolUpgrade: (upgrade: PoolUpgrade) => void
 }
 
@@ -57,7 +58,18 @@ export function addShop(
     x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING,
     onClick: callbacks.onAddSegment,
-    tooltip: 'Add a blank segment to the wheel (fill it later with an upgrade)',
+    tooltip: 'Add a blank segment to the wheel (fill it with an upgrade)',
+    buttonColor: COLOR.BLUE,
+    shadowColor: COLOR.DARK_BLUE,
+  })
+
+  const fillBlankButton = addButton({
+    label: 'Fill Blank Segment (Free)',
+    icon: SPRITE.QUESTION_MARK.id,
+    x,
+    y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
+    onClick: callbacks.onFillBlank,
+    tooltip: 'Fill a blank segment with a random effect',
     buttonColor: COLOR.BLUE,
     shadowColor: COLOR.DARK_BLUE,
   })
@@ -67,7 +79,7 @@ export function addShop(
       label: offer.label,
       icon: POOL_UPGRADE_ICONS[offer.id],
       x,
-      y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + i),
+      y: BUTTON_START_Y + BUTTON_Y_SPACING * (3 + i),
       onClick: () => {
         callbacks.onPoolUpgrade(offer)
       },
@@ -83,7 +95,7 @@ export function addShop(
       label: `${artifact.name} ($${String(artifact.cost)})`,
       icon: artifact.icon,
       x,
-      y: BUTTON_START_Y + BUTTON_Y_SPACING * (2 + poolOffers.length + i),
+      y: BUTTON_START_Y + BUTTON_Y_SPACING * (3 + poolOffers.length + i),
       onClick: () => {
         callbacks.onArtifactOffer(i as 0 | 1)
       },
@@ -98,14 +110,12 @@ export function addShop(
     x,
     y:
       BUTTON_START_Y +
-      BUTTON_Y_SPACING * (2 + poolOffers.length + artifactOffers.length),
+      BUTTON_Y_SPACING * (3 + poolOffers.length + artifactOffers.length),
     onClick: callbacks.onContinue,
     tooltip: 'Continue to the next round',
     buttonColor: COLOR.RED,
     shadowColor: COLOR.DARK_RED,
   })
-
-  let fillTemplateButtons: ReturnType<typeof addButton>[] = []
 
   return {
     updateExtraSpinCost(cost: number) {
@@ -131,6 +141,16 @@ export function addShop(
     hideAddSegment() {
       addSegmentButton.hide()
     },
+    setFillBlankEnabled(enabled: boolean) {
+      if (enabled) {
+        fillBlankButton.enable()
+      } else {
+        fillBlankButton.disable()
+      }
+    },
+    hideFillBlank() {
+      fillBlankButton.hide()
+    },
     updatePoolOfferLabel(index: 0 | 1, label: string, tooltip: string) {
       poolButtons[index].setLabel(label)
       poolButtons[index].setTooltip(tooltip)
@@ -155,38 +175,10 @@ export function addShop(
     hideArtifactOffer(index: 0 | 1) {
       artifactOfferButtons[index].hide()
     },
-    showFillTemplates(
-      templates: FillTemplate[],
-      onPick: (template: FillTemplate) => void,
-    ) {
-      this.hideFillTemplates()
-      const startY = FILL_TEMPLATE_START_Y()
-      const fx = FILL_TEMPLATE_X()
-      fillTemplateButtons = templates.map((template, i) =>
-        addButton({
-          label: template.label,
-          icon: template.icon,
-          x: fx,
-          y: startY + BUTTON_Y_SPACING * i,
-          onClick: () => {
-            onPick(template)
-            this.hideFillTemplates()
-          },
-          tooltip: template.tooltip,
-          buttonColor: COLOR.BLUE,
-          shadowColor: COLOR.DARK_BLUE,
-        }),
-      )
-    },
-    hideFillTemplates() {
-      fillTemplateButtons.forEach((b) => {
-        b.destroy()
-      })
-      fillTemplateButtons = []
-    },
     destroy() {
       extraSpinButton.destroy()
       addSegmentButton.destroy()
+      fillBlankButton.destroy()
       poolButtons.forEach((b) => {
         b.destroy()
       })
@@ -194,7 +186,6 @@ export function addShop(
         b.destroy()
       })
       continueButton.destroy()
-      this.hideFillTemplates()
     },
   }
 }

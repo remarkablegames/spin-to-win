@@ -32,7 +32,6 @@ export const LEVELS: Level[] = [
         addMultiplierSegment: 1.15,
         cloneSegment: 0.5,
         deleteSegment: 0.25,
-        fillBlank: 1.7,
         permanentBaseSpin: 0.5,
         upgradeMoneySegment: 1.7,
         upgradeScoreSegment: 1.7,
@@ -52,7 +51,6 @@ export const LEVELS: Level[] = [
       ],
       poolUpgradeWeightMultipliers: {
         deleteSegment: 0.8,
-        fillBlank: 1.25,
         upgradeMoneySegment: 1.25,
         upgradeScoreSegment: 1.25,
       },
@@ -72,7 +70,6 @@ export const LEVELS: Level[] = [
       poolUpgradeWeightMultipliers: {
         cloneSegment: 1.2,
         deleteSegment: 1.2,
-        fillBlank: 1.0,
         upgradeMoneySegment: 1.0,
         upgradeScoreSegment: 1.0,
       },
@@ -93,7 +90,6 @@ export const LEVELS: Level[] = [
       poolUpgradeWeightMultipliers: {
         cloneSegment: 1.5,
         deleteSegment: 1.5,
-        fillBlank: 0.8,
         upgradeMoneySegment: 0.9,
         upgradeScoreSegment: 0.9,
         addMultiplierSegment: 1.2,

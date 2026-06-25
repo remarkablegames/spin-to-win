@@ -14,13 +14,6 @@ export const ARROW: Sprite = {
   height: 35, // 48
 }
 
-export const ART: Sprite = {
-  id: 'art',
-  src: '/icons/art.png',
-  width: 32, // 64
-  height: 32, // 64
-}
-
 export const COIN: Sprite = {
   id: 'coin',
   src: '/sprites/coin.png',
@@ -63,6 +56,20 @@ export const HEART: Sprite = {
   height: 26, // 34
 }
 
+export const HOME: Sprite = {
+  id: 'home',
+  src: '/icons/home.png',
+  width: 32, // 64
+  height: 32, // 64
+}
+
+export const KARAT: Sprite = {
+  id: 'karat',
+  src: '/sprites/karat.png',
+  width: 36, // 78
+  height: 28, // 60
+}
+
 export const LIGHTNING: Sprite = {
   id: 'lightning',
   src: '/sprites/lightning.png',
@@ -89,6 +96,13 @@ export const POINTER: Sprite = {
   src: '/icons/play.png',
   width: 28, // 64
   height: 28, // 64
+}
+
+export const PUMPKA: Sprite = {
+  id: 'pumpka',
+  src: '/sprites/pumpka.png',
+  width: 34, // 68
+  height: 33, // 65
 }
 
 export const QUESTION_MARK: Sprite = {
@@ -152,6 +166,13 @@ export const SOUNDS_OUTLINE: Sprite = {
   src: '/icons/sounds-o.png',
   width: 32, // 64
   height: 32, // 64
+}
+
+export const TGA: Sprite = {
+  id: 'tga',
+  src: '/sprites/tga.png',
+  width: 32, // 62
+  height: 36, // 70
 }
 
 export const TRASH: Sprite = {

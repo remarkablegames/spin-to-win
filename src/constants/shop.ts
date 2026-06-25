@@ -1,15 +1,20 @@
 import type { Color } from 'kaplay'
 
 import {
-  ART,
+  APPLE,
   COIN,
   GRAPE,
   HEART,
+  HOME,
+  KARAT,
   LIGHTNING,
   MONEY_BAG,
+  PUMPKA,
   SKULLER,
+  SPARK,
   SPIKE,
   STAR,
+  TGA,
 } from './sprite'
 
 export const BASE_PASSIVE_INCOME = 3
@@ -29,8 +34,6 @@ export const UPGRADE_MONEY_SEGMENT_BASE_COST = 5
 export const UPGRADE_MONEY_SEGMENT_COST_INCREMENT = 2
 export const UPGRADE_MONEY_SEGMENT_AMOUNT = 3
 
-export const FILL_BLANK_BASE_COST = 4
-
 export const ADD_MULTIPLIER_SEGMENT_COST = 8
 export const MULTIPLIER_SEGMENT_POSITIVE_CHANCE = 0.7
 export const MULTIPLIER_SEGMENT_POSITIVE_VALUE = 1.25
@@ -48,7 +51,6 @@ export const DELETE_SEGMENT_MIN_SEGMENTS = 5
 export type PoolUpgradeId =
   | 'upgradeScoreSegment'
   | 'upgradeMoneySegment'
-  | 'fillBlank'
   | 'addMultiplierSegment'
   | 'cloneSegment'
   | 'permanentBaseSpin'
@@ -78,14 +80,6 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
     label: `Upgrade Money Segment ($${String(UPGRADE_MONEY_SEGMENT_BASE_COST)})`,
     baseCost: UPGRADE_MONEY_SEGMENT_BASE_COST,
     tooltip: `Boost a money segment by +$${String(UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
-  },
-
-  {
-    id: 'fillBlank',
-    weight: 20,
-    label: `Fill Blank Segment ($${String(FILL_BLANK_BASE_COST)})`,
-    baseCost: FILL_BLANK_BASE_COST,
-    tooltip: `Fill a blank segment with a new effect`,
   },
 
   {
@@ -227,10 +221,75 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   {
     artifact: true,
     color: rgb(200, 100, 200),
-    icon: ART.id,
+    icon: HOME.id,
     label: 'Artifact',
     money: 0,
     score: 0,
     tooltip: 'Land here to gain a random artifact',
+  },
+
+  {
+    color: rgb(34, 139, 34),
+    icon: APPLE.id,
+    label: '+5',
+    money: 0,
+    score: 5,
+    tooltip: 'Score 5 points',
+  },
+
+  {
+    color: rgb(65, 105, 225),
+    icon: STAR.id,
+    label: '+75',
+    money: 0,
+    score: 75,
+    tooltip: 'Score 75 points',
+  },
+
+  {
+    color: rgb(50, 205, 50),
+    icon: COIN.id,
+    label: '+$8',
+    money: 8,
+    score: 0,
+    tooltip: 'Earn $8',
+  },
+
+  {
+    color: rgb(178, 34, 34),
+    icon: TGA.id,
+    label: '-$5',
+    money: -5,
+    score: 0,
+    tooltip: 'Pay $5',
+  },
+
+  {
+    color: rgb(255, 69, 0),
+    icon: PUMPKA.id,
+    label: '-10',
+    money: 0,
+    score: -10,
+    tooltip: 'Lose 10 points',
+  },
+
+  {
+    color: rgb(255, 165, 0),
+    icon: SPARK.id,
+    label: '+10%',
+    money: 0,
+    multiplier: 1.1,
+    score: 0,
+    tooltip: 'Total score ×1.1',
+  },
+
+  {
+    color: rgb(120, 120, 140),
+    icon: KARAT.id,
+    label: '-10%',
+    money: 0,
+    multiplier: 0.9,
+    score: 0,
+    tooltip: 'Total score ×0.9',
   },
 ]
