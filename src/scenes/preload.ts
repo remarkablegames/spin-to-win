@@ -3,32 +3,13 @@ import { MUSIC, SCENE, SOUND, SPRITE } from '../constants'
 scene(SCENE.PRELOAD, () => {
   const font = loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
 
-  Object.values(SOUND).forEach((sound) => void loadSound(sound.id, sound.src))
-  Object.values(MUSIC).forEach((music) => void loadSound(music.id, music.src))
+  Object.values(SPRITE).forEach(
+    (sprite) => void loadSprite(sprite.id, sprite.src),
+  )
 
-  loadSprite(SPRITE.APPLE.id, '/sprites/apple.png')
-  loadSprite(SPRITE.ARROW.id, '/icons/arrow.png')
-  loadSprite(SPRITE.ART.id, '/icons/art.png')
-  loadSprite(SPRITE.COIN.id, '/sprites/coin.png')
-  loadSprite(SPRITE.COPY.id, '/icons/copy.png')
-  loadSprite(SPRITE.CROSS_MARK.id, '/icons/cross_mark.png')
-  loadSprite(SPRITE.FIRE.id, '/sprites/fire.png')
-  loadSprite(SPRITE.GRAPE.id, '/sprites/grape.png')
-  loadSprite(SPRITE.HEART.id, '/sprites/heart.png')
-  loadSprite(SPRITE.LIGHTNING.id, '/sprites/lightning.png')
-  loadSprite(SPRITE.MONEY_BAG.id, '/sprites/money_bag.png')
-  loadSprite(SPRITE.PLUS.id, '/icons/plus.png')
-  loadSprite(SPRITE.POINTER.id, '/icons/play.png')
-  loadSprite(SPRITE.QUESTION_MARK.id, '/icons/question_mark.png')
-  loadSprite(SPRITE.SKULLER.id, '/sprites/skuller.png')
-  loadSprite(SPRITE.SPIDER_WEB.id, '/sprites/spider_web.png')
-  loadSprite(SPRITE.SPIKE.id, '/sprites/spike.png')
-  loadSprite(SPRITE.SPARK.id, '/sprites/spark.png')
-  loadSprite(SPRITE.SPARKLES.id, '/sprites/sparkles.png')
-  loadSprite(SPRITE.STAR.id, '/sprites/star.png')
-  loadSprite(SPRITE.SOUNDS.id, '/icons/sounds.png')
-  loadSprite(SPRITE.SOUNDS_OUTLINE.id, '/icons/sounds-o.png')
-  loadSprite(SPRITE.TRASH.id, '/icons/trash.png')
+  Object.values(SOUND).forEach((sound) => void loadSound(sound.id, sound.src))
+
+  Object.values(MUSIC).forEach((music) => void loadSound(music.id, music.src))
 
   void font.then(() => {
     go(SCENE.TITLE)
