@@ -73,8 +73,12 @@ scene(SCENE.END, (state: EndState) => {
         playSound(SOUND.SCORE_FILL.id)
       })
 
-      header.animateScore(ANIMATE_DURATION)
-      centerBar.animateTo(finalRatio, ANIMATE_DURATION, () => {
+      const animateDuration = Math.max(
+        SCORE_FILL_INTERVAL,
+        ANIMATE_DURATION * finalRatio,
+      )
+      header.animateScore(animateDuration)
+      centerBar.animateTo(finalRatio, animateDuration, () => {
         tickLoop.cancel()
 
         playSound(isWin ? SOUND.LEVEL_COMPLETE.id : SOUND.LEVEL_FAILED.id)
