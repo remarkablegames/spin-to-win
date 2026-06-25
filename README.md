@@ -104,6 +104,33 @@ Builds the game and compresses the contents into a ZIP archive in the `dist` fol
 
 Your game can be uploaded to your server, [itch.io](https://itch.io/), [newgrounds](https://www.newgrounds.com/), etc.
 
+## Testing
+
+### Scene
+
+You can jump to a scene by adding `?scene=<name>` to the URL.
+
+| Scene   | URL params (all optional)                                                      |
+| ------- | ------------------------------------------------------------------------------ |
+| `title` | _(none)_                                                                       |
+| `game`  | `level`, `round`, `score`, `money`, `baseSpins`, `extraSpins`, `passiveIncome` |
+| `shop`  | `level`, `round`, `score`, `money`, `passiveIncome`, `baseSpins`               |
+| `end`   | `level`, `score`, `money`, `baseSpins`, `extraSpins`, `passiveIncome`          |
+
+Examples:
+
+```
+http://localhost:5173/?scene=end&score=100
+```
+
+```
+http://localhost:5173/?scene=game&level=1&money=50
+```
+
+```
+http://localhost:5173/?scene=shop&level=0&round=1&score=100&money=50&passiveIncome=5
+```
+
 ## License
 
 [MIT](LICENSE)
