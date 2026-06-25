@@ -157,6 +157,7 @@ export function addButton({
 
   return {
     destroy() {
+      buttonTooltip?.destroy()
       container.destroy()
     },
     disable() {

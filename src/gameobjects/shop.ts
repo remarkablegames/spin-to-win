@@ -11,7 +11,7 @@ import { addButton } from './button'
 
 const BUTTON_X = () => width() * 0.65
 const BUTTON_START_Y = 220
-const BUTTON_Y_SPACING = 80
+const BUTTON_Y_SPACING = 70
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
   addMultiplierSegment: SPRITE.SPARKLES.id,
   cloneSegment: SPRITE.COPY.id,
@@ -31,6 +31,7 @@ interface ShopCallbacks {
   onExtraSpin: () => void
   onFillBlank: () => void
   onPoolUpgrade: (upgrade: PoolUpgrade) => void
+  onReroll: () => void
 }
 
 export function addShop(
@@ -105,12 +106,25 @@ export function addShop(
     })
   })
 
+  const rerollButton = addButton({
+    label: `Reroll ($${String(SHOP.REROLL_BASE_COST)})`,
+    icon: SPRITE.SPARKLES.id,
+    x,
+    y:
+      BUTTON_START_Y +
+      BUTTON_Y_SPACING * (3 + poolOffers.length + artifactOffers.length),
+    onClick: callbacks.onReroll,
+    tooltip: 'Reroll all shop offers',
+    buttonColor: COLOR.GREEN,
+    shadowColor: COLOR.DARK_GREEN,
+  })
+
   const continueButton = addButton({
     label: 'Continue',
     x,
     y:
       BUTTON_START_Y +
-      BUTTON_Y_SPACING * (3 + poolOffers.length + artifactOffers.length),
+      BUTTON_Y_SPACING * (4 + poolOffers.length + artifactOffers.length),
     onClick: callbacks.onContinue,
     tooltip: 'Continue to the next round',
     buttonColor: COLOR.RED,
@@ -175,6 +189,16 @@ export function addShop(
     hideArtifactOffer(index: 0 | 1) {
       artifactOfferButtons[index].hide()
     },
+    updateRerollCost(cost: number) {
+      rerollButton.setLabel(`Reroll ($${String(cost)})`)
+    },
+    setRerollEnabled(enabled: boolean) {
+      if (enabled) {
+        rerollButton.enable()
+      } else {
+        rerollButton.disable()
+      }
+    },
     destroy() {
       extraSpinButton.destroy()
       addSegmentButton.destroy()
@@ -185,6 +209,7 @@ export function addShop(
       artifactOfferButtons.forEach((b) => {
         b.destroy()
       })
+      rerollButton.destroy()
       continueButton.destroy()
     },
   }

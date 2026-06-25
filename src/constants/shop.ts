@@ -50,6 +50,9 @@ export const DELETE_SEGMENT_BASE_COST = 15
 export const DELETE_SEGMENT_COST_INCREMENT = 5
 export const DELETE_SEGMENT_MIN_SEGMENTS = 5
 
+export const REROLL_BASE_COST = 2
+export const REROLL_COST_INCREMENT = 2
+
 export type PoolUpgradeId =
   | 'upgradeScoreSegment'
   | 'upgradeMoneySegment'
