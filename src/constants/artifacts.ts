@@ -3,7 +3,7 @@ import {
   ARROW,
   COIN,
   CROSS_MARK,
-  GRAPE,
+  FLOWY,
   HEART,
   PLUS,
   SPARK,
@@ -131,7 +131,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     name: 'Score Growth',
     description:
       'Landing on a score segment permanently increases its value by +5',
-    icon: GRAPE.id,
+    icon: FLOWY.id,
     cost: 9,
     rarity: 'rare',
   },

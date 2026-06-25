@@ -42,6 +42,13 @@ export const FIRE: Sprite = {
   height: 34, // 43
 }
 
+export const FLOWY: Sprite = {
+  id: 'flowy',
+  src: '/sprites/flowy.png',
+  width: 32, // 64
+  height: 32, // 64
+}
+
 export const GRAPE: Sprite = {
   id: 'grape',
   src: '/sprites/grape.png',
