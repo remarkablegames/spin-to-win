@@ -1,7 +1,14 @@
-import { COLOR, LEVEL, SCENE } from '../constants'
-import { addButton, addGrid, addHeader, addMuteButton } from '../gameobjects'
+import { COLOR, LEVEL, SCENE, SOUND } from '../constants'
+import {
+  addButton,
+  addGrid,
+  addHeader,
+  addMuteButton,
+  addProgressBar,
+} from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import type { ArtifactSlot } from '../types'
+import { playSound } from '../utils'
 
 interface EndState {
   artifacts?: ArtifactSlot[]
@@ -15,8 +22,15 @@ interface EndState {
   wheelAngle?: number
 }
 
-const BUTTON_OFFSET = 64
-const RESULT_TEXT_TOP = 200
+const ANIMATE_DURATION = 1.5
+const SCORE_FILL_INTERVAL = 0.1
+const PROGRESS_BAR_WIDTH = 400
+const PROGRESS_BAR_HEIGHT = 20
+const LABEL_Y = 175
+const PROGRESS_BAR_Y = 210
+const SUBMIT_BUTTON_Y = 260
+const RESULT_Y = 320
+const NEXT_BUTTON_Y = 375
 
 scene(SCENE.END, (state: EndState) => {
   addMuteButton()
@@ -27,52 +41,90 @@ scene(SCENE.END, (state: EndState) => {
   const level = LEVEL.LEVELS[state.levelIndex]
   const isWin = state.levelScore >= level.targetScore
   const isLastLevel = state.levelIndex >= LEVEL.LEVELS.length - 1
+  const finalRatio = Math.min(1, state.levelScore / level.targetScore)
+  const carryOverScore = Math.max(0, state.levelScore - level.targetScore)
 
   header.setLevel(state.levelIndex + 1)
   header.setRound(level.roundsPerLevel, level.roundsPerLevel)
   header.setScore(state.levelScore, level.targetScore)
   header.setMoney(state.money)
 
-  const resultLabel = isWin
-    ? isLastLevel
-      ? 'You Won!'
-      : 'Level Complete'
-    : 'Level Failed'
-  const resultColor = isWin ? COLOR.GOLD : COLOR.RED
-
   add([
-    text(resultLabel, { align: 'center', size: 32 }),
-    pos(center().x, RESULT_TEXT_TOP),
+    text('Level End', { align: 'center', size: 24 }),
+    pos(center().x, LABEL_Y),
     anchor('center'),
-    color(resultColor),
+    color(COLOR.GOLD),
   ])
 
-  const canAdvance = isWin && !isLastLevel
+  const centerBar = addProgressBar({
+    x: center().x,
+    y: PROGRESS_BAR_Y,
+    width: PROGRESS_BAR_WIDTH,
+    height: PROGRESS_BAR_HEIGHT,
+  })
 
-  addButton({
+  const submitButton = addButton({
     buttonColor: COLOR.GREEN,
-    label: canAdvance ? 'Next Level' : 'Main Menu',
+    label: 'Submit Score',
     onClick: () => {
-      if (!canAdvance) {
-        go(SCENE.TITLE)
-        return
-      }
+      submitButton.hide()
 
-      go(SCENE.GAME, {
-        artifacts: state.artifacts,
-        baseSpins: state.baseSpins,
-        extraSpins: state.extraSpins,
-        levelIndex: state.levelIndex + 1,
-        levelScore: state.levelScore,
-        money: state.money,
-        passiveIncome: state.passiveIncome,
-        roundIndex: -1,
-        segments: state.segments,
-        wheelAngle: state.wheelAngle,
+      const tickLoop = loop(SCORE_FILL_INTERVAL, () => {
+        playSound(SOUND.SCORE_FILL.id)
+      })
+
+      header.animateScore(ANIMATE_DURATION)
+      centerBar.animateTo(finalRatio, ANIMATE_DURATION, () => {
+        tickLoop.cancel()
+
+        playSound(isWin ? SOUND.LEVEL_COMPLETE.id : SOUND.LEVEL_FAILED.id)
+
+        const resultLabel = isWin
+          ? isLastLevel
+            ? 'You Won!'
+            : 'Level Complete'
+          : 'Level Failed'
+        const resultColor = isWin ? COLOR.GOLD : COLOR.RED
+
+        add([
+          text(resultLabel, { align: 'center', size: 32 }),
+          pos(center().x, RESULT_Y),
+          anchor('center'),
+          color(resultColor),
+        ])
+
+        const canAdvance = isWin && !isLastLevel
+
+        addButton({
+          buttonColor: isWin ? COLOR.GREEN : COLOR.RED,
+          label: canAdvance ? 'Next Level' : isWin ? 'Main Menu' : 'Restart',
+          onClick: () => {
+            if (!canAdvance) {
+              go(SCENE.TITLE)
+              return
+            }
+
+            go(SCENE.GAME, {
+              artifacts: state.artifacts,
+              baseSpins: state.baseSpins,
+              extraSpins: state.extraSpins,
+              levelIndex: state.levelIndex + 1,
+              levelScore: carryOverScore,
+              money: state.money,
+              passiveIncome: state.passiveIncome,
+              roundIndex: -1,
+              segments: state.segments,
+              wheelAngle: state.wheelAngle,
+            })
+          },
+          shadowColor: isWin ? COLOR.DARK_GREEN : COLOR.DARK_RED,
+          x: center().x,
+          y: NEXT_BUTTON_Y,
+        })
       })
     },
     shadowColor: COLOR.DARK_GREEN,
     x: center().x,
-    y: RESULT_TEXT_TOP + BUTTON_OFFSET,
+    y: SUBMIT_BUTTON_Y,
   })
 })

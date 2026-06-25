@@ -1,4 +1,5 @@
 import { COLOR } from '../constants'
+import { addProgressBar } from './progressBar'
 import { addTooltip } from './tooltip'
 
 const HEADER_HEIGHT = 130
@@ -9,6 +10,7 @@ const TOP_Y = 16
 
 const PROGRESS_BAR_WIDTH = 250
 const PROGRESS_BAR_HEIGHT = 10
+const PROGRESS_BAR_Y = () => TOP_Y + LINE_HEIGHT * 3 + 4
 
 export function addHeader() {
   add([rect(width(), HEADER_HEIGHT), pos(), color(COLOR.BROWN)])
@@ -80,22 +82,16 @@ export function addHeader() {
     scoreTooltip.hide()
   })
 
-  add([
-    rect(PROGRESS_BAR_WIDTH, PROGRESS_BAR_HEIGHT, { radius: 4 }),
-    pos(CENTER_X(), TOP_Y + LINE_HEIGHT * 3 + 4),
-    anchor('top'),
-    color(COLOR.MEDIUM_BROWN),
-    opacity(0.4),
-  ])
-
-  const progressBarFill = add([
-    rect(0, PROGRESS_BAR_HEIGHT, { radius: 4 }),
-    pos(CENTER_X() - PROGRESS_BAR_WIDTH / 2, TOP_Y + LINE_HEIGHT * 3 + 4),
-    anchor('topleft'),
-    color(COLOR.GOLD),
-  ])
+  const progressBar = addProgressBar({
+    x: CENTER_X(),
+    y: PROGRESS_BAR_Y(),
+    width: PROGRESS_BAR_WIDTH,
+    height: PROGRESS_BAR_HEIGHT,
+  })
 
   let currentLevel = 0
+  let storedCurrent = 0
+  let storedTarget = 1
 
   return {
     setLevel(level: number) {
@@ -105,10 +101,29 @@ export function addHeader() {
       levelRoundLabel.text = `[level]Level ${String(currentLevel)},[/level] [round]Round ${String(current)}/${String(total)}[/round]`
     },
     setScore(current: number, target: number) {
-      scoreLabel.text = `[gold]${String(current)}[/gold]/${String(target)}`
+      storedCurrent = current
+      storedTarget = target
+      scoreLabel.text = `[gold]${String(Math.max(0, current))}[/gold]/${String(target)}`
       scoreTooltip.setText(`Score ${String(target)} points to clear the level`)
-      const ratio = Math.min(1, Math.max(0, current / target))
-      progressBarFill.width = PROGRESS_BAR_WIDTH * ratio
+      progressBar.setRatio(current / target)
+    },
+    animateScore(duration: number, onComplete?: () => void) {
+      const remainingScore = Math.max(0, storedCurrent - storedTarget)
+      const remainingRatio = remainingScore / storedTarget
+      tween(
+        Math.max(0, storedCurrent),
+        remainingScore,
+        duration,
+        (value) => {
+          scoreLabel.text = `[gold]${String(Math.round(value))}[/gold]/${String(storedTarget)}`
+          progressBar.setRatio(value / storedTarget)
+        },
+        easings.easeOutCubic,
+      ).onEnd(() => {
+        scoreLabel.text = `[gold]${String(remainingScore)}[/gold]/${String(storedTarget)}`
+        progressBar.setRatio(remainingRatio)
+        onComplete?.()
+      })
     },
     setMoney(money: number, delta = 0) {
       if (!delta) {

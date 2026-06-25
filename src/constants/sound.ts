@@ -53,3 +53,21 @@ export const SHOP_PURCHASE: Sound = {
   src: '/sounds/kaching.mp3',
   volume: 0.55,
 }
+
+export const SCORE_FILL: Sound = {
+  id: 'scoreFill',
+  src: '/sounds/glass_005.mp3',
+  volume: 0.35,
+}
+
+export const LEVEL_COMPLETE: Sound = {
+  id: 'levelComplete',
+  src: '/sounds/confirmation_002.mp3',
+  volume: 0.6,
+}
+
+export const LEVEL_FAILED: Sound = {
+  id: 'levelFailed',
+  src: '/sounds/error_006.mp3',
+  volume: 0.6,
+}
