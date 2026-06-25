@@ -9,6 +9,7 @@ import {
   SPARK,
   SPIDER_WEB,
   STAR,
+  SUN,
   TRASH,
 } from './sprite'
 
@@ -110,7 +111,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     type: 'passive',
     name: 'Lucky Coin',
     description: 'Each unused spin gives +$1 at the end of the round',
-    icon: COIN.id,
+    icon: SUN.id,
     cost: 9,
     rarity: 'rare',
   },

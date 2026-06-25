@@ -140,6 +140,13 @@ export const SPIDER_WEB: Sprite = {
   height: 32, // 64
 }
 
+export const SUN: Sprite = {
+  id: 'sun',
+  src: '/sprites/sun.png',
+  width: 32, // 64
+  height: 32, // 64
+}
+
 export const SPIKE: Sprite = {
   id: 'spike',
   src: '/sprites/spike.png',
