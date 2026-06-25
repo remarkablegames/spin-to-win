@@ -13,6 +13,11 @@
       "src": "favicon.png",
       "sizes": "72x72",
       "type": "image/png"
+    },
+    {
+      "src": "app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
     }
   ]
 }
