@@ -126,6 +126,7 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
 export interface FillTemplate {
   artifact?: boolean
   color: Color
+  endRound?: boolean
   icon: string
   label: string
   money: number
@@ -291,5 +292,15 @@ export const FILL_TEMPLATES: FillTemplate[] = [
     multiplier: 0.9,
     score: 0,
     tooltip: 'Total score ×0.9',
+  },
+
+  {
+    color: rgb(200, 50, 50),
+    endRound: true,
+    icon: SKULLER.id,
+    label: 'End',
+    money: 0,
+    score: 0,
+    tooltip: 'End the round',
   },
 ]
