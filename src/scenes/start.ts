@@ -1,3 +1,4 @@
+import './cover'
 import './end'
 import './game'
 import './preload'

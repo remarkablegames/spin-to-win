@@ -5,7 +5,7 @@ function parseIntParam(params: URLSearchParams, key: string): number {
   return value !== null ? parseInt(value, 10) : 0
 }
 
-function getScene(params: URLSearchParams): () => void {
+function goScene(params: URLSearchParams): void {
   const scene = params.get('scene')
 
   const baseState = {
@@ -17,38 +17,38 @@ function getScene(params: URLSearchParams): () => void {
   }
 
   switch (scene) {
+    case SCENE.COVER:
+      go(SCENE.COVER)
+      break
+
     case SCENE.GAME:
-      return () => {
-        go(SCENE.GAME, {
-          ...baseState,
-          roundIndex: parseIntParam(params, 'round'),
-          extraSpins: parseIntParam(params, 'extraSpins') || undefined,
-        })
-      }
+      go(SCENE.GAME, {
+        ...baseState,
+        roundIndex: parseIntParam(params, 'round'),
+        extraSpins: parseIntParam(params, 'extraSpins') || undefined,
+      })
+      break
 
     case SCENE.SHOP:
-      return () => {
-        go(SCENE.SHOP, {
-          ...baseState,
-          passiveIncome: parseIntParam(params, 'passiveIncome'),
-          roundIndex: parseIntParam(params, 'round'),
-          artifacts: [],
-          segments: [],
-        })
-      }
+      go(SCENE.SHOP, {
+        ...baseState,
+        passiveIncome: parseIntParam(params, 'passiveIncome'),
+        roundIndex: parseIntParam(params, 'round'),
+        artifacts: [],
+        segments: [],
+      })
+      break
 
     case SCENE.END:
-      return () => {
-        go(SCENE.END, {
-          ...baseState,
-          extraSpins: parseIntParam(params, 'extraSpins') || undefined,
-        })
-      }
+      go(SCENE.END, {
+        ...baseState,
+        extraSpins: parseIntParam(params, 'extraSpins') || undefined,
+      })
+      break
 
     default:
-      return () => {
-        go(SCENE.TITLE)
-      }
+      go(SCENE.TITLE)
+      break
   }
 }
 
@@ -64,6 +64,6 @@ scene(SCENE.PRELOAD, () => {
   Object.values(MUSIC).forEach((music) => void loadSound(music.id, music.src))
 
   void font.then(() => {
-    getScene(new URLSearchParams(location.search))()
+    goScene(new URLSearchParams(location.search))
   })
 })
