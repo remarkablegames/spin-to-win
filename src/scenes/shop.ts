@@ -190,10 +190,16 @@ scene(SCENE.SHOP, (state: ShopState) => {
         updateButtons()
       },
       onFillBlank: () => {
+        if (money < SHOP.FILL_BLANK_SEGMENT_COST) {
+          playSound(SOUND.INVALID_ACTION.id)
+          return
+        }
         if (!hasBlankSegments()) {
           playSound(SOUND.INVALID_ACTION.id)
           return
         }
+        money -= SHOP.FILL_BLANK_SEGMENT_COST
+        header.setMoney(money)
         const blankIndices = wheel.segments
           .map((segment, index) => (segment.blank ? index : -1))
           .filter((index) => index !== -1)
@@ -443,7 +449,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
   function updateButtons() {
     shop.setExtraSpinEnabled(money >= extraSpinCost)
     shop.setAddSegmentEnabled(!addedSegment)
-    shop.setFillBlankEnabled(hasBlankSegments())
+    shop.setFillBlankEnabled(
+      hasBlankSegments() && money >= SHOP.FILL_BLANK_SEGMENT_COST,
+    )
     poolOffers.forEach((offer, i) => {
       shop.setPoolOfferEnabled(i as 0 | 1, isPoolOfferEnabled(offer))
     })

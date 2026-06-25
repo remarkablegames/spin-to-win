@@ -1,4 +1,4 @@
-import { COLOR, SPRITE } from '../constants'
+import { COLOR, SHOP, SPRITE } from '../constants'
 import type { LevelShopConfig } from '../constants/level'
 import type {
   FillTemplate,
@@ -64,7 +64,7 @@ export function addShop(
   })
 
   const fillBlankButton = addButton({
-    label: 'Fill Blank Segment (Free)',
+    label: `Fill Blank Segment ($${String(SHOP.FILL_BLANK_SEGMENT_COST)})`,
     icon: SPRITE.QUESTION_MARK.id,
     x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
