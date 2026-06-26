@@ -38,7 +38,7 @@ export const LEVELS: Level[] = [
         upgradePassiveIncome: 1.15,
       },
     },
-    targetScore: 100,
+    targetScore: 75,
   },
 
   // level 2
@@ -55,7 +55,7 @@ export const LEVELS: Level[] = [
         upgradeScoreSegment: 1.25,
       },
     },
-    targetScore: 250,
+    targetScore: 150,
   },
 
   // level 3
@@ -74,7 +74,7 @@ export const LEVELS: Level[] = [
         upgradeScoreSegment: 1.0,
       },
     },
-    targetScore: 500,
+    targetScore: 300,
   },
 
   // level 4
@@ -95,11 +95,26 @@ export const LEVELS: Level[] = [
         addMultiplierSegment: 1.2,
       },
     },
-    targetScore: 1000,
+    targetScore: 600,
   },
 
   // level 5
-  { roundsPerLevel: 3, targetScore: 2000 },
+  { roundsPerLevel: 3, targetScore: 1200 },
+
+  // level 6
+  { roundsPerLevel: 3, targetScore: 2400 },
+
+  // level 7
+  { roundsPerLevel: 3, targetScore: 4800 },
+
+  // level 8
+  { roundsPerLevel: 3, targetScore: 9600 },
+
+  // level 9
+  { roundsPerLevel: 3, targetScore: 19200 },
+
+  // level 10
+  { roundsPerLevel: 3, targetScore: 38400 },
 ]
 
 export const BASE_SPINS = 3
