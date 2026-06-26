@@ -19,6 +19,7 @@ import {
   getRandomArtifacts,
   hasArtifact,
   isActiveArtifact,
+  isDesktop,
   playMusic,
   playRewardSound,
   playSound,
@@ -27,9 +28,9 @@ import {
   spendArtifactCharge,
 } from '../utils'
 
-const WHEEL_OFFSET = 45
+const WHEEL_OFFSET = isDesktop() ? 45 : 35
 const SPIN_BUTTON_OFFSET = 255
-const END_BUTTON_OFFSET = SPIN_BUTTON_OFFSET + 65
+const END_BUTTON_OFFSET = SPIN_BUTTON_OFFSET + (isDesktop() ? 65 : 60)
 
 type SegmentSnapshot = WheelSegment & { index: number }
 

@@ -2,7 +2,7 @@ import type { AudioPlay, GameObj, PosComp, RectComp } from 'kaplay'
 
 import { ARTIFACT, COLOR, SOUND } from '../constants'
 import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
-import { getArtifactById, getSpriteById, playSound } from '../utils'
+import { getArtifactById, getSpriteById, isDesktop, playSound } from '../utils'
 import { getSellRefund } from '../utils/artifact'
 import { addTooltip } from './tooltip'
 
@@ -10,7 +10,7 @@ const SLOT_SIZE = 64
 const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
-const BOTTOM_OFFSET = 16
+const BOTTOM_OFFSET = isDesktop() ? 16 : 8
 const HOLD_TO_SELL_DURATION = 1
 const TOOLTIP_OFFSET_Y = -8
 

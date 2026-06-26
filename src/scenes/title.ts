@@ -6,11 +6,12 @@ import {
   addShadowText,
   addWheel,
 } from '../gameobjects'
+import { isDesktop } from '../utils'
 
 const TITLE_Y = 130
 const TAGLINE_Y = 180
 const WHEEL_RADIUS = 230
-const WHEEL_Y_OFFSET = 0
+const WHEEL_Y_OFFSET = isDesktop() ? 0 : 10
 const PLAY_BUTTON_Y_OFFSET = 285
 const POINTER_OFFSET = 14
 const WHEEL_ROTATION_SPEED = 8

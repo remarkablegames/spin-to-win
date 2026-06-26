@@ -6,12 +6,13 @@ import type {
   PoolUpgradeId,
 } from '../constants/shop'
 import type { ArtifactId } from '../types'
-import { getArtifactById } from '../utils'
+import { getArtifactById, isDesktop } from '../utils'
 import { addButton } from './button'
 
-const BUTTON_X = () => width() * 0.65
+const BUTTON_X = isDesktop() ? width() * 0.65 : width() * 0.7
 const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 70
+
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
   addMultiplierSegment: SPRITE.SPARKLES.id,
   cloneSegment: SPRITE.COPY.id,
@@ -40,7 +41,7 @@ export function addShop(
   artifactOffers: ArtifactId[],
   initialExtraSpinCost: number,
 ) {
-  const x = BUTTON_X()
+  const x = BUTTON_X
 
   const extraSpinButton = addButton({
     label: `Extra Spin ($${String(initialExtraSpinCost)})`,
