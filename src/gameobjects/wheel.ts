@@ -371,6 +371,10 @@ export function addWheel(options: WheelOptions = {}) {
     if (currentMode.type !== 'none') {
       const valid = isValidModeTarget(segment, currentMode)
       setCursor(valid ? 'pointer' : 'default')
+      if (!valid) {
+        wheelTooltip.hide()
+        return
+      }
       wheelTooltip.setTarget(mouse)
       wheelTooltip.show(getUpgradeTooltip(segment, currentMode))
     } else {
