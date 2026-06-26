@@ -66,7 +66,7 @@ export function addShop(
 
   const fillBlankButton = addButton({
     label: `Fill Blank Segment ($${String(SHOP.FILL_BLANK_SEGMENT_COST)})`,
-    icon: SPRITE.QUESTION_MARK.id,
+    icon: SPRITE.STRANGER.id,
     x,
     y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
     onClick: callbacks.onFillBlank,

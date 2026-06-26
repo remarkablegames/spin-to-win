@@ -182,6 +182,13 @@ export const STAR: Sprite = {
   height: 30, // 40
 }
 
+export const STRANGER: Sprite = {
+  id: 'stranger',
+  src: '/icons/stranger.png',
+  width: 32, // 70
+  height: 32, // 70
+}
+
 export const SOUNDS: Sprite = {
   id: 'sounds',
   src: '/icons/sounds.png',
