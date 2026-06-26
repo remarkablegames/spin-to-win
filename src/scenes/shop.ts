@@ -31,7 +31,7 @@ import {
   removeArtifactSlot,
 } from '../utils'
 
-const WHEEL_X = () => width() * 0.35
+const WHEEL_X = width() * 0.35
 
 interface ShopState {
   artifacts: ArtifactSlot[]
@@ -73,7 +73,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setScore(state.levelScore, LEVEL.LEVELS[state.levelIndex].targetScore)
   header.setMoney(money)
 
-  const wheelX = vec2(WHEEL_X(), center().y)
+  const wheelX = vec2(WHEEL_X, center().y)
   const wheel = addWheel({
     segments: state.segments,
     pos: wheelX,
