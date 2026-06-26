@@ -18,7 +18,7 @@ export type PassiveArtifactId =
 
 export type ArtifactId = ActiveArtifactId | PassiveArtifactId
 
-export interface ArtifactBase {
+interface ArtifactBase {
   id: ArtifactId
   name: string
   description: string

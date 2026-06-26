@@ -65,9 +65,7 @@ interface WheelState {
   clearMode(): void
 }
 
-export type Wheel = ReturnType<typeof addWheel>
-
-export const SEGMENTS: WheelSegment[] = [
+const SEGMENTS: WheelSegment[] = [
   {
     color: rgb(128, 128, 128),
     icon: SPRITE.GRAPE.id,

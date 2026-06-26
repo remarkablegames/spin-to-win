@@ -14,8 +14,6 @@ interface AddProgressBarOptions {
   y: number
 }
 
-export type ProgressBar = ReturnType<typeof addProgressBar>
-
 export function addProgressBar({
   x,
   y,

@@ -5,9 +5,7 @@ import type {
   ActiveArtifactId,
   Artifact,
   ArtifactId,
-  ArtifactRarity,
   ArtifactSlot,
-  PassiveArtifact,
   PassiveArtifactId,
 } from '../types'
 
@@ -17,28 +15,6 @@ export function getArtifactById(id: ArtifactId): Artifact {
 
 export function isActiveArtifact(id: ArtifactId): id is ActiveArtifactId {
   return getArtifactById(id).type === 'active'
-}
-
-export function isPassiveArtifact(id: ArtifactId): id is PassiveArtifactId {
-  return getArtifactById(id).type === 'passive'
-}
-
-export function getActiveArtifacts(): ActiveArtifact[] {
-  return Object.values(ARTIFACT.ARTIFACTS).filter(
-    (artifact): artifact is ActiveArtifact => artifact.type === 'active',
-  )
-}
-
-export function getPassiveArtifacts(): PassiveArtifact[] {
-  return Object.values(ARTIFACT.ARTIFACTS).filter(
-    (artifact): artifact is PassiveArtifact => artifact.type === 'passive',
-  )
-}
-
-export function getArtifactsByRarity(rarity: ArtifactRarity): Artifact[] {
-  return Object.values(ARTIFACT.ARTIFACTS).filter(
-    (artifact) => artifact.rarity === rarity,
-  )
 }
 
 export function getRandomArtifacts(

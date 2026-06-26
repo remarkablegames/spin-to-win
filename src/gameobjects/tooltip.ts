@@ -7,7 +7,7 @@ const PADDING_Y = 8
 const TEXT_SIZE = 20
 const OFFSCREEN = -99999
 
-export interface Tooltip {
+interface Tooltip {
   destroy(): void
   hide(): void
   setTarget(target: GameObj<PosComp> | Vec2): void

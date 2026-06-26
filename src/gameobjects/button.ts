@@ -11,8 +11,6 @@ const SHADOW_OFFSET = 4
 
 const OFFSCREEN = -99999
 
-export type Button = ReturnType<typeof addButton>
-
 interface AddButtonOptions {
   buttonColor?: Color
   height?: number
