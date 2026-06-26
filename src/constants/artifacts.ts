@@ -11,6 +11,7 @@ import {
   STAR,
   SUN,
   TRASH,
+  WATERMELON,
 } from './sprite'
 
 export const ARTIFACT_SLOTS = 5
@@ -142,7 +143,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     type: 'passive',
     name: 'Segment Collector',
     description: 'Each wheel segment gives +2 score at the end of the round',
-    icon: STAR.id,
+    icon: WATERMELON.id,
     cost: 9,
     rarity: 'rare',
   },

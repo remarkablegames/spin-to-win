@@ -202,3 +202,10 @@ export const TRASH: Sprite = {
   width: 32, // 64
   height: 32, // 64
 }
+
+export const WATERMELON: Sprite = {
+  id: 'watermelon',
+  src: '/sprites/watermelon.png',
+  width: 32, // 64
+  height: 32, // 64
+}
