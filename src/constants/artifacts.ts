@@ -3,6 +3,7 @@ import {
   ARROW,
   COIN,
   CROSS_MARK,
+  EGG,
   FLOWY,
   JAM,
   PLUS,
@@ -10,7 +11,6 @@ import {
   SPIDER_WEB,
   STAR,
   SUN,
-  TRASH,
   WATERMELON,
 } from './sprite'
 
@@ -101,7 +101,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     type: 'active',
     name: 'Blank Segment',
     description: 'Select a segment to treat as blank for the next spin',
-    icon: TRASH.id,
+    icon: EGG.id,
     cost: 3,
     rarity: 'uncommon',
     maxCharges: 1,

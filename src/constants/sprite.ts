@@ -35,6 +35,13 @@ export const CROSS_MARK: Sprite = {
   height: 36, // 64
 }
 
+export const EGG: Sprite = {
+  id: 'egg',
+  src: '/sprites/egg.png',
+  width: 30, // 40
+  height: 41, // 55
+}
+
 export const FIRE: Sprite = {
   id: 'fire',
   src: '/sprites/fire.png',
