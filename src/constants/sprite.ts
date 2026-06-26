@@ -63,6 +63,13 @@ export const HEART: Sprite = {
   height: 26, // 34
 }
 
+export const JAM: Sprite = {
+  id: 'jam',
+  src: '/sprites/jam.png',
+  width: 30, // 53
+  height: 28, // 49
+}
+
 export const HISTORY: Sprite = {
   id: 'history',
   src: '/icons/history.png',
