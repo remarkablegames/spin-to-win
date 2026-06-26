@@ -11,6 +11,7 @@
 
 Play the game on:
 
+- [itch.io](https://remarkablegames.itch.io/spin-to-win)
 - [remarkablegames](https://remarkablegames.org/spin-to-win/)
 
 ## Credits
