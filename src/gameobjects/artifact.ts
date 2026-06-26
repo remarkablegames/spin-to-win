@@ -11,7 +11,7 @@ const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
 const BOTTOM_OFFSET = 16
-const HOLD_TO_SELL_DURATION = 2
+const HOLD_TO_SELL_DURATION = 1
 const TOOLTIP_OFFSET_Y = -8
 
 interface ArtifactInventory {
