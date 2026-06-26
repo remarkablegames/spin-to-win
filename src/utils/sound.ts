@@ -40,35 +40,37 @@ export function playWheelTick() {
 }
 
 export function playRewardSound(segment: WheelSegment) {
-  if (segment.blank) {
-    return
-  }
+  switch (true) {
+    case segment.artifact:
+      playSound(SOUND.ARTIFACT.id)
+      break
 
-  if (segment.artifact) {
-    playSound(SOUND.ARTIFACT.id)
-    return
-  }
+    case segment.endRound:
+      playSound(SOUND.NEGATIVE_REWARD.id)
+      break
 
-  if (segment.endRound) {
-    playSound(SOUND.NEGATIVE_REWARD.id)
-    return
-  }
+    case segment.multiplier !== undefined:
+      playSound(
+        segment.multiplier < 1
+          ? SOUND.NEGATIVE_REWARD.id
+          : SOUND.POSITIVE_REWARD.id,
+      )
+      break
 
-  if (segment.multiplier !== undefined) {
-    playSound(
-      segment.multiplier < 1
-        ? SOUND.NEGATIVE_REWARD.id
-        : SOUND.POSITIVE_REWARD.id,
-    )
-    return
-  }
+    case (segment.score ?? 0) < 0 || (segment.money ?? 0) < 0:
+      playSound(SOUND.NEGATIVE_REWARD.id)
+      break
 
-  if ((segment.score ?? 0) < 0 || (segment.money ?? 0) < 0) {
-    playSound(SOUND.NEGATIVE_REWARD.id)
-    return
-  }
+    case (segment.money ?? 0) > 0:
+      playSound(SOUND.SHOP_PURCHASE.id)
+      break
 
-  if ((segment.score ?? 0) > 0 || (segment.money ?? 0) > 0) {
-    playSound(SOUND.POSITIVE_REWARD.id)
+    case (segment.score ?? 0) > 0:
+      playSound(SOUND.POSITIVE_REWARD.id)
+      break
+
+    case segment.blank:
+    default:
+      break
   }
 }
