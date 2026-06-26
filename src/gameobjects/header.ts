@@ -103,7 +103,7 @@ export function addHeader() {
     setScore(current: number, target: number) {
       storedCurrent = current
       storedTarget = target
-      scoreLabel.text = `[gold]${String(Math.max(0, current))}[/gold]/${String(target)}`
+      scoreLabel.text = `[gold]${String(current)}[/gold]/${String(target)}`
       scoreTooltip.setText(`Score ${String(target)} points to clear the level`)
       progressBar.setRatio(current / target)
     },
@@ -111,7 +111,7 @@ export function addHeader() {
       const remainingScore = Math.max(0, storedCurrent - storedTarget)
       const remainingRatio = remainingScore / storedTarget
       tween(
-        Math.max(0, storedCurrent),
+        storedCurrent,
         remainingScore,
         duration,
         (value) => {
