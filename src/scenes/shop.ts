@@ -91,9 +91,8 @@ scene(SCENE.SHOP, (state: ShopState) => {
   ])
 
   const levelShopConfig = LEVEL.LEVELS[state.levelIndex].shop
-  const poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES, levelShopConfig)
-
-  const artifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
+  let poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES, levelShopConfig)
+  let artifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
 
   function sellArtifact(id: ArtifactId) {
     const artifact = getArtifactById(id)
@@ -150,247 +149,146 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
   updateArtifactUI()
 
-  let shop = addShop(
-    {
-      onExtraSpin: () => {
-        if (money < extraSpinCost) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
-        money -= extraSpinCost
-        extraSpins += 1
-        extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
-        header.setMoney(money)
-        shop.updateExtraSpinCost(extraSpinCost)
-        addToast('Extra Spin Purchased')
-        playSound(SOUND.SHOP_PURCHASE.id)
-        updateButtons()
-      },
-      onAddSegment: () => {
-        if (addedSegment) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
-        const blank: WheelSegment = {
-          blank: true,
-          color: COLOR.GREY,
-          icon: SPRITE.QUESTION_MARK.id,
-          label: '',
-          tooltip: 'Blank segment (fill it with an upgrade)',
-        }
-        wheel.addSegment(blank)
-        const newIndex = wheel.segments.length - 1
-        const targetIndex = randi(0, wheel.segments.length)
-        const [blankSegment] = wheel.segments.splice(newIndex, 1)
-        wheel.segments.splice(targetIndex, 0, blankSegment)
-        addedSegment = true
-        shop.hideAddSegment()
-        addToast('Blank Segment Added')
-        playSound(SOUND.SHOP_PURCHASE.id)
-        updateButtons()
-      },
-      onFillBlank: () => {
-        if (money < SHOP.FILL_BLANK_SEGMENT_COST) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
-        if (!hasBlankSegments()) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
-        money -= SHOP.FILL_BLANK_SEGMENT_COST
-        header.setMoney(money)
-        const blankIndices = wheel.segments
-          .map((segment, index) => (segment.blank ? index : -1))
-          .filter((index) => index !== -1)
-        const template = pickFillTemplates(SHOP.FILL_TEMPLATES, 1)[0]
-        const idx = blankIndices[randi(0, blankIndices.length)]
-        wheel.segments[idx] = { ...template }
-        addToast(`Filled: ${template.label}`)
-        playSound(SOUND.SHOP_PURCHASE.id)
-        shop.hideFillBlank()
-        updateButtons()
-      },
-      onPoolUpgrade: (upgrade: PoolUpgrade) => {
-        const index = poolOffers.indexOf(upgrade) as 0 | 1
-        const prevMoney = money
-        handlePoolUpgrade(upgrade, poolOffers, shop)
-        if (money !== prevMoney) {
-          shop.hidePoolOffer(index)
-        }
-      },
-      onArtifactOffer: (index) => {
-        const prevMoney = money
-        buyArtifact(artifactOfferIds[index])
-        if (money !== prevMoney) {
-          shop.hideArtifactOffer(index)
-        }
-      },
-      onReroll: () => {
-        if (money < rerollCost) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
-        money -= rerollCost
-        rerollCost += SHOP.REROLL_COST_INCREMENT
-        header.setMoney(money)
+  let shop: Shop
+  let isRerolling = false
 
-        // Destroy current shop
-        shop.destroy()
-
-        // Reset state
-        extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
-        addedSegment = false
-        upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
-        upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
-        permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
-        deleteSegmentCost = SHOP.DELETE_SEGMENT_BASE_COST
-        passiveIncomeCost = SHOP.PASSIVE_INCOME_UPGRADE_BASE_COST
-
-        // Generate new offers
-        const newPoolOffers = drawPoolOffers(
-          SHOP.POOL_UPGRADES,
-          levelShopConfig,
-        )
-        const newArtifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
-
-        // Create new shop with fresh offers
-        const newShop = addShop(
-          {
-            onExtraSpin: () => {
-              if (money < extraSpinCost) {
-                playSound(SOUND.INVALID_ACTION.id)
-                return
-              }
-              money -= extraSpinCost
-              extraSpins += 1
-              extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
-              header.setMoney(money)
-              newShop.updateExtraSpinCost(extraSpinCost)
-              addToast('Extra Spin Purchased')
-              playSound(SOUND.SHOP_PURCHASE.id)
-              updateButtons()
-            },
-            onAddSegment: () => {
-              if (addedSegment) {
-                playSound(SOUND.INVALID_ACTION.id)
-                return
-              }
-              const blank: WheelSegment = {
-                blank: true,
-                color: COLOR.GREY,
-                icon: SPRITE.QUESTION_MARK.id,
-                label: '',
-                tooltip: 'Blank segment (fill it with an upgrade)',
-              }
-              wheel.addSegment(blank)
-              const newIndex = wheel.segments.length - 1
-              const targetIndex = randi(0, wheel.segments.length)
-              const [blankSegment] = wheel.segments.splice(newIndex, 1)
-              wheel.segments.splice(targetIndex, 0, blankSegment)
-              addedSegment = true
-              newShop.hideAddSegment()
-              addToast('Blank Segment Added')
-              playSound(SOUND.SHOP_PURCHASE.id)
-              updateButtons()
-            },
-            onFillBlank: () => {
-              if (money < SHOP.FILL_BLANK_SEGMENT_COST) {
-                playSound(SOUND.INVALID_ACTION.id)
-                return
-              }
-              if (!hasBlankSegments()) {
-                playSound(SOUND.INVALID_ACTION.id)
-                return
-              }
-              money -= SHOP.FILL_BLANK_SEGMENT_COST
-              header.setMoney(money)
-              const blankIndices = wheel.segments
-                .map((segment, index) => (segment.blank ? index : -1))
-                .filter((index) => index !== -1)
-              const template = pickFillTemplates(SHOP.FILL_TEMPLATES, 1)[0]
-              const idx = blankIndices[randi(0, blankIndices.length)]
-              wheel.segments[idx] = { ...template }
-              addToast(`Filled: ${template.label}`)
-              playSound(SOUND.SHOP_PURCHASE.id)
-              newShop.hideFillBlank()
-              updateButtons()
-            },
-            onPoolUpgrade: (upgrade: PoolUpgrade) => {
-              const index = newPoolOffers.indexOf(upgrade) as 0 | 1
-              const prevMoney = money
-              handlePoolUpgrade(upgrade, newPoolOffers, newShop)
-              if (money !== prevMoney) {
-                newShop.hidePoolOffer(index)
-              }
-            },
-            onArtifactOffer: (index) => {
-              const prevMoney = money
-              buyArtifact(newArtifactOfferIds[index])
-              if (money !== prevMoney) {
-                newShop.hideArtifactOffer(index)
-              }
-            },
-            onReroll: () => {
-              if (money < rerollCost) {
-                playSound(SOUND.INVALID_ACTION.id)
-                return
-              }
-              money -= rerollCost
-              rerollCost += SHOP.REROLL_COST_INCREMENT
-              header.setMoney(money)
-              newShop.updateRerollCost(rerollCost)
-              addToast('Shop Rerolled')
-              playSound(SOUND.SHOP_PURCHASE.id)
-              updateButtons()
-            },
-            onContinue: () => {
-              wheel.clearMode()
-              newShop.destroy()
-              activeArtifactInventory.destroy()
-              go(SCENE.GAME, {
-                ...state,
-                artifacts,
-                baseSpins,
-                money,
-                extraSpins,
-                passiveIncome,
-                segments: wheel.segments,
-                wheelAngle: wheel.angle,
-              })
-            },
-          },
-          newPoolOffers,
-          newArtifactOfferIds,
-          extraSpinCost,
-        )
-
-        shop = newShop
-        shop.updateRerollCost(rerollCost)
-        addToast('Shop Rerolled')
-        playSound(SOUND.SHOP_PURCHASE.id)
-        updateButtons()
+  function createShop() {
+    return addShop(
+      {
+        onExtraSpin: () => {
+          if (money < extraSpinCost) {
+            playSound(SOUND.INVALID_ACTION.id)
+            return
+          }
+          money -= extraSpinCost
+          extraSpins += 1
+          extraSpinCost += SHOP.EXTRA_SPIN_COST_INCREMENT
+          header.setMoney(money)
+          shop.updateExtraSpinCost(extraSpinCost)
+          addToast('Extra Spin Purchased')
+          playSound(SOUND.SHOP_PURCHASE.id)
+          updateButtons()
+        },
+        onAddSegment: () => {
+          if (addedSegment) {
+            playSound(SOUND.INVALID_ACTION.id)
+            return
+          }
+          const blank: WheelSegment = {
+            blank: true,
+            color: COLOR.GREY,
+            icon: SPRITE.QUESTION_MARK.id,
+            label: '',
+            tooltip: 'Blank segment (fill it with an upgrade)',
+          }
+          wheel.addSegment(blank)
+          const newIndex = wheel.segments.length - 1
+          const targetIndex = randi(0, wheel.segments.length)
+          const [blankSegment] = wheel.segments.splice(newIndex, 1)
+          wheel.segments.splice(targetIndex, 0, blankSegment)
+          addedSegment = true
+          shop.hideAddSegment()
+          addToast('Blank Segment Added')
+          playSound(SOUND.SHOP_PURCHASE.id)
+          updateButtons()
+        },
+        onFillBlank: () => {
+          if (money < SHOP.FILL_BLANK_SEGMENT_COST) {
+            playSound(SOUND.INVALID_ACTION.id)
+            return
+          }
+          if (!hasBlankSegments()) {
+            playSound(SOUND.INVALID_ACTION.id)
+            return
+          }
+          money -= SHOP.FILL_BLANK_SEGMENT_COST
+          header.setMoney(money)
+          const blankIndices = wheel.segments
+            .map((segment, index) => (segment.blank ? index : -1))
+            .filter((index) => index !== -1)
+          const template = pickFillTemplates(SHOP.FILL_TEMPLATES, 1)[0]
+          const idx = blankIndices[randi(0, blankIndices.length)]
+          wheel.segments[idx] = { ...template }
+          addToast(`Filled: ${template.label}`)
+          playSound(SOUND.SHOP_PURCHASE.id)
+          shop.hideFillBlank()
+          updateButtons()
+        },
+        onPoolUpgrade: (upgrade: PoolUpgrade) => {
+          const index = poolOffers.indexOf(upgrade) as 0 | 1
+          const prevMoney = money
+          handlePoolUpgrade(upgrade, poolOffers, shop)
+          if (money !== prevMoney) {
+            shop.hidePoolOffer(index)
+          }
+        },
+        onArtifactOffer: (index) => {
+          const prevMoney = money
+          buyArtifact(artifactOfferIds[index])
+          if (money !== prevMoney) {
+            shop.hideArtifactOffer(index)
+          }
+        },
+        onReroll: () => {
+          rerollShop()
+        },
+        onContinue: () => {
+          wheel.clearMode()
+          shop.destroy()
+          activeArtifactInventory.destroy()
+          go(SCENE.GAME, {
+            ...state,
+            artifacts,
+            baseSpins,
+            money,
+            extraSpins,
+            passiveIncome,
+            segments: wheel.segments,
+            wheelAngle: wheel.angle,
+          })
+        },
       },
-      onContinue: () => {
-        wheel.clearMode()
-        shop.destroy()
-        activeArtifactInventory.destroy()
-        go(SCENE.GAME, {
-          ...state,
-          artifacts,
-          baseSpins,
-          money,
-          extraSpins,
-          passiveIncome,
-          segments: wheel.segments,
-          wheelAngle: wheel.angle,
-        })
-      },
-    },
-    poolOffers,
-    artifactOfferIds,
-    extraSpinCost,
-  )
+      poolOffers,
+      artifactOfferIds,
+      extraSpinCost,
+    )
+  }
+
+  function rerollShop() {
+    if (isRerolling) {
+      return
+    }
+    if (money < rerollCost) {
+      playSound(SOUND.INVALID_ACTION.id)
+      return
+    }
+    isRerolling = true
+    money -= rerollCost
+    rerollCost += SHOP.REROLL_COST_INCREMENT
+    header.setMoney(money)
+    shop.destroy()
+
+    extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
+    addedSegment = false
+    upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
+    upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
+    permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
+    deleteSegmentCost = SHOP.DELETE_SEGMENT_BASE_COST
+    passiveIncomeCost = SHOP.PASSIVE_INCOME_UPGRADE_BASE_COST
+    poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES, levelShopConfig)
+    artifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
+
+    shop = createShop()
+    shop.updateRerollCost(rerollCost)
+    addToast('Shop Rerolled')
+    playSound(SOUND.SHOP_PURCHASE.id)
+    updateButtons()
+    wait(0, () => {
+      isRerolling = false
+    })
+  }
+
+  shop = createShop()
 
   function getPoolOfferCost(upgrade: PoolUpgrade): number {
     switch (upgrade.id) {
