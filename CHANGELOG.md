@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/remarkablegames/spin-to-win/compare/v1.0.1...v1.0.2) (2026-06-27)
+
+
+### Bug Fixes
+
+* **preload:** remove leading slash from font src path ([33c2792](https://github.com/remarkablegames/spin-to-win/commit/33c27921d9348a817d9a29e3e96e26f12394c5c4))
+
 ## [1.0.1](https://github.com/remarkablegames/spin-to-win/compare/v1.0.0...v1.0.1) (2026-06-27)
 
 
