@@ -9,7 +9,7 @@ import type { ArtifactId } from '../types'
 import { getArtifactById, isDesktop } from '../utils'
 import { addButton } from './button'
 
-const BUTTON_X = isDesktop() ? width() * 0.65 : width() * 0.7
+const BUTTON_X = () => (isDesktop() ? width() * 0.65 : width() * 0.7)
 const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 70
 
@@ -41,7 +41,7 @@ export function addShop(
   artifactOffers: ArtifactId[],
   initialExtraSpinCost: number,
 ) {
-  const x = BUTTON_X
+  const x = BUTTON_X()
 
   const extraSpinButton = addButton({
     label: `Extra Spin ($${String(initialExtraSpinCost)})`,

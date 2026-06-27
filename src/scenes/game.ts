@@ -28,9 +28,9 @@ import {
   spendArtifactCharge,
 } from '../utils'
 
-const WHEEL_OFFSET = isDesktop() ? 45 : 35
+const WHEEL_OFFSET = () => (isDesktop() ? 45 : 35)
 const SPIN_BUTTON_OFFSET = 255
-const END_BUTTON_OFFSET = SPIN_BUTTON_OFFSET + (isDesktop() ? 65 : 60)
+const END_BUTTON_OFFSET = () => SPIN_BUTTON_OFFSET + (isDesktop() ? 65 : 60)
 
 type SegmentSnapshot = WheelSegment & { index: number }
 
@@ -106,7 +106,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     segments: wheelSegments,
     angle: initialState?.wheelAngle,
     onSpinTick: playWheelTick,
-    pos: vec2(center().x, center().y - WHEEL_OFFSET),
+    pos: vec2(center().x, center().y - WHEEL_OFFSET()),
   })
 
   add([
@@ -114,7 +114,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       width: SPRITE.POINTER.width,
       height: SPRITE.POINTER.height,
     }),
-    pos(center().x, center().y - WHEEL_OFFSET - wheel.radius - 14),
+    pos(center().x, center().y - WHEEL_OFFSET() - wheel.radius - 14),
     anchor('center'),
     rotate(90),
     color(COLOR.WHITE),
@@ -636,7 +636,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
       let showedFloat = false
       if (!effect.skipped && !segment.blank) {
-        const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET)
+        const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET())
         if (segment.endRound) {
           addFloatingText({
             text: 'End',
@@ -704,7 +704,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
   const skipButton = addButton({
     label: 'End',
     x: center().x,
-    y: center().y + END_BUTTON_OFFSET,
+    y: center().y + END_BUTTON_OFFSET(),
     onClick: () => {
       if (isSpinning || spinsRemaining <= 0) {
         playSound(SOUND.INVALID_ACTION.id)

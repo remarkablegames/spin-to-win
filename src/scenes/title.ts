@@ -11,7 +11,7 @@ import { isDesktop } from '../utils'
 const TITLE_Y = 130
 const TAGLINE_Y = 180
 const WHEEL_RADIUS = 230
-const WHEEL_Y_OFFSET = isDesktop() ? 0 : 10
+const WHEEL_Y_OFFSET = () => (isDesktop() ? 0 : 10)
 const PLAY_BUTTON_Y_OFFSET = 285
 const POINTER_OFFSET = 14
 const WHEEL_ROTATION_SPEED = 8
@@ -36,7 +36,7 @@ scene(SCENE.TITLE, () => {
     text: 'Spin. Score. Repeat.',
   })
 
-  const wheelPos = vec2(center().x, center().y + WHEEL_Y_OFFSET)
+  const wheelPos = vec2(center().x, center().y + WHEEL_Y_OFFSET())
   const wheel = addWheel({
     pos: wheelPos,
     radius: WHEEL_RADIUS,

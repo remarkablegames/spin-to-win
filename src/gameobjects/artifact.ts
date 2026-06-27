@@ -10,7 +10,7 @@ const SLOT_SIZE = 64
 const SLOT_GAP = 12
 const BADGE_SIZE = 20
 const PADDING = 10
-const BOTTOM_OFFSET = isDesktop() ? 16 : 8
+const BOTTOM_OFFSET = () => (isDesktop() ? 16 : 8)
 const HOLD_TO_SELL_DURATION = 1
 const TOOLTIP_OFFSET_Y = -8
 
@@ -37,7 +37,7 @@ export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
     slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2
   const totalHeight = SLOT_SIZE + PADDING * 2
   const x = options.x ?? (width() - totalWidth) / 2 + PADDING
-  const y = options.y ?? height() - totalHeight - BOTTOM_OFFSET + PADDING
+  const y = options.y ?? height() - totalHeight - BOTTOM_OFFSET() + PADDING
 
   const container = add([pos(x, y)])
 
