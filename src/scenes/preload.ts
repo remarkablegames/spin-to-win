@@ -53,7 +53,7 @@ function goScene(params: URLSearchParams): void {
 }
 
 scene(SCENE.PRELOAD, () => {
-  const font = loadFont('RobotoMono', '/fonts/RobotoMono.ttf')
+  const font = loadFont('RobotoMono', 'fonts/RobotoMono.ttf')
 
   Object.values(SPRITE).forEach(
     (sprite) => void loadSprite(sprite.id, sprite.src),
