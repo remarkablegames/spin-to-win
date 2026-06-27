@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/remarkablegames/spin-to-win/compare/v1.0.0...v1.0.1) (2026-06-27)
+
+
+### Bug Fixes
+
+* remove leading slash from asset src paths ([770ff30](https://github.com/remarkablegames/spin-to-win/commit/770ff309e31f1e1d6a4d89760bdc1e180b7e1308))
+
 ## 1.0.0 (2026-06-27)
 
 
