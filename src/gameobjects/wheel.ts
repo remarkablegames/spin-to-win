@@ -67,7 +67,7 @@ interface WheelState {
 
 const SEGMENTS: WheelSegment[] = [
   {
-    color: rgb(128, 128, 128),
+    color: rgb(128, 0, 128),
     icon: SPRITE.GRAPE.id,
     label: '+25',
     score: 25,

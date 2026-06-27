@@ -142,7 +142,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
 
   {
-    color: rgb(128, 128, 128),
+    color: rgb(128, 0, 128),
     icon: GRAPE.id,
     label: '+25',
     score: 25,
@@ -262,7 +262,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
   },
 
   {
-    color: rgb(120, 120, 140),
+    color: rgb(180, 60, 80),
     icon: KARAT.id,
     label: '-10%',
     multiplier: 0.9,
