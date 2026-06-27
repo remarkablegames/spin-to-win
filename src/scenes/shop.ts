@@ -55,13 +55,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   let addedSegment = false
   let baseSpins = state.baseSpins ?? LEVEL.BASE_SPINS
   let passiveIncome = state.passiveIncome
-  let passiveIncomeUpgrades = 0
   let artifacts = state.artifacts
-  let upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
-  let upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
-  let permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
-  let deleteSegmentCost = SHOP.DELETE_SEGMENT_BASE_COST
-  let passiveIncomeCost = SHOP.PASSIVE_INCOME_UPGRADE_BASE_COST
   let rerollCost = SHOP.REROLL_BASE_COST
 
   const header = addHeader()
@@ -217,7 +211,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
         onPoolUpgrade: (upgrade: PoolUpgrade) => {
           const index = poolOffers.indexOf(upgrade) as 0 | 1
           const prevMoney = money
-          handlePoolUpgrade(upgrade, poolOffers, shop)
+          handlePoolUpgrade(upgrade)
           if (money !== prevMoney) {
             shop.hidePoolOffer(index)
           }
@@ -270,11 +264,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
 
     extraSpinCost = SHOP.EXTRA_SPIN_BASE_COST
     addedSegment = false
-    upgradeScoreCost = SHOP.UPGRADE_SCORE_SEGMENT_BASE_COST
-    upgradeMoneyCost = SHOP.UPGRADE_MONEY_SEGMENT_BASE_COST
-    permanentSpinCost = SHOP.PERMANENT_BASE_SPIN_BASE_COST
-    deleteSegmentCost = SHOP.DELETE_SEGMENT_BASE_COST
-    passiveIncomeCost = SHOP.PASSIVE_INCOME_UPGRADE_BASE_COST
     poolOffers = drawPoolOffers(SHOP.POOL_UPGRADES, levelShopConfig)
     artifactOfferIds = getRandomArtifacts(2, [], levelShopConfig)
 
@@ -293,43 +282,31 @@ scene(SCENE.SHOP, (state: ShopState) => {
   function getPoolOfferCost(upgrade: PoolUpgrade): number {
     switch (upgrade.id) {
       case 'upgradeScoreSegment':
-        return upgradeScoreCost
+        return SHOP.UPGRADE_SCORE_SEGMENT_COST
       case 'upgradeMoneySegment':
-        return upgradeMoneyCost
+        return SHOP.UPGRADE_MONEY_SEGMENT_COST
       case 'permanentBaseSpin':
-        return permanentSpinCost
+        return SHOP.PERMANENT_BASE_SPIN_COST
       case 'deleteSegment':
-        return deleteSegmentCost
+        return SHOP.DELETE_SEGMENT_COST
       case 'upgradePassiveIncome':
-        return passiveIncomeCost
+        return SHOP.PASSIVE_INCOME_UPGRADE_COST
       default:
         return upgrade.baseCost
     }
   }
 
-  function handlePoolUpgrade(
-    upgrade: PoolUpgrade,
-    currentPoolOffers: [PoolUpgrade, PoolUpgrade],
-    currentShop: Shop,
-  ) {
+  function handlePoolUpgrade(upgrade: PoolUpgrade) {
     const cost = getPoolOfferCost(upgrade)
     if (money < cost) {
       playSound(SOUND.INVALID_ACTION.id)
       return
     }
 
-    const offerIndex = currentPoolOffers.indexOf(upgrade) as 0 | 1
-
     switch (upgrade.id) {
       case 'upgradeScoreSegment': {
         money -= cost
-        upgradeScoreCost += SHOP.UPGRADE_SCORE_SEGMENT_COST_INCREMENT
         header.setMoney(money)
-        currentShop.updatePoolOfferLabel(
-          offerIndex,
-          `Upgrade Score Segment ($${String(upgradeScoreCost)})`,
-          `Spend $${String(upgradeScoreCost)} to boost a score segment by +${String(SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
-        )
         addToast('Select a score segment on the wheel')
         playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setUpgradeMode('score', SHOP.UPGRADE_SCORE_SEGMENT_AMOUNT, () => {
@@ -342,13 +319,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
       case 'upgradeMoneySegment': {
         money -= cost
-        upgradeMoneyCost += SHOP.UPGRADE_MONEY_SEGMENT_COST_INCREMENT
         header.setMoney(money)
-        currentShop.updatePoolOfferLabel(
-          offerIndex,
-          `Upgrade Money Segment ($${String(upgradeMoneyCost)})`,
-          `Spend $${String(upgradeMoneyCost)} to boost a money segment by +$${String(SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
-        )
         addToast('Select a money segment on the wheel')
         playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setUpgradeMode('money', SHOP.UPGRADE_MONEY_SEGMENT_AMOUNT, () => {
@@ -398,13 +369,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       case 'permanentBaseSpin': {
         money -= cost
         baseSpins += 1
-        permanentSpinCost += SHOP.PERMANENT_BASE_SPIN_COST_INCREMENT
         header.setMoney(money)
-        currentShop.updatePoolOfferLabel(
-          offerIndex,
-          `Permanent Base Spin ($${String(permanentSpinCost)})`,
-          `Spend $${String(permanentSpinCost)} to permanently add +1 spin to every round`,
-        )
         addToast('+1 Permanent Spin Added')
         playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
@@ -412,13 +377,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
       }
       case 'deleteSegment': {
         money -= cost
-        deleteSegmentCost += SHOP.DELETE_SEGMENT_COST_INCREMENT
         header.setMoney(money)
-        currentShop.updatePoolOfferLabel(
-          offerIndex,
-          `Delete Segment ($${String(deleteSegmentCost)})`,
-          `Spend $${String(deleteSegmentCost)} to permanently remove a segment from the wheel`,
-        )
         addToast('Select a segment to delete')
         playSound(SOUND.SHOP_PURCHASE.id)
         wheel.setDeleteMode((segment: WheelSegment) => {
@@ -434,24 +393,9 @@ scene(SCENE.SHOP, (state: ShopState) => {
         break
       }
       case 'upgradePassiveIncome': {
-        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {
-          playSound(SOUND.INVALID_ACTION.id)
-          return
-        }
         money -= cost
         passiveIncome += SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT
-        passiveIncomeUpgrades += 1
-        passiveIncomeCost += SHOP.PASSIVE_INCOME_UPGRADE_COST_INCREMENT
         header.setMoney(money)
-        if (passiveIncomeUpgrades >= SHOP.PASSIVE_INCOME_UPGRADE_MAX) {
-          currentShop.setPoolOfferEnabled(offerIndex, false)
-        } else {
-          currentShop.updatePoolOfferLabel(
-            offerIndex,
-            `Upgrade Income ($${String(passiveIncomeCost)})`,
-            `Spend $${String(passiveIncomeCost)} to earn +$${String(SHOP.PASSIVE_INCOME_UPGRADE_AMOUNT)} more money each round`,
-          )
-        }
         addToast(`Passive Income now $${String(passiveIncome)}/round`)
         playSound(SOUND.SHOP_PURCHASE.id)
         updateButtons()
@@ -484,8 +428,6 @@ scene(SCENE.SHOP, (state: ShopState) => {
         return hasMoneySegments()
       case 'deleteSegment':
         return wheel.segments.length > SHOP.DELETE_SEGMENT_MIN_SEGMENTS
-      case 'upgradePassiveIncome':
-        return passiveIncomeUpgrades < SHOP.PASSIVE_INCOME_UPGRADE_MAX
       default:
         return true
     }

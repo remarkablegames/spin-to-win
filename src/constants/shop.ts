@@ -19,35 +19,29 @@ import {
 
 export const BASE_PASSIVE_INCOME = 3
 export const PASSIVE_INCOME_UPGRADE_AMOUNT = 1
-export const PASSIVE_INCOME_UPGRADE_BASE_COST = 8
-export const PASSIVE_INCOME_UPGRADE_COST_INCREMENT = 4
-export const PASSIVE_INCOME_UPGRADE_MAX = 3
+export const PASSIVE_INCOME_UPGRADE_COST = 9
 
 export const EXTRA_SPIN_BASE_COST = 1
 export const EXTRA_SPIN_COST_INCREMENT = 1
 
 export const FILL_BLANK_SEGMENT_COST = 3
 
-export const UPGRADE_SCORE_SEGMENT_BASE_COST = 5
-export const UPGRADE_SCORE_SEGMENT_COST_INCREMENT = 2
+export const UPGRADE_SCORE_SEGMENT_COST = 6
 export const UPGRADE_SCORE_SEGMENT_AMOUNT = 25
 
-export const UPGRADE_MONEY_SEGMENT_BASE_COST = 5
-export const UPGRADE_MONEY_SEGMENT_COST_INCREMENT = 2
-export const UPGRADE_MONEY_SEGMENT_AMOUNT = 3
+export const UPGRADE_MONEY_SEGMENT_COST = 6
+export const UPGRADE_MONEY_SEGMENT_AMOUNT = 2
 
 const ADD_MULTIPLIER_SEGMENT_COST = 8
 export const MULTIPLIER_SEGMENT_POSITIVE_CHANCE = 0.7
 export const MULTIPLIER_SEGMENT_POSITIVE_VALUE = 1.25
 export const MULTIPLIER_SEGMENT_NEGATIVE_VALUE = 0.85
 
-const CLONE_SEGMENT_BASE_COST = 10
+const CLONE_SEGMENT_BASE_COST = 12
 
-export const PERMANENT_BASE_SPIN_BASE_COST = 10
-export const PERMANENT_BASE_SPIN_COST_INCREMENT = 5
+export const PERMANENT_BASE_SPIN_COST = 12
 
-export const DELETE_SEGMENT_BASE_COST = 15
-export const DELETE_SEGMENT_COST_INCREMENT = 5
+export const DELETE_SEGMENT_COST = 15
 export const DELETE_SEGMENT_MIN_SEGMENTS = 5
 
 export const REROLL_BASE_COST = 2
@@ -74,16 +68,16 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
   {
     id: 'upgradeScoreSegment',
     weight: 25,
-    label: `Upgrade Score Segment ($${String(UPGRADE_SCORE_SEGMENT_BASE_COST)})`,
-    baseCost: UPGRADE_SCORE_SEGMENT_BASE_COST,
+    label: `Upgrade Score Segment ($${String(UPGRADE_SCORE_SEGMENT_COST)})`,
+    baseCost: UPGRADE_SCORE_SEGMENT_COST,
     tooltip: `Boost a score segment by +${String(UPGRADE_SCORE_SEGMENT_AMOUNT)}`,
   },
 
   {
     id: 'upgradeMoneySegment',
     weight: 25,
-    label: `Upgrade Money Segment ($${String(UPGRADE_MONEY_SEGMENT_BASE_COST)})`,
-    baseCost: UPGRADE_MONEY_SEGMENT_BASE_COST,
+    label: `Upgrade Money Segment ($${String(UPGRADE_MONEY_SEGMENT_COST)})`,
+    baseCost: UPGRADE_MONEY_SEGMENT_COST,
     tooltip: `Boost a money segment by +$${String(UPGRADE_MONEY_SEGMENT_AMOUNT)}`,
   },
 
@@ -106,24 +100,24 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
   {
     id: 'permanentBaseSpin',
     weight: 15,
-    label: `Permanent Base Spin ($${String(PERMANENT_BASE_SPIN_BASE_COST)})`,
-    baseCost: PERMANENT_BASE_SPIN_BASE_COST,
+    label: `Permanent Base Spin ($${String(PERMANENT_BASE_SPIN_COST)})`,
+    baseCost: PERMANENT_BASE_SPIN_COST,
     tooltip: `Permanently add +1 spin to every round`,
   },
 
   {
     id: 'deleteSegment',
     weight: 8,
-    label: `Delete Segment ($${String(DELETE_SEGMENT_BASE_COST)})`,
-    baseCost: DELETE_SEGMENT_BASE_COST,
+    label: `Delete Segment ($${String(DELETE_SEGMENT_COST)})`,
+    baseCost: DELETE_SEGMENT_COST,
     tooltip: `Permanently remove a segment from the wheel`,
   },
 
   {
     id: 'upgradePassiveIncome',
     weight: 10,
-    label: `Upgrade Income ($${String(PASSIVE_INCOME_UPGRADE_BASE_COST)})`,
-    baseCost: PASSIVE_INCOME_UPGRADE_BASE_COST,
+    label: `Upgrade Income ($${String(PASSIVE_INCOME_UPGRADE_COST)})`,
+    baseCost: PASSIVE_INCOME_UPGRADE_COST,
     tooltip: `Earn +$${String(PASSIVE_INCOME_UPGRADE_AMOUNT)} more money each round`,
   },
 ]

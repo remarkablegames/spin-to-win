@@ -54,8 +54,7 @@ export const ARTIFACTS: Record<ArtifactId, Artifact> = {
     id: 'boostNextMultiplier',
     type: 'active',
     name: 'Boost Next Multiplier',
-    description:
-      'Landing on a multiplier segment permanently increases its value by +25%',
+    description: 'Landing on a multiplier segment increases its value by +25%',
     icon: SPARK.id,
     cost: 6,
     rarity: 'uncommon',

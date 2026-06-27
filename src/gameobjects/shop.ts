@@ -166,10 +166,6 @@ export function addShop(
     hideFillBlank() {
       fillBlankButton.hide()
     },
-    updatePoolOfferLabel(index: 0 | 1, label: string, tooltip: string) {
-      poolButtons[index].setLabel(label)
-      poolButtons[index].setTooltip(tooltip)
-    },
     setPoolOfferEnabled(index: 0 | 1, enabled: boolean) {
       if (enabled) {
         poolButtons[index].enable()
