@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/remarkablegames/spin-to-win/compare/v1.0.2...v1.0.3) (2026-06-27)
+
+
+### Bug Fixes
+
+* evaluate layout constants lazily to fix itch.io iframe sizing ([8bc82f0](https://github.com/remarkablegames/spin-to-win/commit/8bc82f05ea48eefe81ced1a597c9650f401e51d9))
+
 ## [1.0.2](https://github.com/remarkablegames/spin-to-win/compare/v1.0.1...v1.0.2) (2026-06-27)
 
 
