@@ -330,25 +330,20 @@ scene(SCENE.SHOP, (state: ShopState) => {
         updateButtons()
         break
       }
-      case 'addMultiplierSegment': {
+      case 'upgradeMultiplierSegment': {
         money -= cost
         header.setMoney(money)
-        const isPositive = rand(0, 1) < SHOP.MULTIPLIER_SEGMENT_POSITIVE_CHANCE
-        const multiplierValue = isPositive
-          ? SHOP.MULTIPLIER_SEGMENT_POSITIVE_VALUE
-          : SHOP.MULTIPLIER_SEGMENT_NEGATIVE_VALUE
-        const multiplierColor = isPositive ? COLOR.LIGHT_BLUE : COLOR.PURPLE
-        const multiplierLabel = isPositive ? '+25%' : '-15%'
-        const multiplierSegment: WheelSegment = {
-          color: multiplierColor,
-          icon: isPositive ? SPRITE.LIGHTNING.id : SPRITE.SPIKE.id,
-          label: multiplierLabel,
-          multiplier: multiplierValue,
-          tooltip: `Total score ×${String(multiplierValue)}`,
-        }
-        wheel.addSegment(multiplierSegment)
-        addToast(`Added ${multiplierLabel} Segment`)
+        addToast('Select a multiplier segment on the wheel')
         playSound(SOUND.SHOP_PURCHASE.id)
+        wheel.setUpgradeMode(
+          'multiplier',
+          SHOP.UPGRADE_MULTIPLIER_SEGMENT_AMOUNT,
+          () => {
+            addToast('Multiplier Segment Upgraded')
+            playSound(SOUND.SHOP_PURCHASE.id)
+            updateButtons()
+          },
+        )
         updateButtons()
         break
       }

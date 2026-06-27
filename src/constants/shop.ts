@@ -7,11 +7,11 @@ import {
   HEART,
   HOME,
   KARAT,
-  LIGHTNING,
   MONEY_BAG,
   PUMPKA,
   SKULLER,
   SPARK,
+  SPARKLES,
   SPIKE,
   STAR,
   TGA,
@@ -32,10 +32,8 @@ export const UPGRADE_SCORE_SEGMENT_AMOUNT = 25
 export const UPGRADE_MONEY_SEGMENT_COST = 6
 export const UPGRADE_MONEY_SEGMENT_AMOUNT = 2
 
-const ADD_MULTIPLIER_SEGMENT_COST = 8
-export const MULTIPLIER_SEGMENT_POSITIVE_CHANCE = 0.7
-export const MULTIPLIER_SEGMENT_POSITIVE_VALUE = 1.25
-export const MULTIPLIER_SEGMENT_NEGATIVE_VALUE = 0.85
+export const UPGRADE_MULTIPLIER_SEGMENT_COST = 6
+export const UPGRADE_MULTIPLIER_SEGMENT_AMOUNT = 0.05
 
 const CLONE_SEGMENT_BASE_COST = 12
 
@@ -50,7 +48,7 @@ export const REROLL_COST_INCREMENT = 2
 export type PoolUpgradeId =
   | 'upgradeScoreSegment'
   | 'upgradeMoneySegment'
-  | 'addMultiplierSegment'
+  | 'upgradeMultiplierSegment'
   | 'cloneSegment'
   | 'permanentBaseSpin'
   | 'deleteSegment'
@@ -82,11 +80,11 @@ export const POOL_UPGRADES: PoolUpgrade[] = [
   },
 
   {
-    id: 'addMultiplierSegment',
+    id: 'upgradeMultiplierSegment',
     weight: 20,
-    label: `Add Multiplier Segment ($${String(ADD_MULTIPLIER_SEGMENT_COST)})`,
-    baseCost: ADD_MULTIPLIER_SEGMENT_COST,
-    tooltip: `Add a score multiplier segment to the wheel`,
+    label: `Upgrade Multiplier Segment ($${String(UPGRADE_MULTIPLIER_SEGMENT_COST)})`,
+    baseCost: UPGRADE_MULTIPLIER_SEGMENT_COST,
+    tooltip: `Boost a multiplier segment by +5%`,
   },
 
   {
@@ -193,7 +191,7 @@ export const FILL_TEMPLATES: FillTemplate[] = [
 
   {
     color: rgb(100, 200, 255),
-    icon: LIGHTNING.id,
+    icon: SPARKLES.id,
     label: '+25%',
     multiplier: 1.25,
     tooltip: 'Total score ×1.25',

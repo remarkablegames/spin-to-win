@@ -29,7 +29,7 @@ export const LEVELS: Level[] = [
       ],
       maxArtifactCost: 6,
       poolUpgradeWeightMultipliers: {
-        addMultiplierSegment: 1.15,
+        upgradeMultiplierSegment: 1.15,
         cloneSegment: 0.5,
         deleteSegment: 0.25,
         permanentBaseSpin: 0.5,
@@ -92,7 +92,7 @@ export const LEVELS: Level[] = [
         deleteSegment: 1.5,
         upgradeMoneySegment: 0.9,
         upgradeScoreSegment: 0.9,
-        addMultiplierSegment: 1.2,
+        upgradeMultiplierSegment: 1.2,
       },
     },
     targetScore: 600,

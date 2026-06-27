@@ -98,6 +98,13 @@ export const KARAT: Sprite = {
   height: 28, // 60
 }
 
+export const KAT: Sprite = {
+  id: 'kat',
+  src: '/sprites/kat.png',
+  width: 30, // 61
+  height: 29, // 58
+}
+
 export const LIGHTNING: Sprite = {
   id: 'lightning',
   src: '/sprites/lightning.png',

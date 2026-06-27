@@ -25,7 +25,7 @@ export interface WheelSegment {
   tooltip: string
 }
 
-type UpgradeType = 'score' | 'money'
+type UpgradeType = 'score' | 'money' | 'multiplier'
 
 type WheelMode =
   | { type: 'none' }
@@ -117,7 +117,7 @@ const SEGMENTS: WheelSegment[] = [
   },
   {
     color: COLOR.LIGHT_BLUE,
-    icon: SPRITE.LIGHTNING.id,
+    icon: SPRITE.SPARKLES.id,
     label: '+25%',
     multiplier: 1.25,
     tooltip: 'Total score ×1.25',
@@ -130,7 +130,8 @@ export function getDefaultSegments() {
 
 export function formatSegmentLabel(segment: WheelSegment) {
   if (typeof segment.multiplier === 'number') {
-    return segment.label
+    const multiplier = segment.multiplier
+    return `${multiplier >= 1 ? '+' : ''}${String(Math.round((multiplier - 1) * 100))}%`
   }
 
   if (typeof segment.score === 'number') {
@@ -317,10 +318,15 @@ export function addWheel(options: WheelOptions = {}) {
 
   function isValidModeTarget(segment: WheelSegment, mode: WheelMode): boolean {
     switch (mode.type) {
-      case 'upgrade':
-        return mode.upgradeType === 'score'
-          ? segment.score !== undefined
-          : segment.money !== undefined
+      case 'upgrade': {
+        if (mode.upgradeType === 'score') {
+          return segment.score !== undefined
+        }
+        if (mode.upgradeType === 'money') {
+          return segment.money !== undefined
+        }
+        return segment.multiplier !== undefined
+      }
       case 'fill':
         return segment.blank === true
       case 'delete':
@@ -334,10 +340,16 @@ export function addWheel(options: WheelOptions = {}) {
 
   function getUpgradeTooltip(segment: WheelSegment, mode: WheelMode): string {
     switch (mode.type) {
-      case 'upgrade':
-        return mode.upgradeType === 'score'
-          ? `${String(segment.score ?? 0)} → ${String((segment.score ?? 0) + mode.amount)}`
-          : `$${String(segment.money ?? 0)} → $${String((segment.money ?? 0) + mode.amount)}`
+      case 'upgrade': {
+        if (mode.upgradeType === 'score') {
+          return `${String(segment.score ?? 0)} → ${String((segment.score ?? 0) + mode.amount)}`
+        }
+        if (mode.upgradeType === 'money') {
+          return `$${String(segment.money ?? 0)} → $${String((segment.money ?? 0) + mode.amount)}`
+        }
+        const newMultiplier = (segment.multiplier ?? 1) + mode.amount
+        return `${segment.label} → ${newMultiplier >= 1 ? '+' : ''}${String(Math.round((newMultiplier - 1) * 100))}%`
+      }
       case 'fill':
         return 'Click to fill this blank segment'
       case 'delete':
@@ -412,8 +424,11 @@ export function addWheel(options: WheelOptions = {}) {
     if (mode.type === 'upgrade') {
       if (mode.upgradeType === 'score') {
         segment.score = (segment.score ?? 0) + mode.amount
-      } else {
+      } else if (mode.upgradeType === 'money') {
         segment.money = (segment.money ?? 0) + mode.amount
+      } else {
+        segment.multiplier = (segment.multiplier ?? 1) + mode.amount
+        segment.tooltip = `Total score ×${String(segment.multiplier)}`
       }
       segment.label = formatSegmentLabel(segment)
     }

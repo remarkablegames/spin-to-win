@@ -14,7 +14,7 @@ const BUTTON_START_Y = 220
 const BUTTON_Y_SPACING = 70
 
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
-  addMultiplierSegment: SPRITE.SPARKLES.id,
+  upgradeMultiplierSegment: SPRITE.SPARKLES.id,
   cloneSegment: SPRITE.COPY.id,
   deleteSegment: SPRITE.TRASH.id,
   permanentBaseSpin: SPRITE.PLUS.id,
