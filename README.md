@@ -28,7 +28,7 @@ Read the [blog post](https://remarkablegames.org/posts/spin-to-win/).
 
 ### Music
 
-- [Free Music Second Dealing by みんなの創作支援サイトＴスタ/T-STUDIO](https://t-studio-tst.itch.io/free-music-second-dealing)
+- [Second Dealing by みんなの創作支援サイトＴスタ/T-STUDIO](https://t-studio-tst.itch.io/free-music-second-dealing)
 
 ### Sounds
 
