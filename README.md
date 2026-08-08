@@ -16,6 +16,14 @@ Play the game on:
 
 Read the [blog post](https://remarkablegames.org/posts/spin-to-win/).
 
+## Features
+
+- **Spin the wheel** — each round gives you a limited number of spins. Land on score, money, multiplier, or "End Round" segments to shape your run.
+- **Build your wheel** — between rounds, visit the shop to upgrade segments, clone them, delete unwanted ones, or add and fill blank segments.
+- **Artifacts** — collect active and passive artifacts that let you skip negatives, extend or stop the spin, boost payouts, earn passive income, and more.
+- **Progress through levels** — reach the target score across 10 levels with escalating difficulty.
+- **Strategic choices** — decide when to keep spinning, end the round early, or spend money on upgrades and rerolls.
+
 ## Credits
 
 ### Art
