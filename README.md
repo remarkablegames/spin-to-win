@@ -9,9 +9,10 @@
 
 🎡 **Spin to Win** is a luck-based strategy game where every spin counts. Earn points, unlock upgrades, add segments, and remove penalties as you build your ultimate wheel. Can you reach the target score before luck runs out?
 
-Play the game on:
+Play in browser:
 
 - [itch.io](https://remarkablegames.itch.io/spin-to-win)
+- [Wavedash](https://wavedash.com/games/spin-to-win)
 - [remarkablegames](https://remarkablegames.org/spin-to-win/)
 
 Read the [blog post](https://remarkablegames.org/posts/spin-to-win/).
