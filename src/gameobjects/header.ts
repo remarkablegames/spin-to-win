@@ -2,7 +2,7 @@ import { COLOR } from '../constants'
 import { addProgressBar } from './progressBar'
 import { addTooltip } from './tooltip'
 
-const HEADER_HEIGHT = 130
+export const HEADER_HEIGHT = 130
 const TEXT_SIZE = 20
 const LINE_HEIGHT = 28
 const CENTER_X = () => width() / 2

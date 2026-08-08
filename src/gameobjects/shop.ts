@@ -6,12 +6,37 @@ import type {
   PoolUpgradeId,
 } from '../constants/shop'
 import type { ArtifactId } from '../types'
-import { getArtifactById, isDesktop } from '../utils'
+import { getArtifactById, getShopButtonX } from '../utils'
 import { addButton } from './button'
+import { HEADER_HEIGHT } from './header'
 
-const BUTTON_X = () => (isDesktop() ? width() * 0.65 : width() * 0.7)
-const BUTTON_START_Y = 220
-const BUTTON_Y_SPACING = 70
+const BASE_BUTTON_START_Y = 220
+const BASE_BUTTON_Y_SPACING = 70
+const BUTTON_HALF_HEIGHT = 25
+const BOTTOM_MARGIN = 20
+
+// On short screens, shrink the button list (down to this fraction of its
+// normal size/spacing) so every offer stays on screen.
+const MIN_SHOP_SCALE = 0.55
+
+function getShopLayout(buttonCount: number) {
+  const availableHeight = height() - HEADER_HEIGHT - BOTTOM_MARGIN
+  const desiredHeight =
+    BASE_BUTTON_START_Y -
+    HEADER_HEIGHT +
+    (buttonCount - 1) * BASE_BUTTON_Y_SPACING +
+    BUTTON_HALF_HEIGHT
+  const scale = Math.min(
+    1,
+    Math.max(MIN_SHOP_SCALE, availableHeight / desiredHeight),
+  )
+
+  return {
+    scale,
+    spacing: BASE_BUTTON_Y_SPACING * scale,
+    startY: HEADER_HEIGHT + (BASE_BUTTON_START_Y - HEADER_HEIGHT) * scale,
+  }
+}
 
 const POOL_UPGRADE_ICONS: Record<PoolUpgradeId, string> = {
   upgradeMultiplierSegment: SPRITE.SPARKLES.id,
@@ -41,13 +66,17 @@ export function addShop(
   artifactOffers: ArtifactId[],
   initialExtraSpinCost: number,
 ) {
-  const x = BUTTON_X()
+  const x = getShopButtonX()
+  const totalButtons = 5 + poolOffers.length + artifactOffers.length
+  const { scale, spacing, startY } = getShopLayout(totalButtons)
+  const buttonY = (index: number) => startY + spacing * index
 
   const extraSpinButton = addButton({
     label: `Extra Spin ($${String(initialExtraSpinCost)})`,
     icon: SPRITE.PLUS.id,
+    scale,
     x,
-    y: BUTTON_START_Y,
+    y: buttonY(0),
     onClick: callbacks.onExtraSpin,
     tooltip: `Spend $${String(initialExtraSpinCost)} to gain an extra spin this round`,
     buttonColor: COLOR.BLUE,
@@ -57,8 +86,9 @@ export function addShop(
   const addSegmentButton = addButton({
     label: 'Add Blank Segment (Free)',
     icon: SPRITE.QUESTION_MARK.id,
+    scale,
     x,
-    y: BUTTON_START_Y + BUTTON_Y_SPACING,
+    y: buttonY(1),
     onClick: callbacks.onAddSegment,
     tooltip: 'Add a blank segment to the wheel (fill it with an upgrade)',
     buttonColor: COLOR.BLUE,
@@ -68,8 +98,9 @@ export function addShop(
   const fillBlankButton = addButton({
     label: `Fill Blank Segment ($${String(SHOP.FILL_BLANK_SEGMENT_COST)})`,
     icon: SPRITE.STRANGER.id,
+    scale,
     x,
-    y: BUTTON_START_Y + BUTTON_Y_SPACING * 2,
+    y: buttonY(2),
     onClick: callbacks.onFillBlank,
     tooltip: 'Fill a blank segment with a random effect',
     buttonColor: COLOR.BLUE,
@@ -80,8 +111,9 @@ export function addShop(
     addButton({
       label: offer.label,
       icon: POOL_UPGRADE_ICONS[offer.id],
+      scale,
       x,
-      y: BUTTON_START_Y + BUTTON_Y_SPACING * (3 + i),
+      y: buttonY(3 + i),
       onClick: () => {
         callbacks.onPoolUpgrade(offer)
       },
@@ -96,8 +128,9 @@ export function addShop(
     return addButton({
       label: `${artifact.name} ($${String(artifact.cost)})`,
       icon: artifact.icon,
+      scale,
       x,
-      y: BUTTON_START_Y + BUTTON_Y_SPACING * (3 + poolOffers.length + i),
+      y: buttonY(3 + poolOffers.length + i),
       onClick: () => {
         callbacks.onArtifactOffer(i as 0 | 1)
       },
@@ -110,10 +143,9 @@ export function addShop(
   const rerollButton = addButton({
     label: `Reroll ($${String(SHOP.REROLL_BASE_COST)})`,
     icon: SPRITE.HISTORY.id,
+    scale,
     x,
-    y:
-      BUTTON_START_Y +
-      BUTTON_Y_SPACING * (3 + poolOffers.length + artifactOffers.length),
+    y: buttonY(3 + poolOffers.length + artifactOffers.length),
     onClick: callbacks.onReroll,
     tooltip: 'Reroll all shop offers',
     buttonColor: COLOR.GREEN,
@@ -122,10 +154,9 @@ export function addShop(
 
   const continueButton = addButton({
     label: 'Continue',
+    scale,
     x,
-    y:
-      BUTTON_START_Y +
-      BUTTON_Y_SPACING * (4 + poolOffers.length + artifactOffers.length),
+    y: buttonY(4 + poolOffers.length + artifactOffers.length),
     onClick: callbacks.onContinue,
     tooltip: 'Continue to the next round',
     buttonColor: COLOR.RED,

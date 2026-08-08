@@ -9,17 +9,19 @@ import {
   addToast,
   addWheel,
   FLOATING_TEXT_DURATION,
+  getArtifactBarClearance,
+  HEADER_HEIGHT,
 } from '../gameobjects'
 import type { WheelSegment } from '../gameobjects/wheel'
 import { formatSegmentLabel, getDefaultSegments } from '../gameobjects/wheel'
 import type { ActiveArtifactId, ArtifactId, ArtifactSlot } from '../types'
 import {
   addArtifactSlot,
+  computeWheelLayout,
   getArtifactById,
   getRandomArtifacts,
   hasArtifact,
   isActiveArtifact,
-  isDesktop,
   playMusic,
   playRewardSound,
   playSound,
@@ -28,9 +30,104 @@ import {
   spendArtifactCharge,
 } from '../utils'
 
-const WHEEL_OFFSET = () => (isDesktop() ? 45 : 35)
-const SPIN_BUTTON_OFFSET = 255
-const END_BUTTON_OFFSET = () => SPIN_BUTTON_OFFSET + (isDesktop() ? 65 : 60)
+const DEFAULT_WHEEL_RADIUS = 250
+const MIN_WHEEL_RADIUS = 90
+
+// How big the wheel is allowed to grow to fill extra vertical space,
+// capped so it never gets wider than the screen.
+const MAX_WHEEL_RADIUS = 320
+const WHEEL_HORIZONTAL_MARGIN = 20
+const POINTER_CLEARANCE = SPRITE.POINTER.height + 24
+const BUTTON_HEIGHT = 50
+
+// Distance from the wheel edge to the spin button's center.
+const WHEEL_TO_SPIN_BUTTON = 50
+
+// Distance from the spin button's center to the end button's center
+// (stacked layout, used when there's enough vertical space).
+const SPIN_TO_END_BUTTON = 65
+const GAP_ABOVE_ARTIFACT_BAR = 15
+
+// Side-by-side button layout (used on short screens to keep the wheel big).
+const SIDE_BY_SIDE_BUTTON_WIDTH = 150
+const SIDE_BY_SIDE_BUTTON_GAP = 16
+
+// On very short screens, shrink the buttons and artifact bar (down to this
+// fraction of their normal size) instead of shrinking the wheel further.
+const MIN_UI_SCALE = 0.8
+
+function getMaxWheelRadius() {
+  return Math.min(MAX_WHEEL_RADIUS, width() / 2 - WHEEL_HORIZONTAL_MARGIN)
+}
+
+function getBottomReserved(stacked: boolean, uiScale: number) {
+  const buttonsHeight = stacked
+    ? SPIN_TO_END_BUTTON + (BUTTON_HEIGHT * uiScale) / 2
+    : (BUTTON_HEIGHT * uiScale) / 2
+
+  return (
+    WHEEL_TO_SPIN_BUTTON +
+    buttonsHeight +
+    GAP_ABOVE_ARTIFACT_BAR +
+    getArtifactBarClearance(uiScale)
+  )
+}
+
+function getWheelLayout() {
+  const maxRadius = getMaxWheelRadius()
+
+  const stackedLayout = computeWheelLayout({
+    bottomReserved: getBottomReserved(true, 1),
+    contentTop: HEADER_HEIGHT,
+    defaultRadius: DEFAULT_WHEEL_RADIUS,
+    maxRadius,
+    minRadius: MIN_WHEEL_RADIUS,
+    topReserved: POINTER_CLEARANCE,
+  })
+
+  // The wheel doesn't need to shrink below its default size, so keep
+  // buttons stacked vertically as before.
+  if (stackedLayout.radius >= DEFAULT_WHEEL_RADIUS) {
+    return { ...stackedLayout, sideBySideButtons: false, uiScale: 1 }
+  }
+
+  const sideBySideLayout = computeWheelLayout({
+    bottomReserved: getBottomReserved(false, 1),
+    contentTop: HEADER_HEIGHT,
+    defaultRadius: DEFAULT_WHEEL_RADIUS,
+    maxRadius,
+    minRadius: MIN_WHEEL_RADIUS,
+    topReserved: POINTER_CLEARANCE,
+  })
+
+  // Side-by-side buttons at full size already fit the default wheel size.
+  if (sideBySideLayout.radius >= DEFAULT_WHEEL_RADIUS) {
+    return { ...sideBySideLayout, sideBySideButtons: true, uiScale: 1 }
+  }
+
+  // Still too tight: shrink the buttons/artifact bar first so the wheel can
+  // stay as large as possible, down to MIN_UI_SCALE. Solve for the scale
+  // that lets the default wheel radius fit exactly.
+  const contentHeight = height() - HEADER_HEIGHT
+  const fixedReserved =
+    POINTER_CLEARANCE +
+    DEFAULT_WHEEL_RADIUS * 2 +
+    WHEEL_TO_SPIN_BUTTON +
+    GAP_ABOVE_ARTIFACT_BAR
+  const scalableReserved = BUTTON_HEIGHT / 2 + getArtifactBarClearance(1)
+  const rawUiScale = (contentHeight - fixedReserved) / scalableReserved
+  const uiScale = Math.max(MIN_UI_SCALE, Math.min(1, rawUiScale))
+
+  const compactLayout = computeWheelLayout({
+    bottomReserved: getBottomReserved(false, uiScale),
+    contentTop: HEADER_HEIGHT,
+    defaultRadius: DEFAULT_WHEEL_RADIUS,
+    minRadius: MIN_WHEEL_RADIUS,
+    topReserved: POINTER_CLEARANCE,
+  })
+
+  return { ...compactLayout, sideBySideButtons: true, uiScale }
+}
 
 type SegmentSnapshot = WheelSegment & { index: number }
 
@@ -101,12 +198,20 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   const header = addHeader()
 
+  const {
+    radius: wheelRadius,
+    sideBySideButtons,
+    uiScale,
+    wheelCenterY,
+  } = getWheelLayout()
+
   const wheelSegments = initialState?.segments ?? getDefaultSegments()
   const wheel = addWheel({
     segments: wheelSegments,
     angle: initialState?.wheelAngle,
     onSpinTick: playWheelTick,
-    pos: vec2(center().x, center().y - WHEEL_OFFSET()),
+    pos: vec2(center().x, wheelCenterY),
+    radius: wheelRadius,
   })
 
   add([
@@ -114,7 +219,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
       width: SPRITE.POINTER.width,
       height: SPRITE.POINTER.height,
     }),
-    pos(center().x, center().y - WHEEL_OFFSET() - wheel.radius - 14),
+    pos(center().x, wheelCenterY - wheel.radius - 14),
     anchor('center'),
     rotate(90),
     color(COLOR.WHITE),
@@ -122,6 +227,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   const artifactInventory = addArtifact({
     onUse: useArtifact,
+    scale: uiScale,
   })
 
   function formatSpinTooltip() {
@@ -636,7 +742,7 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
       let showedFloat = false
       if (!effect.skipped && !segment.blank) {
-        const wheelPos = vec2(center().x, center().y - WHEEL_OFFSET())
+        const wheelPos = vec2(center().x, wheelCenterY)
         if (segment.endRound) {
           addFloatingText({
             text: 'End',
@@ -692,10 +798,25 @@ scene(SCENE.GAME, (initialState?: GameState) => {
     })
   }
 
+  const buttonRowY = wheelCenterY + wheel.radius + WHEEL_TO_SPIN_BUTTON
+  const sideBySideButtonSpacing =
+    (SIDE_BY_SIDE_BUTTON_WIDTH * uiScale + SIDE_BY_SIDE_BUTTON_GAP) / 2
+  const spinButtonX = sideBySideButtons
+    ? center().x - sideBySideButtonSpacing
+    : center().x
+  const endButtonX = sideBySideButtons
+    ? center().x + sideBySideButtonSpacing
+    : center().x
+  const endButtonY = sideBySideButtons
+    ? buttonRowY
+    : buttonRowY + SPIN_TO_END_BUTTON
+
   const spinButton = addButton({
     label: 'Spin',
-    x: center().x,
-    y: center().y + SPIN_BUTTON_OFFSET,
+    scale: uiScale,
+    width: sideBySideButtons ? SIDE_BY_SIDE_BUTTON_WIDTH : undefined,
+    x: spinButtonX,
+    y: buttonRowY,
     onClick: spin,
     tooltip: '1 spin remaining',
     tooltipAnchor: 'bot',
@@ -703,8 +824,10 @@ scene(SCENE.GAME, (initialState?: GameState) => {
 
   const skipButton = addButton({
     label: 'End',
-    x: center().x,
-    y: center().y + END_BUTTON_OFFSET(),
+    scale: uiScale,
+    width: sideBySideButtons ? SIDE_BY_SIDE_BUTTON_WIDTH : undefined,
+    x: endButtonX,
+    y: endButtonY,
     onClick: () => {
       if (isSpinning || spinsRemaining <= 0) {
         playSound(SOUND.INVALID_ACTION.id)

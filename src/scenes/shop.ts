@@ -17,6 +17,8 @@ import {
   addToast,
   addWheel,
   drawPoolOffers,
+  getArtifactBarClearance,
+  HEADER_HEIGHT,
   pickFillTemplates,
 } from '../gameobjects'
 import type { Shop } from '../gameobjects/shop'
@@ -24,14 +26,53 @@ import type { WheelSegment } from '../gameobjects/wheel'
 import type { ArtifactId, ArtifactSlot } from '../types'
 import {
   addArtifactSlot,
+  computeWheelLayout,
   getArtifactById,
   getRandomArtifacts,
   getSellRefund,
+  getShopButtonX,
   playSound,
   removeArtifactSlot,
 } from '../utils'
 
 const WHEEL_X = () => width() * 0.35
+const WHEEL_LEFT_MARGIN = 20
+// Widest a shop button can realistically get (long labels + icon), used to
+// keep the wheel from running into the button column.
+const MAX_BUTTON_HALF_WIDTH = 160
+const BUTTON_COLUMN_GAP = 20
+const DEFAULT_WHEEL_RADIUS = 250
+const MIN_WHEEL_RADIUS = 90
+const POINTER_CLEARANCE = 26
+const BOTTOM_MARGIN = 20
+const GAP_ABOVE_ARTIFACT_BAR = 10
+
+// Shrinks the wheel on narrow screens so it doesn't clip past the left edge
+// or run into the shop buttons on the right.
+function getMaxWheelRadiusForWidth() {
+  const buttonAreaLeftEdge =
+    getShopButtonX() - MAX_BUTTON_HALF_WIDTH - BUTTON_COLUMN_GAP
+
+  return Math.min(
+    DEFAULT_WHEEL_RADIUS,
+    WHEEL_X() - WHEEL_LEFT_MARGIN,
+    buttonAreaLeftEdge - WHEEL_X(),
+  )
+}
+
+function getWheelLayout() {
+  const maxRadius = getMaxWheelRadiusForWidth()
+
+  return computeWheelLayout({
+    bottomReserved:
+      BOTTOM_MARGIN + GAP_ABOVE_ARTIFACT_BAR + getArtifactBarClearance(),
+    contentTop: HEADER_HEIGHT,
+    defaultRadius: maxRadius,
+    maxRadius,
+    minRadius: MIN_WHEEL_RADIUS,
+    topReserved: POINTER_CLEARANCE,
+  })
+}
 
 interface ShopState {
   artifacts: ArtifactSlot[]
@@ -67,11 +108,13 @@ scene(SCENE.SHOP, (state: ShopState) => {
   header.setScore(state.levelScore, LEVEL.LEVELS[state.levelIndex].targetScore)
   header.setMoney(money)
 
-  const wheelX = vec2(WHEEL_X(), center().y)
+  const { radius: wheelRadius, wheelCenterY } = getWheelLayout()
+  const wheelX = vec2(WHEEL_X(), wheelCenterY)
   const wheel = addWheel({
     segments: state.segments,
     pos: wheelX,
     angle: state.wheelAngle,
+    radius: wheelRadius,
   })
 
   add([
@@ -131,6 +174,7 @@ scene(SCENE.SHOP, (state: ShopState) => {
   }
 
   const activeArtifactInventory = addArtifact({
+    centerX: WHEEL_X(),
     holdToConfirm: true,
     onUse: (id) => {
       sellArtifact(id)

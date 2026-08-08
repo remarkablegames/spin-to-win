@@ -6,40 +6,65 @@ import {
   addShadowText,
   addWheel,
 } from '../gameobjects'
-import { isDesktop } from '../utils'
+import { computeWheelLayout, isDesktop } from '../utils'
 
-const TITLE_Y = 130
-const TAGLINE_Y = 180
-const WHEEL_RADIUS = 230
-const WHEEL_Y_OFFSET = () => (isDesktop() ? 0 : 10)
-const PLAY_BUTTON_Y_OFFSET = 285
+const TITLE_Y = () => (isDesktop() ? 90 : 60)
+const TAGLINE_Y = () => (isDesktop() ? 140 : 105)
+
+// Where the wheel/button block starts, right below the title text.
+const CONTENT_TOP = () => TAGLINE_Y() + (isDesktop() ? -40 : height() * 0.01)
+const DEFAULT_WHEEL_RADIUS = 230
+const MIN_WHEEL_RADIUS = 90
+const MAX_WHEEL_RADIUS = 320
+
+// Gap above the wheel (room for the pointer).
+const POINTER_CLEARANCE = 42
+
+// Distance from the wheel edge to the play button's center.
+const GAP_WHEEL_TO_PLAY_BUTTON = 45
+const BUTTON_HALF_HEIGHT = 25
+const BOTTOM_MARGIN = 20
 const POINTER_OFFSET = 14
 const WHEEL_ROTATION_SPEED = 8
+
+function getWheelLayout() {
+  return computeWheelLayout({
+    bottomReserved:
+      GAP_WHEEL_TO_PLAY_BUTTON + BUTTON_HALF_HEIGHT + BOTTOM_MARGIN,
+    contentTop: CONTENT_TOP(),
+    defaultRadius: DEFAULT_WHEEL_RADIUS,
+    maxRadius: MAX_WHEEL_RADIUS,
+    minRadius: MIN_WHEEL_RADIUS,
+    topReserved: POINTER_CLEARANCE,
+  })
+}
 
 scene(SCENE.TITLE, () => {
   addMuteButton()
   addGrid()
 
+  const { radius, wheelCenterY } = getWheelLayout()
+
   addShadowText({
     color: COLOR.GOLD,
-    pos: { x: center().x, y: TITLE_Y },
+    pos: { x: center().x, y: TITLE_Y() },
     size: 56,
     text: 'Spin to Win',
   })
 
   addShadowText({
     color: COLOR.LIGHT_BROWN,
-    pos: { x: center().x, y: TAGLINE_Y },
+    pos: { x: center().x, y: TAGLINE_Y() },
     shadowColor: COLOR.DARK_BROWN,
     shadowOpacity: 0.8,
     size: 24,
     text: 'Spin. Score. Repeat.',
   })
 
-  const wheelPos = vec2(center().x, center().y + WHEEL_Y_OFFSET())
+  const wheelPos = vec2(center().x, wheelCenterY)
   const wheel = addWheel({
     pos: wheelPos,
-    radius: WHEEL_RADIUS,
+    radius,
   })
 
   wheel.onUpdate(() => {
@@ -66,6 +91,6 @@ scene(SCENE.TITLE, () => {
     tooltip: 'Start a new run',
     tooltipAnchor: 'bot',
     x: center().x,
-    y: center().y + PLAY_BUTTON_Y_OFFSET,
+    y: wheelCenterY + wheel.radius + GAP_WHEEL_TO_PLAY_BUTTON,
   })
 })

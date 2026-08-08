@@ -1,4 +1,5 @@
 export * from './artifact'
 export * from './device'
+export * from './layout'
 export * from './sound'
 export * from './sprite'

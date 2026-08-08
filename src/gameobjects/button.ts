@@ -17,6 +17,7 @@ interface AddButtonOptions {
   icon?: string
   label: string
   onClick: () => void
+  scale?: number
   shadowColor?: Color
   tooltip?: string
   tooltipAnchor?: Anchor
@@ -37,6 +38,7 @@ export function addButton({
   icon,
   buttonColor = COLOR.GREEN,
   shadowColor = COLOR.DARK_GREEN,
+  scale: buttonScale = 1,
 }: AddButtonOptions) {
   const ICON_SIZE = 24
   const iconWidth = icon ? ICON_SIZE + HORIZONTAL_PADDING / 2 : 0
@@ -50,7 +52,7 @@ export function addButton({
     )
   }
 
-  const container = add([pos(x, y)])
+  const container = add([pos(x, y), scale(buttonScale)])
 
   const shadow = container.add([
     rect(calcWidth(label), height),

@@ -20,8 +20,11 @@ interface ArtifactInventory {
 }
 
 interface AddArtifactOptions {
+  /** Horizontal center the bar is aligned to. Defaults to `width() / 2`. */
+  centerX?: number
   holdToConfirm?: boolean
   onUse: (id: ArtifactId) => void
+  scale?: number
   x?: number
   y?: number
 }
@@ -31,15 +34,25 @@ interface SlotDisplay {
   tooltip: ReturnType<typeof addTooltip>
 }
 
+/** Distance reserved from the bottom of the screen up to the top of the artifact bar. */
+export function getArtifactBarClearance(barScale = 1) {
+  return (SLOT_SIZE + PADDING * 2 + BOTTOM_OFFSET()) * barScale
+}
+
 export function addArtifact(options: AddArtifactOptions): ArtifactInventory {
+  const barScale = options.scale ?? 1
   const slotCount = ARTIFACT.ARTIFACT_SLOTS
   const totalWidth =
     slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP + PADDING * 2
   const totalHeight = SLOT_SIZE + PADDING * 2
-  const x = options.x ?? (width() - totalWidth) / 2 + PADDING
-  const y = options.y ?? height() - totalHeight - BOTTOM_OFFSET() + PADDING
+  // The bar scales around its bottom-center, so it stays centered
+  // horizontally and anchored to the bottom of the screen at any scale.
+  const centerX = options.centerX ?? width() / 2
+  const x = options.x ?? centerX - barScale * (totalWidth / 2 - PADDING)
+  const y =
+    options.y ?? height() - barScale * (totalHeight + BOTTOM_OFFSET() - PADDING)
 
-  const container = add([pos(x, y)])
+  const container = add([pos(x, y), scale(barScale)])
 
   container.add([
     rect(totalWidth, totalHeight, { radius: 8 }),
