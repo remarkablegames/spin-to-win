@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/remarkablegames/spin-to-win/compare/v1.0.4...v1.0.5) (2026-08-08)
+
+
+### Bug Fixes
+
+* **layout:** make wheel, header, buttons, and shop responsive on small screens ([d660f19](https://github.com/remarkablegames/spin-to-win/commit/d660f19328d331bbb34b3501b71cdea9202cceec))
+
 ## [1.0.4](https://github.com/remarkablegames/spin-to-win/compare/v1.0.3...v1.0.4) (2026-08-08)
 
 
