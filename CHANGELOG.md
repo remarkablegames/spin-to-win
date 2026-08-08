@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/remarkablegames/spin-to-win/compare/v1.0.3...v1.0.4) (2026-08-08)
+
+
+### Continuous Integration
+
+* **github:** upload to wavedash in release-please.yml ([cba9744](https://github.com/remarkablegames/spin-to-win/commit/cba9744b816092b5ab7eabc0b8caca3ce9d375ab))
+
 ## [1.0.3](https://github.com/remarkablegames/spin-to-win/compare/v1.0.2...v1.0.3) (2026-06-27)
 
 
