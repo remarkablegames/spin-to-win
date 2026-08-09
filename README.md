@@ -7,7 +7,7 @@
 [![release](https://img.shields.io/github/v/release/remarkablegames/spin-to-win)](https://github.com/remarkablegames/spin-to-win/releases)
 [![build](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml/badge.svg)](https://github.com/remarkablegames/spin-to-win/actions/workflows/build.yml)
 
-🎡 **Spin to Win** is a luck-based strategy game where every spin counts. Earn points, unlock upgrades, add segments, and remove penalties as you build your ultimate wheel. Can you reach the target score before luck runs out?
+🎡 **Spin to Win** is a luck-based strategy game where every spin counts. Earn points, unlock upgrades, add segments, and remove penalties as you build your ultimate wheel. Can you reach the target score before your luck runs out?
 
 Play in browser:
 
